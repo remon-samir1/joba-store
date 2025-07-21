@@ -9,6 +9,6 @@ export const Axios = axios.create({
   headers: {
     Authorization: 'Bearer ' + token ,
 
-    // 'X-Gust-Token': Math.random(),
+    'X-Gust-Token':'jhnkjvliufiu',
   },
 });

@@ -25,6 +25,7 @@ import { ProductHero } from "../components/product/ProductHero";
 import { ProductDetails } from "../components/product/ProductDetails";
 import ProductDetailPage from "../app/products/[id]/ProductDetailPage";
 import AdminLogin from "../components/AdminLogin/AdminLogin.jsx";
+import CartPage from "../app/cart/CartPage";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/cart" element={<CartPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/categories/:id" element={<CategoriesPage />} />

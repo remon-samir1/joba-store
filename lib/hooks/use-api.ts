@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api } from "../..//lib/api";
 import type {
   Product,
   Category,
@@ -13,7 +13,7 @@ import type {
   Coupon,
   Invoice,
   BlogPost,
-} from "@/lib/api";
+} from "../../lib/api";
 
 // Products hooks
 export const useProducts = (params?: {

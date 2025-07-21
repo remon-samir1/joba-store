@@ -108,7 +108,7 @@ export default function AddProductPage() {
   
     // 🟩 Basic fields
     formData.append('name', productData.productName);
-    formData.append('product_type_id', 1);
+    formData.append('product_type_id', "T-shirts");
     formData.append('description', productData.productDescription);
     formData.append('price', productData.productPrice);
     formData.append('stock', productData.stockQuantity);

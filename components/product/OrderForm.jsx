@@ -15,6 +15,7 @@ import {
 import axios from "axios";
 import Notifcation from "../Notification";
 import { toast } from "react-toastify";
+import { Axios } from "../Helpers/Axios";
 
 export function OrderForm({ productId, productSizeId }) {
   const [formData, setFormData] = useState({
@@ -81,8 +82,8 @@ export function OrderForm({ productId, productSizeId }) {
     };
 
     try {
-      const res = await axios.post(
-        "https://goba-ecommerce.sunmedagency.com/api/orders",
+      const res = await Axios.post(
+        "/orders",
         requestBody,
       );
       toast.success("Order submitted successfully!");
