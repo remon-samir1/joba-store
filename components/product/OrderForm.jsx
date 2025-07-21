@@ -66,8 +66,8 @@ export function OrderForm({ productId, productSizeId }) {
     const requestBody = {
       items: [
         {
-          product_id: productId, // ✅ يُمرر من الـ props
-          product_size_id: productSizeId || null, // nullable
+          product_id: productId, 
+          // product_size_id: productSizeId || null,
           quantity: parseInt(formData.quantity),
         },
       ],

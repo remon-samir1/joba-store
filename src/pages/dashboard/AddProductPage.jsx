@@ -108,12 +108,12 @@ export default function AddProductPage() {
   
     // 🟩 Basic fields
     formData.append('name', productData.productName);
-    formData.append('product_type_id', "T-shirts");
+    // formData.append('product_type_id', "T-shirts");
     formData.append('description', productData.productDescription);
     formData.append('price', productData.productPrice);
     formData.append('stock', productData.stockQuantity);
     formData.append('category_id', productData.productCategory); 
-    formData.append('product_type_id', productData.productTag); 
+    // formData.append('product_type_id', productData.productTag); 
     formData.append('is_featured', productData.isBestSeller ? 1 : 0);
   
     // 🟨 Status - You might use 'pending' by default
