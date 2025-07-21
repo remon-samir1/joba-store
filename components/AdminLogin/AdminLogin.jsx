@@ -9,13 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import juba from '../../src/assets/juba.svg'
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const cookie = Cookies();
-
+const nav = useNavigate()
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -32,7 +33,7 @@ export default function AdminLogin() {
 
         console.log(token);
         toast.success('Login Succssefly')
-        window.location.pathname ='/dashboard'
+        nav('/dashboard')
       });
     } catch (err) {
       toast.error('Invalid email or password !')
