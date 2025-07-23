@@ -2,13 +2,21 @@
 
 import { useContext, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Heart, Paperclip, Minus, Plus,Info } from "lucide-react";
+import {
+  ShoppingCart,
+  Heart,
+  Paperclip,
+  Minus,
+  Plus,
+  Info,
+} from "lucide-react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Notifcation from "../Notification.jsx";
 import { Axios } from "../Helpers/Axios.js";
 import { CartCh } from "../../Context/CartContext.jsx";
+import OrderRequestModal from "../../app/products/[id]/RequestModal.jsx";
 
 export function ProductDetails({
   description,
@@ -33,21 +41,22 @@ export function ProductDetails({
       setQuantity(newQuantity);
     }
   };
+  const [showModal, setShowModal] = useState(false);
   console.log(selectedSize);
-  const cartcontext = useContext(CartCh)
-  const change = cartcontext.setCartChange
+  const cartcontext = useContext(CartCh);
+  const change = cartcontext.setCartChange;
   const handleAddToCart = async () => {
     const data = {
       product_size_id: selectedSize,
       total_price: price * quantity,
     };
-  
+
     try {
       if (!selectedSize) {
         toast.warn("Please select Size or a specific concentration");
-        return; 
+        return;
       }
-  
+
       const response = await Axios.post(`/cart/${slug}`, data);
       change((prev) => !prev);
       console.log("API response:", response.data);
@@ -57,12 +66,10 @@ export function ProductDetails({
       alert("Failed to add to cart. Please try again.");
     }
   };
-  
+
   const handleAddToWishlist = async () => {
     try {
-      const response = await Axios.post(
-        `/wishlist/${slug}`,
-      );
+      const response = await Axios.post(`/wishlist/${slug}`);
       console.log("API response:", response.data);
       toast.success(`Added to wishlist !`);
     } catch (error) {
@@ -114,27 +121,20 @@ export function ProductDetails({
           {/* Stock Status and Request Button */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-2">
-              <Info className="h-6 w-6 text-primary" />
+              <Info className="h-6 w-6 bg text-primary" />
               <span className="text-gray-900">
                 {inStock ? "In stock" : "Out of stock"}
               </span>
             </div>
+          </div>
             {!inStock && (
               <button
-                onClick={() => {
-                  const orderForm = document.getElementById("order-form");
-                  if (orderForm) {
-                    orderForm.scrollIntoView({ behavior: "smooth" });
-                  } else {
-                    alert("Please scroll down to fill the order request form");
-                  }
-                }}
-                className="bg-primary hover:bg-primary/90 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors w-full sm:w-auto"
+                onClick={() => setShowModal(true)}
+                className="bg-primary block hover:bg-primary/90 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors w-full sm:w-auto"
               >
                 Request Now
               </button>
             )}
-          </div>
         </div>
       </div>
       <div>
@@ -227,6 +227,9 @@ export function ProductDetails({
           <Paperclip className="h-5 w-5" />
         </Button>
       </div>
+    
+      <OrderRequestModal isOpen={showModal} onClose={()=>setShowModal(false)}/>
+    
     </div>
   );
 }

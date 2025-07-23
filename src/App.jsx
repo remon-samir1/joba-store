@@ -43,6 +43,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/blog/:id" element={<singleBlog />} />
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/contact" element={<ContactPage />} />

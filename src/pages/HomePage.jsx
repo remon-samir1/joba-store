@@ -13,6 +13,7 @@ import axios from "axios";
 import { Axios, baseURL } from "../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import Notifcation from "../../components/Notification";
+import Testimonials from "./Testmonials";
 
 // Hero slides data
 const heroSlides = [
@@ -447,40 +448,43 @@ function NewProducts() {
 
 // Best Seller Section
 function BestSeller() {
-  const products = [
-    {
-      name: "Queen's Summer",
-      category: "Medium Shoulder Bags",
-      price: 384,
-      image:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/b627abefe39198c23fffff15606450eb064acc88?width=592",
-      onSale: true,
-    },
-    {
-      name: "Queen's Summer",
-      category: "Medium Shoulder Bags",
-      price: 384,
-      image:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/b627abefe39198c23fffff15606450eb064acc88?width=592",
-      onSale: true,
-    },
-    {
-      name: "Queen's Summer",
-      category: "Medium Shoulder Bags",
-      price: 384,
-      image:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/b627abefe39198c23fffff15606450eb064acc88?width=592",
-      onSale: true,
-    },
-    {
-      name: "Queen's Summer",
-      category: "Medium Shoulder Bags",
-      price: 384,
-      image:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/b627abefe39198c23fffff15606450eb064acc88?width=592",
-      onSale: true,
-    },
-  ];
+  
+  const handleAddToWishlist = async (e, slug, is_favorite) => {
+    e.stopPropagation();
+    e.preventDefault();
+    // setIsWishlisted(slug);
+    try {
+      if (is_favorite) {
+        const response = await Axios.delete(`/wishlist/${slug}`).then(() => {
+          toast.success(`Removed From wishlist !`);
+
+          setProducts(
+            products.map((prev) =>
+              prev.slug == slug ? { ...prev, is_favorite : false } : prev,
+            ),
+          );
+        });
+      } else {
+        const response = await Axios.post(`/wishlist/${slug}`).then(() => {
+          toast.success(`Added to wishlist !`);
+          setProducts(
+            products.map((prev) =>
+              prev.slug == slug ? { ...prev, is_favorite: true } : prev,
+            ),
+          );
+        });
+      }
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      toast.error("Failed to add to wishlist. Please try again.");
+    }
+  };
+const [products , setProducts] = useState([]);
+useEffect(()=>{
+  Axios.get('/best-sellers').then(data =>{
+    setProducts(data.data.data)
+    console.log(data)})
+},[])
 
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-background">
@@ -494,12 +498,25 @@ function BestSeller() {
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {products.map((product, index) => (
+          {products?.map((product, index) => (
             <Link
               key={index}
               // to={`/products/${product.name.en.toLowerCase().replace(/\s+/g, "-")}-${index + 10}`}
             >
-              {/* <ProductCard {...product} /> */}
+                    <ProductCard
+                  
+                    handleAddToWishlist={handleAddToWishlist}
+                    slug={product.slug}
+                    id={product.id}
+                    is_favorite={product.is_favorite}
+                    name={product.name.en}
+                    price={product.price}
+                    originalPrice={product.price}
+                    image={product.image}
+                    title={product.title}
+                    category={product.category.name}
+                    variant="overlay"
+                  />
             </Link>
           ))}
         </div>
@@ -549,126 +566,128 @@ function DiscountSection() {
 }
 
 // Testimonials Section
-function Testimonials() {
-  const testimonials = [
-    {
-      name: "Andre Silva - Your Beloved Customer",
-      quote: '"It\'s Great Shop!"',
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ipsum eget libero elementum amet.",
-      image:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/8a4605409ba2cdf73575101a5df89a2366802105?width=448",
-      active: false,
-    },
-    {
-      name: "Andre Silva - Your Beloved Customer",
-      quote: '"It\'s Great Shop!"',
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ipsum eget libero elementum amet.",
-      image:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/04546ca2e0940da28c8678b37d97aca15a753334?width=448",
-      active: true,
-    },
-    {
-      name: "Andre Silva - Your Beloved Customer",
-      quote: '"It\'s Great Shop!"',
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ipsum eget libero elementum amet.",
-      image:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/6c7d4613f3f2a464e77c63f2ddf89596edc45721?width=448",
-      active: false,
-    },
-  ];
 
-  return (
-    <section className="py-12 sm:py-16 lg:py-20 bg-orange-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
-            Our Clients say
-          </h2>
-        </div>
+// function Testimonials() {
+//   const testimonials = [
+//     {
+//       name: "Andre Silva - Your Beloved Customer",
+//       quote: '"It\'s Great Shop!"',
+//       content:
+//         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ipsum eget libero elementum amet.",
+//       image:
+//         "https://cdn.builder.io/api/v1/image/assets/TEMP/8a4605409ba2cdf73575101a5df89a2366802105?width=448",
+//       active: false,
+//     },
+//     {
+//       name: "Andre Silva - Your Beloved Customer",
+//       quote: '"It\'s Great Shop!"',
+//       content:
+//         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ipsum eget libero elementum amet.",
+//       image:
+//         "https://cdn.builder.io/api/v1/image/assets/TEMP/04546ca2e0940da28c8678b37d97aca15a753334?width=448",
+//       active: true,
+//     },
+//     {
+//       name: "Andre Silva - Your Beloved Customer",
+//       quote: '"It\'s Great Shop!"',
+//       content:
+//         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ipsum eget libero elementum amet.",
+//       image:
+//         "https://cdn.builder.io/api/v1/image/assets/TEMP/6c7d4613f3f2a464e77c63f2ddf89596edc45721?width=448",
+//       active: false,
+//     },
+//   ];
 
-        {/* Testimonials */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className={`rounded-lg overflow-hidden ${
-                testimonial.active ? "bg-primary text-white" : "bg-white"
-              }`}
-            >
-              <div className="p-4 sm:p-6 lg:p-8 h-48 sm:h-56 lg:h-64 flex flex-col">
-                {/* Stars */}
-                <div className="flex gap-1 mb-4 sm:mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-3 w-3 sm:h-4 sm:w-4 ${
-                        testimonial.active
-                          ? "fill-white text-white"
-                          : "fill-gray-300 text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
+//   return (
+//     <section className="py-12 sm:py-16 lg:py-20 bg-orange-50">
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//         {/* Section Header */}
+//         <div className="text-center mb-12 sm:mb-16">
+//           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
+//             Our Clients say
+//           </h2>
+//         </div>
 
-                {/* Quote */}
-                <h3
-                  className={`text-lg sm:text-xl lg:text-2xl font-bold mb-3 sm:mb-4 ${
-                    testimonial.active ? "text-white" : "text-gray-600"
-                  }`}
-                >
-                  {testimonial.quote}
-                </h3>
+//         {/* Testimonials */}
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
+//           {testimonials.map((testimonial, index) => (
+//             <div
+//               key={index}
+//               className={`rounded-lg overflow-hidden ${
+//                 testimonial.active ? "bg-primary text-white" : "bg-white"
+//               }`}
+//             >
+//               <div className="p-4 sm:p-6 lg:p-8 h-48 sm:h-56 lg:h-64 flex flex-col">
+//                 {/* Stars */}
+//                 <div className="flex gap-1 mb-4 sm:mb-6">
+//                   {[...Array(5)].map((_, i) => (
+//                     <Star
+//                       key={i}
+//                       className={`h-3 w-3 sm:h-4 sm:w-4 ${
+//                         testimonial.active
+//                           ? "fill-white text-white"
+//                           : "fill-gray-300 text-gray-300"
+//                       }`}
+//                     />
+//                   ))}
+//                 </div>
 
-                {/* Content */}
-                <p
-                  className={`text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-1 ${
-                    testimonial.active ? "text-gray-100" : "text-gray-600"
-                  }`}
-                >
-                  {testimonial.content}
-                </p>
+//                 {/* Quote */}
+//                 <h3
+//                   className={`text-lg sm:text-xl lg:text-2xl font-bold mb-3 sm:mb-4 ${
+//                     testimonial.active ? "text-white" : "text-gray-600"
+//                   }`}
+//                 >
+//                   {testimonial.quote}
+//                 </h3>
 
-                {/* Name */}
-                <p
-                  className={`font-semibold text-sm sm:text-base ${
-                    testimonial.active ? "text-white" : "text-gray-600"
-                  }`}
-                >
-                  {testimonial.name}
-                </p>
-              </div>
+//                 {/* Content */}
+//                 <p
+//                   className={`text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-1 ${
+//                     testimonial.active ? "text-gray-100" : "text-gray-600"
+//                   }`}
+//                 >
+//                   {testimonial.content}
+//                 </p>
 
-              {/* Image */}
-              <div className="p-3 sm:p-4">
-                <img
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  className="w-full h-32 sm:h-40 lg:h-48 object-cover rounded-lg"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+//                 {/* Name */}
+//                 <p
+//                   className={`font-semibold text-sm sm:text-base ${
+//                     testimonial.active ? "text-white" : "text-gray-600"
+//                   }`}
+//                 >
+//                   {testimonial.name}
+//                 </p>
+//               </div>
 
-        {/* Dots Indicator */}
-        <div className="flex justify-center gap-3 sm:gap-4">
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ${
-                i === 2 ? "bg-primary" : "bg-gray-300"
-              }`}
-            ></div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+//               {/* Image */}
+//               <div className="p-3 sm:p-4">
+//                 <img
+//                   src={testimonial.image}
+//                   alt={testimonial.name}
+//                   className="w-full h-32 sm:h-40 lg:h-48 object-cover rounded-lg"
+//                 />
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+
+//         {/* Dots Indicator */}
+//         <div className="flex justify-center gap-3 sm:gap-4">
+//           {[...Array(5)].map((_, i) => (
+//             <div
+//               key={i}
+//               className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ${
+//                 i === 2 ? "bg-primary" : "bg-gray-300"
+//               }`}
+//             ></div>
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+<Testimonials/>
 
 // Main Homepage Component
 export default function HomePage() {

@@ -1,11 +1,12 @@
-import { Metadata } from "next";
+
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Calendar, User, ArrowLeft, Share2, BookOpen } from "lucide-react";
 
-// Mock blog data (in a real app, this would come from a database or CMS)
+
 const blogPosts = [
   {
     id: 1,
@@ -287,41 +288,15 @@ const relatedPosts = [
   },
 ];
 
-interface BlogDetailPageProps {
-  params: {
-    slug: string;
-  };
-}
 
-export async function generateMetadata({
-  params,
-}: BlogDetailPageProps): Promise<Metadata> {
+export default function singleBlog({ params }) {
   const post = blogPosts.find((post) => post.slug === params.slug);
-
-  if (!post) {
-    return {
-      title: "Blog Post Not Found - Goba Store",
-    };
-  }
-
-  return {
-    title: `${post.title} - Goba Store Blog`,
-    description: post.excerpt,
-  };
-}
-
-export default function BlogDetailPage({ params }: BlogDetailPageProps) {
-  const post = blogPosts.find((post) => post.slug === params.slug);
-
-  if (!post) {
-    notFound();
-  }
+  if (!post) return notFound();
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero Section */}
       <section className="relative py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6 lg:px-8">
           <Link
@@ -362,7 +337,6 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
         </div>
       </section>
 
-      {/* Featured Image */}
       <section className="py-8">
         <div className="max-w-4xl mx-auto px-6 lg:px-8">
           <img
@@ -373,7 +347,6 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
         </div>
       </section>
 
-      {/* Article Content */}
       <article className="py-12">
         <div className="max-w-4xl mx-auto px-6 lg:px-8">
           <div className="prose prose-lg max-w-none">
@@ -385,11 +358,9 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
         </div>
       </article>
 
-      {/* Tags and Share */}
       <section className="py-8 border-t border-gray-200">
         <div className="max-w-4xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            {/* Tags */}
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-gray-600">Tags:</span>
               <div className="flex flex-wrap gap-2">
@@ -404,7 +375,6 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
               </div>
             </div>
 
-            {/* Share */}
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-gray-600">Share:</span>
               <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
@@ -415,7 +385,6 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
         </div>
       </section>
 
-      {/* Related Articles */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">

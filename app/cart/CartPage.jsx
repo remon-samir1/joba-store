@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./CartPage.css";
 import { Header } from "../../src/components/Header";
 import { Axios } from "../../components/Helpers/Axios";
@@ -7,17 +7,19 @@ import { toast } from "react-toastify";
 import empty from "../../src/assets/joba-empty-cart.svg";
 import { Footer } from "../../components/Footer";
 import { Link } from "react-router-dom";
+import { CartCh } from "../../Context/CartContext";
 const CartPage = () => {
 
 
-
+  const cartcontext = useContext(CartCh)
+  const change = cartcontext.setCartChange
   const removeItem = (slug) => {
     Axios.delete(
-      `https://goba-ecommerce.sunmedagency.com/api/cart/${slug}`,
+      `/cart/${slug}`,
     ).then((data) => {
       console.log(data);
       toast.success(`Deleted Successfly !`);
-
+      change(prev => !prev)
       setCart((prev) => cart.filter((item) => item.product.slug !== slug));
     });
   };
@@ -175,7 +177,7 @@ const CartPage = () => {
               <span className="totals-label">Total</span>
               <span className="totals-value">EGP {total.toFixed(2)}</span>
             </div>
-            <Link to='/checkout' className="checkout-btn">Checkout</Link>
+            <Link  to='/checkout' className="checkout-btn">Checkout</Link>
           </div>
         </div>
       </section>

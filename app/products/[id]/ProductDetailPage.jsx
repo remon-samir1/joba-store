@@ -10,6 +10,7 @@ import { CartTotals } from "../../../components/product/CartTotals.jsx";
 import { ReviewsSection } from "../../../components/product/ReviewsSection.jsx";
 import { RelatedProducts } from "../../..//components/product/RelatedProducts";
 import { Header } from "../../../src/components/Header.jsx";
+import Loading from "../../../components/Loading/Loading.jsx";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -32,7 +33,7 @@ export default function ProductDetailPage() {
       });
   }, [id]);
 
-  if (!product) return <div className="p-8 text-center">Loading...</div>;
+  if (!product) return <Loading />;
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,54 +41,47 @@ export default function ProductDetailPage() {
 
       <main className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-<div className="flex items-start justify-between gap-3 md:flex-row flex-col md:!gap-24">
-
-          <ProductHero
-          
-            // reviews={product?.reviews}
-            image={product?.image}
-            additionalImages={product?.images}
+          <div className="flex items-start justify-between gap-3 md:flex-row flex-col md:!gap-24">
+            <ProductHero
+              // reviews={product?.reviews}
+              image={product?.image}
+              additionalImages={product?.images}
             />
 
             <ProductDetails
-            inStock={product?.stock}
-            
-            name={product?.name?.en}
-            price={product?.price}
-            rating={product?.rating}
-            selectedSize={selectedSize}
-            setSelectedSize={setSelectedSize}
-            slug={product?.slug}
-            id={id}
-            sizes={product?.sizes}
+              inStock={product?.stock}
+              name={product?.name?.en}
+              price={product?.price}
+              rating={product?.rating}
+              selectedSize={selectedSize}
+              setSelectedSize={setSelectedSize}
+              slug={product?.slug}
+              id={id}
+              sizes={product?.sizes}
               description={product?.description?.en}
               category={product?.category.name}
               tags={product?.tags || []}
-              />
-              </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 mt-11 gap-12 mb-16">
-            <div className="lg:col-span-2">
-              <OrderForm  sizeId={selectedSize} productId={id}/>
-            </div>
-            <div>
-              <CartTotals
-                productId={id}
-                sizeId={product}
-
-              />
-            </div>
-          </div>
-
-          <div className="mb-16">
-            <ReviewsSection slug={product?.slug}
-            reviews={product?.reviews}
-            
             />
           </div>
 
+          <div className="grid grid-cols-1 lg:grid-cols-3 mt-11 gap-12 mb-16">
+            <div className="lg:col-span-2">
+              {
+                product?.stock > 0 &&
+              <OrderForm sizeId={selectedSize} productId={id} />
+              }
+            </div>
+            <div>
+              <CartTotals productId={id} sizeId={product} />
+            </div>
+          </div>
+
           <div className="mb-16">
-            <RelatedProducts slug={product?.slug}/>
+            <ReviewsSection slug={product?.slug} reviews={product?.reviews} />
+          </div>
+
+          <div className="mb-16">
+            <RelatedProducts slug={product?.slug} />
           </div>
         </div>
       </main>

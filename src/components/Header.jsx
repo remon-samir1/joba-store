@@ -103,7 +103,8 @@ const [cart , setCart] = useState(0)
   useEffect(() => {
     Axios.get("/cart").then(
       (data) => {
-        setCart(data.data.data.items.length);
+
+        setCart(data.data.data.items?.length);
         console.log(data.data.data.items);
       },
     );
@@ -377,7 +378,7 @@ const [cart , setCart] = useState(0)
                 <Link to="/cart" className="relative">
                   <ShoppingCart className="h-6 sm:h-7 lg:h-8 w-6 sm:w-7 lg:w-8 text-white hover:text-gray-200 transition-colors" />
                   {/* Cart badge */}
-                  {cartItemCount > 0 && (
+                  {cart > 0 && (
                     <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-gray-900 text-white rounded-full w-5 sm:w-6 h-5 sm:h-6 flex items-center justify-center text-xs font-medium">
                       {cart > 99 ? "99+" : cart}
                     </div>
