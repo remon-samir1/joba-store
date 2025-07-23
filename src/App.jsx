@@ -25,9 +25,9 @@ import { ProductHero } from "../components/product/ProductHero";
 import { ProductDetails } from "../components/product/ProductDetails";
 import ProductDetailPage from "../app/products/[id]/ProductDetailPage";
 import AdminLogin from "../components/AdminLogin/AdminLogin.jsx";
-import CartPage from "../app/cart/CartPage";
-import BlogPage from "../app/blog/Blog";
-import WishlistPage from "../app/wishlist/Wishlits";
+import CartPage from "../app/cart/CartPage.jsx";
+import BlogPage from "../app/blog/Blog.jsx";
+import WishlistPage from "../app/wishlist/Wishlits.jsx";
 import CheckoutPage from "../app/Checkout/Checkout.jsx";
 
 const queryClient = new QueryClient();
