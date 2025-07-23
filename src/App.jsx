@@ -26,6 +26,9 @@ import { ProductDetails } from "../components/product/ProductDetails";
 import ProductDetailPage from "../app/products/[id]/ProductDetailPage";
 import AdminLogin from "../components/AdminLogin/AdminLogin.jsx";
 import CartPage from "../app/cart/CartPage";
+import BlogPage from "../app/blog/Blog";
+import WishlistPage from "../app/wishlist/Wishlits";
+import CheckoutPage from "../app/Checkout/Checkout";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +41,9 @@ function App() {
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/categories/:id" element={<CategoriesPage />} />

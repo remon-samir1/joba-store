@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import user from '../../src/assets/user.jpg'
 import {
   Select,
   SelectContent,
@@ -12,6 +13,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import axios from "axios";
+import { Axios } from "../Helpers/Axios";
+import { toast } from "react-toastify";
+import Notifcation from "../Notification";
+import Loading from "../Loading/Loading";
 
 const mockReviews = [
   {
@@ -40,34 +45,40 @@ const mockReviews = [
   },
 ];
 
-export function ReviewsSection({reviews , slug}) {
+export function ReviewsSection({ slug }) {
+  const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({
     name: "",
-    email:'',
+    email: "",
     rating: "",
     comment: "",
   });
-
+  useEffect(() => {
+    Axios.get(`/products/${slug}/reviews`).then((data) => {
+      setReviews(data.data.data.data);
+      console.log(data);
+    });
+  }, []);
+  const [loading, setLoading] = useState(false);
   const handleSubmitReview = async (e) => {
     e.preventDefault();
-  
+    setLoading(true);
     try {
-      const response = await axios.post(`https://goba-ecommerce.sunmedagency.com/api/products/${slug}/reviews`, {
+      const response = await Axios.post(`/products/${slug}/reviews`, {
         name: newReview.name,
-        email:newReview.email,
+        email: newReview.email,
         rating: parseInt(newReview.rating),
         comment: newReview.comment,
       });
-  console.log(response);
-      alert("Review submitted successfully!");
+      console.log(response);
+      setLoading(false);
+
+      toast.success("Review submitted successfully!");
       setNewReview({ name: "", rating: "", comment: "" });
-  
-      // ممكن تحدث الـ reviews لو جاي من الباك:
-      // setReviews([...reviews, response.data]);
-  
     } catch (error) {
+      setLoading(false);
       console.error(error);
-      alert("Something went wrong while submitting the review.");
+      toast.error("Something went wrong while submitting the review.");
     }
   };
 
@@ -76,7 +87,9 @@ export function ReviewsSection({reviews , slug}) {
       <svg
         key={i}
         className={`h-5 w-5 ${
-          i < rating ? "text-primary fill-current" : "text-gray-300 fill-current"
+          i < rating
+            ? "text-primary fill-current"
+            : "text-gray-300 fill-current"
         }`}
         viewBox="0 0 20 20"
       >
@@ -86,14 +99,16 @@ export function ReviewsSection({reviews , slug}) {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8  mt-8">
+      <Notifcation />
+      {loading && <Loading />}
       <h2 className="text-4xl font-medium text-gray-900">Reviews (2)</h2>
 
       {/* Reviews List */}
       <div className="space-y-8">
-        {reviews.map((review) => (
+        {reviews?.map((review) => (
           <div key={review.id} className="flex gap-6">
-            <div className="w-16 h-16 bg-gray-200 rounded-full flex-shrink-0"></div>
+            <img src={user} className="w-16 h-16 bg-gray-200 rounded-full flex-shrink-0"></img>
 
             <div className="flex-1 space-y-2">
               <h3 className="text-xl font-semibold text-gray-900">
@@ -124,7 +139,7 @@ export function ReviewsSection({reviews , slug}) {
           />
           <Input
             placeholder="Email"
-            type='email'
+            type="email"
             required
             value={newReview.email}
             onChange={(e) =>

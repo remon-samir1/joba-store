@@ -111,6 +111,7 @@ export default function AddProductPage() {
     // formData.append('product_type_id', "T-shirts");
     formData.append('description', productData.productDescription);
     formData.append('price', productData.productPrice);
+    formData.append('payment_method', 'visa');
     formData.append('stock', productData.stockQuantity);
     formData.append('category_id', productData.productCategory); 
     // formData.append('product_type_id', productData.productTag); 

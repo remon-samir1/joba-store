@@ -8,29 +8,7 @@ export default function AboutPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative bg-white h-[405px] overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/cadd4badf0dd90d25f5e7f4b5a15251a6a065f26?width=2880"
-            alt="About Hero Background"
-            className="w-full h-full object-cover object-center"
-            style={{ minHeight: "500px" }}
-          />
-        </div>
-
-        {/* Breadcrumb and Title */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 h-full flex items-center">
-          <div className="flex flex-col gap-8">
-            <nav className="text-lg md:text-2xl font-medium text-[#1D1919]">
-              Home &gt; About
-            </nav>
-            <h1 className="text-4xl md:text-6xl font-bold text-[#1D1919]">
-              About
-            </h1>
-          </div>
-        </div>
-      </section>
+    
 
       {/* Main Content Section */}
       <section className="py-20 bg-white">

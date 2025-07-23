@@ -1,127 +1,237 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import "./CartPage.css";
+import bg from "../../src/assets/headerBg.svg";
+import { Header } from "../../src/components/Header";
+import { Axios } from "../../components/Helpers/Axios";
+import Notifcation from "../../components/Notification";
+import { toast } from "react-toastify";
+import empty from "../../src/assets/joba-empty-cart.svg";
+import { Footer } from "../../components/Footer";
 import { Link } from "react-router-dom";
-import { Trash2 } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Separator } from "../../components/ui/separator";
+const CartPage = () => {
 
-export default function CartPage() {
-  const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  // Get cart items from external API
-  useEffect(() => {
-    setLoading(true);
-    fetch("https://api.example.com/cart") // استبدل هذا بالرابط الحقيقي للـ API
-      .then((res) => res.json())
-      .then((data) => setCartItems(data))
-      .finally(() => setLoading(false));
-  }, []);
 
-  const handleRemove = async (itemId) => {
-    await fetch(`https://api.example.com/cart/${itemId}`, {
-      method: "DELETE",
+  const removeItem = (slug) => {
+    Axios.delete(
+      `https://goba-ecommerce.sunmedagency.com/api/cart/${slug}`,
+    ).then((data) => {
+      console.log(data);
+      toast.success(`Deleted Successfly !`);
+
+      setCart((prev) => cart.filter((item) => item.product.slug !== slug));
     });
-    setCartItems((prev) => prev.filter((item) => item.id !== itemId));
   };
 
-  const handleQuantityChange = async (itemId, newQuantity) => {
+
+  const [cart, setCart] = useState([]);
+  const subtotal = cart?.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0,
+  );
+  const total = subtotal; 
+  const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
-    await fetch(`https://api.example.com/cart/${itemId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quantity: newQuantity }),
-    });
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.product.id === id ? { ...item, quantity: newQuantity } : item,
+      ),
     );
-  };
 
-  const calculateTotal = () => {
-    return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
-
+  useEffect(() => {
+    Axios.get("/cart").then(
+      (data) => {
+        setCart(data.data.data.items);
+        console.log(data.data.data.items);
+      },
+    );
+  }, []);
   return (
-    <div className="container py-8">
-      <h1 className="text-2xl font-bold mb-6">Shopping Cart</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : cartItems.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-gray-500">Your cart is empty</p>
-          <Link to="/products">
-            <Button className="mt-4">Continue Shopping</Button>
-          </Link>
-        </div>
-      ) : (
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-4">
-            {cartItems.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between gap-4 p-4 border rounded-lg"
-              >
-                <div className="flex items-center gap-4">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div>
-                    <h2 className="font-semibold">{item.title}</h2>
-                    <p className="text-sm text-gray-500">
-                      ${item.price.toFixed(2)}
-                    </p>
+    <div className="cart-page">
+      <Notifcation />
+      {/* Header */}
+      <Header />
+
+
+      {/* Cart Section */}
+      <section className="cart-section">
+        <div className="container">
+          <h2 className="section-title">My Cart</h2>
+
+          <div className="cart-table-container">
+            <div className="cart-table-header">
+              <span>Product</span>
+              <span>Name</span>
+              <span>Quantity</span>
+              <span>Sub Total</span>
+            </div>
+
+            <div className="cart-items">
+              {cart.length === 0 ? (
+                <div className="text-center">
+                  <div className="flex w-full justify-center  mx-auto h-96">
+                    <img
+                      src={empty}
+                      alt="cart"
+                      loading="lazy"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
+                  <h3 className="text-2xl font-medium text-[#1D1919]">
+                    {" "}
+                    your cart is empty!
+                  </h3>
+                  <p className="text-[#656565] mt-4 max-w-80">
+                    Lorem ipsum dolor sit amet consectetur. Suspendisse proin
+                    sagittis risus sed.
+                  </p>
                 </div>
-                <div className="flex items-center gap-4">
-                  <Input
-                    type="number"
-                    value={item.quantity}
-                    className="w-16"
-                    min={1}
-                    onChange={(e) =>
-                      handleQuantityChange(item.id, parseInt(e.target.value))
-                    }
+              ) : (
+                cart?.map((item) => (
+                  <div key={item.id} className="cart-item">
+                    <button
+                      className="remove-btn"
+                      onClick={() => removeItem(item.product.slug)}
+                    >
+                      <svg
+                        width="40"
+                        height="40"
+                        viewBox="0 0 40 40"
+                        fill="none"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M20.0007 36.6667C29.2057 36.6667 36.6673 29.205 36.6673 20C36.6673 10.795 29.2057 3.33337 20.0007 3.33337C10.7957 3.33337 3.33398 10.795 3.33398 20C3.33398 29.205 10.7957 36.6667 20.0007 36.6667ZM26.7773 13.2234C27.0114 13.4577 27.1429 13.7755 27.1429 14.1067C27.1429 14.438 27.0114 14.7557 26.7773 14.99L21.7673 20L26.7757 25.0084C26.9965 25.2453 27.1167 25.5587 27.1109 25.8826C27.1052 26.2064 26.974 26.5154 26.745 26.7444C26.516 26.9734 26.207 27.1046 25.8832 27.1103C25.5594 27.116 25.2459 26.9958 25.009 26.775L20.0007 21.77L14.9923 26.7784C14.8779 26.9012 14.7399 26.9997 14.5865 27.068C14.4332 27.1363 14.2677 27.1731 14.0999 27.176C13.932 27.179 13.7653 27.1481 13.6097 27.0852C13.454 27.0224 13.3126 26.9288 13.1939 26.8101C13.0752 26.6914 12.9816 26.55 12.9188 26.3944C12.8559 26.2387 12.825 26.072 12.828 25.9042C12.831 25.7363 12.8677 25.5708 12.936 25.4175C13.0043 25.2641 13.1028 25.1261 13.2257 25.0117L18.2306 20L13.224 14.9917C13.1012 14.8773 13.0027 14.7393 12.9343 14.5859C12.866 14.4326 12.8293 14.2671 12.8263 14.0992C12.8234 13.9314 12.8542 13.7647 12.9171 13.609C12.98 13.4534 13.0736 13.312 13.1923 13.1933C13.311 13.0746 13.4523 12.981 13.608 12.9182C13.7636 12.8553 13.9304 12.8244 14.0982 12.8274C14.266 12.8303 14.4315 12.8671 14.5849 12.9354C14.7382 13.0037 14.8762 13.1022 14.9907 13.225L20.0007 18.23L25.009 13.2217C25.2434 12.9876 25.5611 12.8561 25.8923 12.8561C26.2236 12.8561 26.5413 12.9876 26.7757 13.2217"
+                          fill="#F15A24"
+                        />
+                      </svg>
+                    </button>
+
+                    <div className="product-image">
+                      <img
+                        src={item.product.image}
+                        alt={item.product.name.en}
+                      />
+                    </div>
+
+                    <div className="product-name">{item.product.name.en}</div>
+
+                    <div className="quantity-controls">
+                      <button
+                        className="quantity-btn"
+                        onClick={() =>
+                          updateQuantity(item.product.id, item.quantity - 1)
+                        }
+                      >
+                        -
+                      </button>
+                      <span className="quantity">{item.quantity}</span>
+                      <button
+                        className="quantity-btn"
+                        onClick={() =>
+                          updateQuantity(item.product.id, item.quantity + 1)
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className="item-total">
+                      EGP {(item.product.price * item.quantity).toFixed(2)}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Coupon Section */}
+          <div className="coupon-section">
+            <div className="coupon-container">
+              <input
+                type="text"
+                placeholder="Coupon code"
+                // value={couponCode}
+                // onChange={(e) => setCouponCode(e.target.value)}
+                className="coupon-input"
+              />
+              <button className="apply-btn">Apply</button>
+            </div>
+          </div>
+
+          {/* Cart Totals */}
+          <div className="cart-totals">
+            <h3 className="totals-title">Cart Totals</h3>
+            <div className="totals-row">
+              <span className="totals-label">Subtotal</span>
+              <span className="totals-value">EGP {total.toFixed(2)}</span>
+            </div>
+            <div className="totals-row">
+              <span className="totals-label">Shipping</span>
+              <span className="totals-value">Free Shipping</span>
+            </div>
+            <div className="totals-row total-row">
+              <span className="totals-label">Total</span>
+              <span className="totals-value">EGP {total.toFixed(2)}</span>
+            </div>
+            <Link to='/checkout' className="checkout-btn">Checkout</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Related Items */}
+      <section className="related-items">
+        <div className="container">
+          <h2 className="section-title">Related Items</h2>
+          <div className="products-grid">
+            {cart?.map((product) => (
+              <div key={product.product.id} className="product-card">
+                <div className="product-image-container">
+                  <img
+                    src={product.product.image}
+                    alt={product.product.name.en}
                   />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemove(item.id)}
-                  >
-                    <Trash2 className="w-5 h-5 text-red-500" />
-                  </Button>
+                  <div className="sale-badge">SALE</div>
+                  <button className="heart-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M21.2913 4.58741C20.7805 4.07642 20.1741 3.67106 19.5066 3.3945C18.8392 3.11793 18.1238 2.97559 17.4013 2.97559C16.6788 2.97559 15.9634 3.11793 15.2959 3.3945C14.6285 3.67106 14.022 4.07642 13.5113 4.58741L12.4513 5.64741L11.3913 4.58741C10.3596 3.55572 8.96032 2.97612 7.50129 2.97612C6.04226 2.97612 4.64298 3.55572 3.61129 4.58741C2.5796 5.6191 2 7.01838 2 8.47741C2 9.93644 2.5796 11.3357 3.61129 12.3674L4.67129 13.4274L12.4513 21.2074L20.2313 13.4274L21.2913 12.3674C21.8023 11.8567 22.2076 11.2502 22.4842 10.5828C22.7608 9.91531 22.9031 9.1999 22.9031 8.47741C22.9031 7.75492 22.7608 7.03952 22.4842 6.37206C22.2076 5.7046 21.8023 5.09817 21.2913 4.58741V4.58741Z"
+                        stroke="#F15A24"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  <div className="product-overlay">
+                    <div className="product-info">
+                      <h3 className="product-title">
+                        {product.product.name.en}
+                      </h3>
+                      {/* <p className="product-category">{product.product.category.name}</p> */}
+                      <div className="product-pricing">
+                        <span className="current-price">
+                          EGP {product.product.price}
+                        </span>
+                        <span className="original-price">
+                          {/* ${product.originalPrice} */}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-
-          <div className="space-y-4">
-            <div className="border rounded-lg p-4">
-              <h2 className="text-lg font-semibold mb-2">Order Summary</h2>
-              <Separator className="my-2" />
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>${calculateTotal().toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Shipping</span>
-                <span>$0.00</span>
-              </div>
-              <Separator className="my-2" />
-              <div className="flex justify-between font-semibold">
-                <span>Total</span>
-                <span>${calculateTotal().toFixed(2)}</span>
-              </div>
-              <Button className="w-full mt-4">Checkout</Button>
-            </div>
-          </div>
         </div>
-      )}
+      </section>
+
+      {/* Footer */}
+    <Footer/>
     </div>
   );
-}
+};
+
+export default CartPage;

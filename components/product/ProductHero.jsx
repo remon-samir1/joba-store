@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { CartCh } from "../../Context/CartContext";
 
 export function ProductHero({
   name,
@@ -18,7 +19,7 @@ export function ProductHero({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [products , setProducts]=useState([])
 
-  
+
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % additionalImages.length);
   };
@@ -30,14 +31,14 @@ export function ProductHero({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-8">
+    <div className="flex !w-[200px] gap-8 lg:gap-12 mb-8">
       {/* Product Image */}
       <div className="relative">
-        <div className="aspect-square bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="aspect-square !w-[200px] bg-white border border-gray-200 rounded-lg overflow-hidden">
           <img
             src={additionalImages[currentImageIndex]?.path}
             alt={name}
-            className="w-full h-full object-cover"
+            className="w-[40vw] h-[400px] object-cover"
           />
         </div>
 
@@ -83,62 +84,6 @@ export function ProductHero({
         )}
       </div>
 
-      {/* Product Info */}
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-4xl font-semibold text-gray-900 mb-4">{name}</h1>
-          <div className="text-3xl font-semibold text-primary mb-6">
-             {price}
-          </div>
-
-          {/* Rating */}
-          <div className="flex items-center gap-2 mb-6">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className={`h-4 w-4 ${
-                    i < Math.floor(rating)
-                      ? "text-yellow-400 fill-current"
-                      : "text-gray-300 fill-current"
-                  }`}
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                </svg>
-              ))}
-            </div>
-            <span className="text-sm text-gray-600">
-              {rating} ({reviews} comment{reviews !== 1 ? "s" : ""})
-            </span>
-          </div>
-
-          {/* Stock Status and Request Button */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-            <div className="flex items-center gap-2">
-              <Info className="h-6 w-6 text-primary" />
-              <span className="text-gray-900">
-                {inStock ? "In stock" : "Out of stock"}
-              </span>
-            </div>
-            {!inStock && (
-              <button
-                onClick={() => {
-                  const orderForm = document.getElementById("order-form");
-                  if (orderForm) {
-                    orderForm.scrollIntoView({ behavior: "smooth" });
-                  } else {
-                    alert("Please scroll down to fill the order request form");
-                  }
-                }}
-                className="bg-primary hover:bg-primary/90 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors w-full sm:w-auto"
-              >
-                Request Now
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

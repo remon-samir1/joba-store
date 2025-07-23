@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import Notification from '../../components/Notification'
 import {
@@ -18,6 +17,7 @@ import {
 import { Axios } from "../../components/Helpers/Axios";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Header } from "../components/Header";
 
 const tags = [
   "Natural blends",
@@ -59,17 +59,36 @@ export default function CategoriesPage() {
   const [medicalMixturesExpanded, setMedicalMixturesExpanded] = useState(true);
   const [wishlist, setWishlist] = useState([]);
 
-  const handleAddToWishlist = async (slug) => {
+
+  const handleAddToWishlist = async (e, slug, is_favorite) => {
+    e.stopPropagation();
+    e.preventDefault();
     try {
-      const response = await axios.post(`https://goba-ecommerce.sunmedagency.com/api/wishlist/${slug}`);
-      toast.success(`Added to wishlist!`);
-      setWishlist((prev) => [...prev, slug]); 
+      if (is_favorite) {
+        const response = await Axios.delete(`/wishlist/${slug}`).then(() => {
+          toast.success(`Removed From wishlist !`);
+
+          setProducts(
+            products.map((prev) =>
+              prev.slug == slug ? { ...prev, is_favorite : false } : prev,
+            ),
+          );
+        });
+      } else {
+        const response = await Axios.post(`/wishlist/${slug}`).then(() => {
+          toast.success(`Added to wishlist !`);
+          setProducts(
+            products.map((prev) =>
+              prev.slug == slug ? { ...prev, is_favorite: true } : prev,
+            ),
+          );
+        });
+      }
     } catch (error) {
       console.error("Error adding to wishlist:", error);
       toast.error("Failed to add to wishlist. Please try again.");
     }
   };
-  const isInWishlist = (slug) => wishlist.includes(slug);
 
   useEffect(() => {
     Axios.get("tags").then((data) => console.log(data));
@@ -156,7 +175,7 @@ export default function CategoriesPage() {
     <div className="min-h-screen bg-background">
       <Notification/>
       <Header />
-      <section className="relative h-64 sm:h-80 lg:h-96 bg-white overflow-hidden">
+      {/* <section className="relative h-64 sm:h-80 lg:h-96 bg-white overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="https://cdn.builder.io/api/v1/image/assets/TEMP/cadd4badf0dd90d25f5e7f4b5a15251a6a065f26?width=2880"
@@ -178,7 +197,7 @@ export default function CategoriesPage() {
             </h1>
           </div>
         </div>
-      </section>
+      </section> */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="relative w-full sm:w-1/2">
@@ -365,15 +384,16 @@ export default function CategoriesPage() {
   onClick={(e) => {
     e.preventDefault(); // يمنع الذهاب لصفحة المنتج
     e.stopPropagation(); // يمنع الانتقال من اللينك
-    handleAddToWishlist(product.slug);
+    handleAddToWishlist( e,product.slug , product.is_favorite);
   }}
   className="absolute top-4 right-4 w-8 h-8 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/70 transition-colors"
 >
-  <Heart
-    className={`h-4 w-4 stroke-2 ${
-      isInWishlist(product.slug) ? "fill-primary text-primary" : "text-primary"
-    }`}
-  />
+
+{product.is_favorite ? (
+            <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+          ) : (
+            <Heart className="h-4 w-4" />
+          )}
 </button>
 
                       <div className="absolute bottom-6 left-6 right-6 text-white">

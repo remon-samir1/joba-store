@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 
-import { Header } from "../../..//components/Header.jsx";
 import { Footer } from "../../..//components/Footer.jsx";
 import { ProductHero } from "../../../components/product/ProductHero.jsx";
 import { ProductDetails } from "../../..//components/product/ProductDetails.jsx";
@@ -10,6 +9,7 @@ import { OrderForm } from "../../../components/product/OrderForm.jsx";
 import { CartTotals } from "../../../components/product/CartTotals.jsx";
 import { ReviewsSection } from "../../../components/product/ReviewsSection.jsx";
 import { RelatedProducts } from "../../..//components/product/RelatedProducts";
+import { Header } from "../../../src/components/Header.jsx";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -38,54 +38,23 @@ export default function ProductDetailPage() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero Section */}
-      <div className="relative">
-        <div
-          className="h-96 bg-cover bg-center relative"
-          style={{
-            backgroundImage:
-              "url('https://cdn.builder.io/api/v1/image/assets/TEMP/cadd4badf0dd90d25f5e7f4b5a15251a6a065f26?width=1440')",
-          }}
-        >
-          <div className="absolute inset-0 bg-black/20" />
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
-            <nav className="mb-8">
-              <div className="flex items-center space-x-2 text-xl font-semibold text-gray-900">
-                <Link to="/" className="hover:text-primary">
-                  Home
-                </Link>
-                <span>{">"}</span>
-                <Link to="/categories" className="hover:text-primary">
-                  Categories
-                </Link>
-                <span>{">"}</span>
-                <span>{product?.category.name || "Product"}</span>
-                <span>{">"}</span>
-                <span>{product?.name.en}</span>
-              </div>
-            </nav>
-
-            <h1 className="text-6xl font-semibold text-gray-900">
-              {product?.name.en}
-            </h1>
-          </div>
-        </div>
-      </div>
-
       <main className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
+<div className="flex items-start justify-between gap-3 md:flex-row flex-col md:!gap-24">
+
           <ProductHero
-            name={product?.name?.en}
-            price={product?.price}
-            rating={product?.rating}
+          
             // reviews={product?.reviews}
             image={product?.image}
             additionalImages={product?.images}
-            inStock={product?.stock}
-          />
+            />
 
-          <div className="mb-12">
             <ProductDetails
+            inStock={product?.stock}
+            
+            name={product?.name?.en}
+            price={product?.price}
+            rating={product?.rating}
             selectedSize={selectedSize}
             setSelectedSize={setSelectedSize}
             slug={product?.slug}
@@ -94,11 +63,10 @@ export default function ProductDetailPage() {
               description={product?.description?.en}
               category={product?.category.name}
               tags={product?.tags || []}
-              price={product?.price}
-            />
-          </div>
+              />
+              </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-3 mt-11 gap-12 mb-16">
             <div className="lg:col-span-2">
               <OrderForm  sizeId={selectedSize} productId={id}/>
             </div>
@@ -107,9 +75,6 @@ export default function ProductDetailPage() {
                 productId={id}
                 sizeId={product}
 
-                subtotal={product?.price * 3}
-                shipping="Free Shipping"
-                total={product?.price * 3}
               />
             </div>
           </div>

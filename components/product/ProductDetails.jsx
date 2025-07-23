@@ -1,15 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Heart, Paperclip, Minus, Plus } from "lucide-react";
+import { ShoppingCart, Heart, Paperclip, Minus, Plus,Info } from "lucide-react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Notifcation from "../Notification.jsx";
 import { Axios } from "../Helpers/Axios.js";
+import { CartCh } from "../../Context/CartContext.jsx";
 
-export function ProductDetails({ description,setSelectedSize ,selectedSize,category, tags, price , id,sizes , slug }) {
+export function ProductDetails({
+  description,
+  name,
+  inStock,
+  rating,
+  reviews,
+  setSelectedSize,
+  selectedSize,
+  category,
+  tags,
+  price,
+  id,
+  sizes,
+  slug,
+}) {
   const [quantity, setQuantity] = useState(2);
 
   const handleQuantityChange = (change) => {
@@ -18,16 +33,23 @@ export function ProductDetails({ description,setSelectedSize ,selectedSize,categ
       setQuantity(newQuantity);
     }
   };
-console.log(selectedSize);
+  console.log(selectedSize);
+  const cartcontext = useContext(CartCh)
+  const change = cartcontext.setCartChange
   const handleAddToCart = async () => {
     const data = {
-    
       product_size_id: selectedSize,
       total_price: price * quantity,
     };
-
+  
     try {
-      const response = await Axios.post(`https://goba-ecommerce.sunmedagency.com/api/cart/${slug}`, data);
+      if (!selectedSize) {
+        toast.warn("Please select Size or a specific concentration");
+        return; 
+      }
+  
+      const response = await Axios.post(`/cart/${slug}`, data);
+      change((prev) => !prev);
       console.log("API response:", response.data);
       toast.success(`Added ${quantity} items (${selectedSize}) to cart!`);
     } catch (error) {
@@ -35,10 +57,12 @@ console.log(selectedSize);
       alert("Failed to add to cart. Please try again.");
     }
   };
-
-  const handleAddToWishlist = async() => {
+  
+  const handleAddToWishlist = async () => {
     try {
-      const response = await axios.post(`https://goba-ecommerce.sunmedagency.com/api/wishlist/${slug}`);
+      const response = await Axios.post(
+        `/wishlist/${slug}`,
+      );
       console.log("API response:", response.data);
       toast.success(`Added to wishlist !`);
     } catch (error) {
@@ -54,8 +78,65 @@ console.log(selectedSize);
 
   return (
     <div className="space-y-8">
-      <Notifcation/>
+      <Notifcation />
       {/* Description */}
+
+      {/* Product Info */}
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-4xl font-semibold text-gray-900 mb-4">{name}</h1>
+          <div className="text-3xl font-semibold text-primary mb-6">
+            {price}
+          </div>
+
+          {/* Rating */}
+          <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <svg
+                  key={i}
+                  className={`h-4 w-4 ${
+                    i < Math.floor(rating)
+                      ? "text-yellow-400 fill-current"
+                      : "text-gray-300 fill-current"
+                  }`}
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                </svg>
+              ))}
+            </div>
+            <span className="text-sm text-gray-600">
+              {rating} ({reviews} comment{reviews !== 1 ? "s" : ""})
+            </span>
+          </div>
+
+          {/* Stock Status and Request Button */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div className="flex items-center gap-2">
+              <Info className="h-6 w-6 text-primary" />
+              <span className="text-gray-900">
+                {inStock ? "In stock" : "Out of stock"}
+              </span>
+            </div>
+            {!inStock && (
+              <button
+                onClick={() => {
+                  const orderForm = document.getElementById("order-form");
+                  if (orderForm) {
+                    orderForm.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    alert("Please scroll down to fill the order request form");
+                  }
+                }}
+                className="bg-primary hover:bg-primary/90 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors w-full sm:w-auto"
+              >
+                Request Now
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
       <div>
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">
           Description

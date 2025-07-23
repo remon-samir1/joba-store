@@ -75,6 +75,8 @@ export function OrderForm({ productId, productSizeId }) {
       shipping_email: formData.shipping_email,
       shipping_address: formData.shipping_address,
       shipping_city: formData.shipping_city,
+  payment_method:'visa',
+
       shipping_state: formData.shipping_state,
       shipping_zip: formData.shipping_zip,
       shipping_country: formData.shipping_country,
@@ -102,7 +104,12 @@ export function OrderForm({ productId, productSizeId }) {
       });
     } catch (err) {
       console.error(err);
-      alert("Error submitting order");
+      if(err.response.data.errors.coupon_code){
+        toast.error(err.response.data.errors.coupon_code[0])
+      }else{
+
+      }
+      toast.error("Error submitting order");
     }
   };
 

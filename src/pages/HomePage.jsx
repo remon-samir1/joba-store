@@ -10,7 +10,9 @@ import {
   Star,
 } from "lucide-react";
 import axios from "axios";
-import { Axios } from "../../components/Helpers/Axios";
+import { Axios, baseURL } from "../../components/Helpers/Axios";
+import { toast } from "react-toastify";
+import Notifcation from "../../components/Notification";
 
 // Hero slides data
 const heroSlides = [
@@ -82,8 +84,8 @@ function Hero() {
             index === currentSlide
               ? "translate-x-0"
               : index < currentSlide
-                ? "-translate-x-full"
-                : "translate-x-full"
+              ? "-translate-x-full"
+              : "translate-x-full"
           }`}
         >
           {/* Background Image with Overlay */}
@@ -152,15 +154,14 @@ function Hero() {
 // Categories Section Component
 
 function Categories() {
-  
-  const [categories , setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   useEffect(() => {
-    Axios.get('/categories').then((data) => {
-      setCategories(data.data.data.data);
+    Axios.get("/categories").then((data) => {
+      setCategories(data.data.data.data.slice(-4));
       console.log(data);
     });
   }, []);
- console.log(categories);
+  console.log(categories);
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -183,7 +184,11 @@ function Categories() {
               to={`/categories/${category.slug || category.id}`}
               key={category.id}
               className={`relative overflow-hidden rounded-lg group cursor-pointer 
-                ${index === 0 ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full" : "h-48 sm:h-56 lg:h-full"}`}
+                ${
+                  index === 0
+                    ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full"
+                    : "h-48 sm:h-56 lg:h-full"
+                }`}
             >
               <img
                 src={category.image || "https://via.placeholder.com/300"}
@@ -192,17 +197,20 @@ function Categories() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-4 sm:left-6 lg:left-8 text-white">
-                <h3 className={`font-bold leading-tight ${
-                  index === 0
-                    ? "text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-2 sm:mb-4 lg:mb-6"
-                    : "text-lg sm:text-xl"
-                }`}>
+                <h3
+                  className={`font-bold leading-tight ${
+                    index === 0
+                      ? "text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-2 sm:mb-4 lg:mb-6"
+                      : "text-lg sm:text-xl"
+                  }`}
+                >
                   {category.name}
                 </h3>
                 {index === 0 && (
                   <>
                     <p className="text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 lg:mb-8 max-w-md opacity-90">
-                      {category.description || "Lorem Ipsum is simply dummy text of the printing and typesetting industry."}
+                      {category.description ||
+                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry."}
                     </p>
                     <button className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-full text-white hover:bg-primary/90 transition-colors">
                       <ChevronRight className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />
@@ -218,21 +226,32 @@ function Categories() {
   );
 }
 // Product Card Component
+
 function ProductCard({
   name,
   category,
   id,
+  isWishlisted,
+  setIsWishlisted,
+  product_size_id,
+  is_favorite,
+  handleAddToCart,
+  slug,
   price,
   originalPrice,
+  handleAddToWishlist,
   image,
   onSale = false,
   variant = "overlay",
 }) {
-
   if (variant === "overlay") {
     return (
       <div className="relative w-full h-80 sm:h-96 lg:h-[408px] rounded-lg overflow-hidden group cursor-pointer">
-        <img src={image} alt={name} className="w-full h-full object-cover" />
+        <img
+          src={ image || `${baseURL}/${image}`}
+          alt={name}
+          className="w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
         {/* Sale Badge */}
@@ -243,8 +262,15 @@ function ProductCard({
         )}
 
         {/* Heart Icon */}
-        <button className="absolute top-3 sm:top-4 right-3 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/70 transition-colors">
-          <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary stroke-2" />
+        <button
+          onClick={(e) => {
+            handleAddToWishlist(e, slug, is_favorite);
+          }}
+          className="absolute top-3 sm:top-4 right-3 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/70 transition-colors"
+        >
+          
+            <Heart className={`h-4 w-4 ${is_favorite  && "fill-red-500 text-red-500"}`} />
+  
         </button>
 
         {/* Product Info */}
@@ -270,7 +296,7 @@ function ProductCard({
           </div>
           <button className="w-full bg-primary text-white py-2.5 sm:py-3 rounded flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-colors text-sm sm:text-base">
             <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            Add to cart
+            Show Details
           </button>
         </div>
       </div>
@@ -295,7 +321,11 @@ function ProductCard({
 
         {/* Heart Icon */}
         <button className="absolute top-4 sm:top-6 right-4 sm:right-6 w-7 h-7 sm:w-8 sm:h-8 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/70 transition-colors">
-          <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary stroke-2" />
+        {is_favorite ? (
+            <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+          ) : (
+            <Heart className="h-4 w-4" />
+          )}
         </button>
 
         {/* Product Info Overlay */}
@@ -327,16 +357,50 @@ function ProductCard({
 // New Products Section
 
 function NewProducts() {
-  const [products , setProducts]=useState([])
-  useEffect(()=>{
-    axios.get('https://goba-ecommerce.sunmedagency.com/api/products').then(data=>{
-    setProducts(data.data.data)  
-    console.log(data)})
-  },[])
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    Axios
+      .get("/products")
+      .then((data) => {
+        setProducts(data.data.data);
+        console.log(data);
+      });
+  }, []);
+  const [isWishlisted, setIsWishlisted] = useState([]);
 
+  const handleAddToWishlist = async (e, slug, is_favorite) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsWishlisted(slug);
+    try {
+      if (is_favorite) {
+        const response = await Axios.delete(`/wishlist/${slug}`).then(() => {
+          toast.success(`Removed From wishlist !`);
 
+          setProducts(
+            products.map((prev) =>
+              prev.slug == slug ? { ...prev, is_favorite : false } : prev,
+            ),
+          );
+        });
+      } else {
+        const response = await Axios.post(`/wishlist/${slug}`).then(() => {
+          toast.success(`Added to wishlist !`);
+          setProducts(
+            products.map((prev) =>
+              prev.slug == slug ? { ...prev, is_favorite: true } : prev,
+            ),
+          );
+        });
+      }
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      toast.error("Failed to add to wishlist. Please try again.");
+    }
+  };
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-background">
+      <Notifcation />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8 sm:mb-12">
@@ -355,10 +419,22 @@ function NewProducts() {
           <div className="flex gap-3 sm:gap-4 w-fit">
             {products?.map((product, index) => (
               <div key={index} className="w-64 sm:w-72 flex-shrink-0">
-                <Link
-                  to={`/products/${product?.id}`}
-                >
-                  <ProductCard id={product.id} name={product.name.en} price={product.price} originalPrice={product.price} image={product.image} title={product.title} category={product.category.name} variant="overlay" />
+                <Link to={`/products/${product?.id}`}>
+                  <ProductCard
+                    setIsWishlisted={setIsWishlisted}
+                    isWishlisted={isWishlisted}
+                    handleAddToWishlist={handleAddToWishlist}
+                    slug={product.slug}
+                    id={product.id}
+                    is_favorite={product.is_favorite}
+                    name={product.name.en}
+                    price={product.price}
+                    originalPrice={product.price}
+                    image={product.image}
+                    title={product.title}
+                    category={product.category.name}
+                    variant="overlay"
+                  />
                 </Link>
               </div>
             ))}
