@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import './checkout.css'
+import './CheckOut.css'
 import { Header } from "../../src/components/Header";
 const CheckoutPage = () => {
   const [formData, setFormData] = useState({
