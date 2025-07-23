@@ -131,7 +131,7 @@
 .form-group select {
   cursor: pointer;
   appearance: none;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 14 17" fill="none"><path d="M7.02397 12.3378L1.99023 6.16578L2.8077 5.16345L7.02397 10.3332L11.2402 5.16345L12.0577 6.16578L7.02397 12.3378Z" fill="%231D1919"/></svg>');
+  /* background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 14 17" fill="none"><path d="M7.02397 12.3378L1.99023 6.16578L2.8077 5.16345L7.02397 10.3332L11.2402 5.16345L12.0577 6.16578L7.02397 12.3378Z" fill="%231D1919"/></svg>'); */
   background-repeat: no-repeat;
   background-position: right 19px center;
   background-size: 14px;
