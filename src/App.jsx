@@ -28,7 +28,7 @@ import AdminLogin from "../components/AdminLogin/AdminLogin.jsx";
 import CartPage from "../app/cart/CartPage";
 import BlogPage from "../app/blog/Blog";
 import WishlistPage from "../app/wishlist/Wishlits";
-import CheckoutPage from "../app/Checkout/Checkout";
+import CheckoutPage from "../app/Checkout/Checkout.jsx";
 
 const queryClient = new QueryClient();
 
