@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./CartPage.css";
-import bg from "../../src/assets/headerBg.svg";
 import { Header } from "../../src/components/Header";
 import { Axios } from "../../components/Helpers/Axios";
 import Notifcation from "../../components/Notification";
