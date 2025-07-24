@@ -77,7 +77,7 @@ export default function ProductListPage() {
 
   const handleDeleteProduct = async (id) => {
     try {
-      await Axios.delete(`/products/${id}`);
+      await Axios.delete(`admin/products/${id}`,{_method:'DELETE'});
       const updated = products.filter((p) => p.id !== id);
       setProducts(updated);
     } catch (err) {
@@ -217,7 +217,7 @@ export default function ProductListPage() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-red-600"
-                              onClick={() => handleDeleteProduct(product.id)}
+                              onClick={() => handleDeleteProduct(product.slug)}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
