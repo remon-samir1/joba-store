@@ -1,282 +1,279 @@
-import React, { useEffect, useState } from "react";
-// import './CheckOut.css'
+import React, { useEffect, useState, useRef } from "react";
+import "./CheckOut.css";
 import { Header } from "../../src/components/Header";
-import { useRef } from "react";
 import { Axios } from "../../components/Helpers/Axios";
 import { Footer } from "../../components/Footer";
+import { toast } from "react-toastify";
+import Notifcation from "../../components/Notification";
+import Loading from "../../components/Loading/Loading";
+import image from "../../src/assets/done.svg";
+import { Link } from "react-router-dom";
 const CheckoutPage = () => {
   const scrollRef = useRef();
   const [cart, setCart] = useState([]);
-
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
   useEffect(() => {
-    Axios.get("/cart").then(
-      (data) => {
-        setCart(data.data.data.items);
-        console.log(data.data.data.items);
-      },
-    );
+    Axios.get("/cart").then((data) => {
+      setCart(data.data.data.items);
+    });
   }, []);
+
   const total = cart?.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0,
   );
-  useEffect(()=>{
-    scrollRef.current.scrollIntoView({behavoir:'smooth'})
-  },[])
+
+  useEffect(() => {
+    scrollRef.current.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
   const [formData, setFormData] = useState({
-    email: "",
-    first_name: "",
-    last_name: "",
-    address: "",
-    country: "Indonesia",
-    postalCode: "",
-    phoneNumber: "",
-    sameAsShipping: true,
-    couponCode: "",
-  });
-
-
-  const [orderSummary] = useState({
-    subtotal: 210,
-    shipping: 0,
-    total: 3000,
+    shipping_email: "",
+    shipping_name: "",
+    shipping_address: "",
+    shipping_city: "",
+    shipping_state: "",
+    shipping_zip: "",
+    shipping_country: "Indonesia",
+    coupon_code: "",
+    payment_method: "cash",
   });
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Checkout submitted:", formData);
+    setLoading(true);
+    const items = cart.map((item) => ({
+      product_id: item.product.id,
+      // product_size_id: item.size_id || null,
+      quantity: item.quantity,
+    }));
+
+    const payload = {
+      payment_method: formData.payment_method,
+      items,
+      shipping_name: formData.shipping_name,
+      shipping_address: formData.shipping_address,
+      shipping_city: formData.shipping_city,
+      shipping_state: formData.shipping_state,
+      shipping_zip: formData.shipping_zip,
+      shipping_country: formData.shipping_country,
+      shipping_email: formData.shipping_email,
+      coupon_code: formData.coupon_code || null,
+    };
+    console.log(payload);
+    try {
+      const response = await Axios.post("/orders", payload);
+      console.log(response);
+      toast.success("Order placed successfully!");
+      setLoading(false);
+      setDone(true)
+    } catch (error) {
+      console.error("Order error:", error.response?.data);
+      if(items.length === 0){
+        toast.warn('Please Add Items To Cart First')
+      }
+      toast.error("Order failed. Please check your inputs.");
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="checkout-page " ref={scrollRef}>
-      {/* Header */}
-    <Header/>
+    <div ref={scrollRef}>
+                {loading && <Loading />}
+      {done ? (
+        <div className="">
+          <Header/>
+          
+    <div className="w-[90%] max-w-2xl mx-auto p-8 mt-12 mb-16 bg-white shadow-lg rounded-xl flex flex-col justify-center items-center text-center space-y-6">
+      <div className="w-28 h-28">
+        <img src={image} alt="Order Done" className="w-full h-full object-contain" />
+      </div>
+      
+      <h3 className="text-2xl font-semibold text-gray-800">Thanks for your order!</h3>
+      
+      <p className="text-base text-gray-600 leading-relaxed">
+        A proforma invoice has been issued and sent to your email. Our Juba team will be in touch shortly to confirm the payment.
+      </p>
+      
+      <Link to="/" className="inline-block text-white bg-primary hover:bg-primary/90 px-8 py-2 rounded-full transition">
+        Continue shopping
+      </Link>
+    </div>
+          <Footer/>
+        </div>
+      ) : (
+        <div className="checkout-page" >
+          <Header />
 
-      {/* Breadcrumb Line */}
-      {/* <div className="breadcrumb-separator"></div> */}
+          <Notifcation />
 
-      {/* Main Content */}
-      <main className="checkout-main">
-        <div className="container">
-          {/* Title Section */}
-          <div className="checkout-header">
-            <h1 className="checkout-title">Checkout</h1>
-            <p className="checkout-description">
-              Lorem ipsum dolor sit amet consectetur. Quis cras amet ac
-              tincidunt mauris scelerisque elementum nulla id. Mattis sed et
-              orci adipiscing. Egestas consectetur sed pharetra odio ridiculus.
-              Aliquam bibendum nunc orci bibendum hendrerit tempor maecenas
-              molestie. Sagittis venenatis id malesuada sagittis id sapien
-              gravida ut.
-            </p>
-          </div>
+          <main className="checkout-main">
+            <div className="container">
+              {/* Checkout Header */}
+              <div className="checkout-header">
+                <h1 className="checkout-title">Checkout</h1>
+                <p className="checkout-description">
+                  Please enter your details to complete your order.
+                </p>
+              </div>
 
-          {/* Checkout Form Layout */}
-          <div className="checkout-content">
-            {/* Left Side - Checkout Form */}
-            <div className="checkout-form-section">
-              <form onSubmit={handleSubmit}>
-                {/* Customer Email */}
-                <div className="form-section">
-                  <h2 className="section-title">Customer Email</h2>
-                  <div className="form-group">
-                    <label htmlFor="email">Email Address</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      placeholder="Email address"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <p className="sign-in-link">
-                    Already have an account? Sign in
-                  </p>
+              {/* Checkout Content */}
+              <div className="checkout-content">
+                {/* Left Side - Form */}
+                <div className="checkout-form-section">
+                  <form onSubmit={handleSubmit}>
+                    <div className="form-section">
+                      <h2 className="section-title">Shipping Information</h2>
+
+                      <div className="form-group">
+                        <label>Email</label>
+                        <input
+                          type="email"
+                          name="shipping_email"
+                          placeholder="Email"
+                          value={formData.shipping_email}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label>Full Name</label>
+                        <input
+                          type="text"
+                          name="shipping_name"
+                          placeholder="Full name"
+                          value={formData.shipping_name}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label>Address</label>
+                        <textarea
+                          name="shipping_address"
+                          placeholder="Address"
+                          value={formData.shipping_address}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>City</label>
+                          <input
+                            type="text"
+                            name="shipping_city"
+                            value={formData.shipping_city}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label>State</label>
+                          <input
+                            type="text"
+                            name="shipping_state"
+                            value={formData.shipping_state}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Zip Code</label>
+                          <input
+                            type="text"
+                            name="shipping_zip"
+                            value={formData.shipping_zip}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label>Country</label>
+                          <input
+                            type="text"
+                            name="shipping_country"
+                            value={formData.shipping_country}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Coupon Code (optional)</label>
+                        <input
+                          type="text"
+                          name="coupon_code"
+                          value={formData.coupon_code}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label>Payment Method</label>
+                        <select
+                          name="payment_method"
+                          value={formData.payment_method}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          <option value="cash">Cash</option>
+                          <option value="credit_card">Credit Card</option>
+                        </select>
+                      </div>
+
+                      <button type="submit" className="checkout-submit-btn">
+                        Submit Order
+                      </button>
+                    </div>
+                  </form>
                 </div>
 
-                {/* Shipping Address */}
-                <div className="form-section">
-                  <h2 className="section-title">Shipping Address</h2>
+                {/* Right Side - Summary */}
+                <div className="order-summary-section">
+                  <div className="order-summary">
+                    <h3 className="totals-title">Cart Totals</h3>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="first_name">First Name</label>
-                      <input
-                        type="text"
-                        id="first_name"
-                        name="first_name"
-                        placeholder="First name"
-                        value={formData.first_name}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="last_name">Last Name</label>
-                      <input
-                        type="text"
-                        id="last_name"
-                        name="last_name"
-                        placeholder="Last name"
-                        value={formData.last_name}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
+                    {cart?.map((item, idx) => (
+                      <div className="totals-row" key={idx}>
+                        <span>
+                          {item.product.name.en} × {item.quantity}
+                        </span>
+                        <span>{item.product.price * item.quantity} EGP</span>
+                      </div>
+                    ))}
 
-                  <div className="form-group">
-                    <label htmlFor="address">Address Line</label>
-                    <textarea
-                      id="address"
-                      name="address"
-                      placeholder="Address line"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="country">Country</label>
-                    <select
-                      id="country"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option value="Indonesia">Indonesia</option>
-                      <option value="USA">United States</option>
-                      <option value="UK">United Kingdom</option>
-                      <option value="Australia">Australia</option>
-                    </select>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="postalCode">Postal Code</label>
-                      <select
-                        id="postalCode"
-                        name="postalCode"
-                        value={formData.postalCode}
-                        onChange={handleInputChange}
-                        required
-                      >
-                        <option value="">Postal Code</option>
-                        <option value="12345">12345</option>
-                        <option value="67890">67890</option>
-                        <option value="54321">54321</option>
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="phoneNumber">Phone Number</label>
-                      <input
-                        type="tel"
-                        id="phoneNumber"
-                        name="phoneNumber"
-                        placeholder="Phone number"
-                        value={formData.phoneNumber}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Billing Address */}
-                <div className="form-section">
-                  <h2 className="section-title">Billing Address</h2>
-                  <div className="checkbox-group">
-                    <div className="checkbox-wrapper">
-                      <input
-                        type="checkbox"
-                        id="sameAsShipping"
-                        name="sameAsShipping"
-                        checked={formData.sameAsShipping}
-                        onChange={handleInputChange}
-                      />
-                      <label
-                        htmlFor="sameAsShipping"
-                        className="checkbox-label"
-                      >
-                        Same as shipping address
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </form>
-            </div>
-
-            {/* Right Side - Order Summary */}
-            <div className="order-summary-section">
-              <div className="order-summary">
-                <div className="cart-totals-container">
-                  <h3 className="totals-title">Cart Totals</h3>
-
-                  <div className="totals-list">
-                    <div className="totals-row">
-                      <span className="totals-label">Subtotal</span>
-                      <span className="totals-value">
-                        EGP {total}
-                      </span>
-                    </div>
-                    <div className="totals-row">
-                      <span className="totals-label">Shipping</span>
-                      <span className="totals-value">
-                      Free Shipping
-                      </span>
-                    </div>
                     <div className="totals-row total-row">
-                      <span className="totals-label">Total</span>
-                      <span className="totals-value">
-                        EGP {total}
-                      </span>
+                      <span>Total</span>
+                      <span>EGP {total}</span>
                     </div>
                   </div>
                 </div>
-
-                <div className="coupon-section">
-                  <div className="coupon-input-group">
-                    <input
-                      type="text"
-                      name="couponCode"
-                      placeholder="Coupon code"
-                      value={formData.couponCode}
-                      onChange={handleInputChange}
-                      className="coupon-input"
-                    />
-                    <button type="button" className="apply-coupon-btn">
-                      Apply
-                    </button>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="checkout-submit-btn"
-                  onClick={handleSubmit}
-                >
-                  Checkout
-                </button>
               </div>
             </div>
-          </div>
-        </div>
-      </main>
+          </main>
 
-      {/* Footer */}
-    <Footer/>
+          <Footer />
+        </div>
+      )}
     </div>
   );
 };
