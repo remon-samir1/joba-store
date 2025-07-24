@@ -228,7 +228,7 @@ export function ProductDetails({
         </Button>
       </div>
     
-      <OrderRequestModal isOpen={showModal} onClose={()=>setShowModal(false)}/>
+      <OrderRequestModal id={id} isOpen={showModal} onClose={()=>setShowModal(false)}/>
     
     </div>
   );

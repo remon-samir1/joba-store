@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './RequestModal.css'
 import { Axios } from '../../../components/Helpers/Axios';
-const OrderRequestModal = ({ isOpen, onClose }) => {
+import { toast } from 'react-toastify';
+import Notifcation from '../../../components/Notification';
+const OrderRequestModal = ({ isOpen, onClose ,id }) => {
+  
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
-    phoneNumber: '',
-    addressLine: '',
+    product_id:id,
+    phone: '',
+    message:"",
+    address: '',
     country: 'EGYPT',
     quantity: 3
   });
@@ -29,15 +34,31 @@ const OrderRequestModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Order request submitted:', formData);
-  Axios.post('/')
+  
+  Axios.post('/order-requests' , formData).then(data => {
+    toast.success('Request Submmited Successfly')
+    console.log(data)})
     onClose?.();
   };
 
+  const [cart , setCart] = useState([])
+  useEffect(() => {
+    Axios.get("/cart").then(
+      (data) => {
+        setCart(data.data.data.items);
+        console.log(data.data.data.items);
+      },
+    );
+  }, []);
+  const subtotal = cart?.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0,
+  );
   if (!isOpen) return null;
 
   return (
     <div className="order-request-overlay">
+      <Notifcation/>
       <div className="order-request-modal">
         <div className="order-request-content">
           {/* Order Request Form */}
@@ -52,9 +73,9 @@ const OrderRequestModal = ({ isOpen, onClose }) => {
                   <input
                     type="text"
                     id="firstName"
-                    name="firstName"
+                    name="first_name"
                     placeholder="First name"
-                    value={formData.firstName}
+                    value={formData.first_name}
                     onChange={handleInputChange}
                     required
                   />
@@ -64,9 +85,33 @@ const OrderRequestModal = ({ isOpen, onClose }) => {
                   <input
                     type="text"
                     id="lastName"
-                    name="lastName"
+                    name="last_name"
                     placeholder="Last name"
-                    value={formData.lastName}
+                    value={formData.last_name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-field">
+                  <label htmlFor="product">Product</label>
+                  <input
+                    type="text"
+                    id="product"
+                    name="product"
+                    placeholder="product"
+                    value={formData.product}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-field">
+                  <label htmlFor="lastName">Message</label>
+                  <input
+                    type="text"
+                    id="message"
+                    name="message"
+                    placeholder="message"
+                    value={formData.message}
                     onChange={handleInputChange}
                     required
                   />
@@ -93,9 +138,9 @@ const OrderRequestModal = ({ isOpen, onClose }) => {
                 <input
                   type="tel"
                   id="phoneNumber"
-                  name="phoneNumber"
+                  name="phone"
                   placeholder="Phone number"
-                  value={formData.phoneNumber}
+                  value={formData.phone}
                   onChange={handleInputChange}
                   required
                 />
@@ -106,9 +151,9 @@ const OrderRequestModal = ({ isOpen, onClose }) => {
                 <label htmlFor="addressLine">Address Line</label>
                 <textarea
                   id="addressLine"
-                  name="addressLine"
+                  name="address"
                   placeholder="Address line"
-                  value={formData.addressLine}
+                  value={formData.address}
                   onChange={handleInputChange}
                   required
                 />
@@ -160,17 +205,17 @@ const OrderRequestModal = ({ isOpen, onClose }) => {
               
               <div className="totals-item">
                 <span className="totals-label">Subtotal</span>
-                <span className="totals-value">EGP {orderTotals.subtotal}</span>
+                <span className="totals-value">EGP {subtotal}</span>
               </div>
               
               <div className="totals-item">
                 <span className="totals-label">Shipping</span>
-                <span className="totals-value">{orderTotals.shipping}</span>
+                <span className="totals-value">Free Shipping</span>
               </div>
               
               <div className="totals-item total-final">
                 <span className="totals-label">Total</span>
-                <span className="totals-value">EGP {orderTotals.total}</span>
+                <span className="totals-value">EGP {subtotal}</span>
               </div>
             </div>
 
@@ -181,7 +226,7 @@ const OrderRequestModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Close Button */}
-        <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
+        <button type='submit' className="modal-close-btn" onClick={onClose} aria-label="Close modal">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>

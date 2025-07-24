@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import './CheckOut.css'
+// import './CheckOut.css'
 import { Header } from "../../src/components/Header";
 import { useRef } from "react";
 import { Axios } from "../../components/Helpers/Axios";
@@ -25,15 +25,16 @@ const CheckoutPage = () => {
   },[])
   const [formData, setFormData] = useState({
     email: "",
-    firstName: "",
-    lastName: "",
-    addressLine: "",
+    first_name: "",
+    last_name: "",
+    address: "",
     country: "Indonesia",
     postalCode: "",
     phoneNumber: "",
     sameAsShipping: true,
     couponCode: "",
   });
+
 
   const [orderSummary] = useState({
     subtotal: 210,
@@ -109,25 +110,25 @@ const CheckoutPage = () => {
 
                   <div className="form-row">
                     <div className="form-group">
-                      <label htmlFor="firstName">First Name</label>
+                      <label htmlFor="first_name">First Name</label>
                       <input
                         type="text"
-                        id="firstName"
-                        name="firstName"
+                        id="first_name"
+                        name="first_name"
                         placeholder="First name"
-                        value={formData.firstName}
+                        value={formData.first_name}
                         onChange={handleInputChange}
                         required
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="lastName">Last Name</label>
+                      <label htmlFor="last_name">Last Name</label>
                       <input
                         type="text"
-                        id="lastName"
-                        name="lastName"
+                        id="last_name"
+                        name="last_name"
                         placeholder="Last name"
-                        value={formData.lastName}
+                        value={formData.last_name}
                         onChange={handleInputChange}
                         required
                       />
@@ -135,12 +136,12 @@ const CheckoutPage = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="addressLine">Address Line</label>
+                    <label htmlFor="address">Address Line</label>
                     <textarea
-                      id="addressLine"
-                      name="addressLine"
+                      id="address"
+                      name="address"
                       placeholder="Address line"
-                      value={formData.addressLine}
+                      value={formData.address}
                       onChange={handleInputChange}
                       required
                     />

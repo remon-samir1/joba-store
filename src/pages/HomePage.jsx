@@ -233,6 +233,7 @@ function ProductCard({
   category,
   id,
   isWishlisted,
+  images,
   setIsWishlisted,
   product_size_id,
   is_favorite,
@@ -249,7 +250,7 @@ function ProductCard({
     return (
       <div className="relative w-full h-80 sm:h-96 lg:h-[408px] rounded-lg overflow-hidden group cursor-pointer">
         <img
-          src={ image || `${baseURL}/${image}`}
+          src={ images[0].path}
           alt={name}
           className="w-full h-full object-cover"
         />
@@ -427,6 +428,7 @@ function NewProducts() {
                     handleAddToWishlist={handleAddToWishlist}
                     slug={product.slug}
                     id={product.id}
+                    images={product?.images}
                     is_favorite={product.is_favorite}
                     name={product.name.en}
                     price={product.price}
