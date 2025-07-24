@@ -26,6 +26,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
+import { toast } from "react-toastify";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -78,7 +79,8 @@ export default function ProductListPage() {
   const handleDeleteProduct = async (id) => {
     try {
       await Axios.delete(`admin/products/${id}`,{_method:'DELETE'});
-      const updated = products.filter((p) => p.id !== id);
+      const updated = products.filter((p) => p.slug !== id);
+      toast.success('Deleted Successfly')
       setProducts(updated);
     } catch (err) {
       console.error("Failed to delete", err);

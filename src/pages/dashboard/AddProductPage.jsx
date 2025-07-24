@@ -26,6 +26,7 @@ import { Axios } from "../../../components/Helpers/Axios";
 import Notifcation from "../../../components/Notification";
 import Loading from "../../../components/Loading/Loading";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function AddProductPage() {
   const [loading , setLoading] = useState(false)
@@ -69,7 +70,6 @@ export default function AddProductPage() {
       [id]: checked,
     }));
   };
-
   // Handler for Switches
   const handleSwitchChange = (id, checked) => {
     setProductData((prevData) => ({
@@ -214,6 +214,9 @@ export default function AddProductPage() {
         },
       }).then(()=>{
   toast.success('product Created Successfly')
+  setTimeout(() => {
+    nav(-1)
+  }, 2000);
         setLoading(false)
       })
       console.log("✅ Product added successfully", res.data);
