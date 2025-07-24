@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import "./CheckOut.css";
+// import "./CheckOut.css";
 import { Header } from "../../src/components/Header";
 import { Axios } from "../../components/Helpers/Axios";
 import { Footer } from "../../components/Footer";

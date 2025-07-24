@@ -33,6 +33,7 @@ import InvoicesDetails from "./pages/dashboard/InvoicesDetails";
 import AddCategory from "./pages/dashboard/AddCategory";
 import UpdateCategory from "./pages/dashboard/UpdateCategory";
 import { CouponManagement } from "./pages/dashboard/AddCoupon/AddCounpon";
+import UpdateProduct from "./pages/dashboard/UpdateProduct";
 // import AddCoupon from "./pages/dashboard/AddCoupon";
 
 const queryClient = new QueryClient();
@@ -75,6 +76,7 @@ function App() {
                   <Route path="popup-maker" element={<PopupMakerPage />} />
                   <Route path="products" element={<ProductListPage />} />
                   <Route path="products/add" element={<AddProductPage />} />
+                  <Route path="products/edit/:id" element={<UpdateProduct />} />
                   <Route path="reviews" element={<ReviewsPage />} />
                   <Route
                     path="settings"

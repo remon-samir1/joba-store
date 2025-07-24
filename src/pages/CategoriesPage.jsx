@@ -375,7 +375,7 @@ export default function CategoriesPage() {
                   >
                     <div className="relative w-full h-[408px] rounded-lg overflow-hidden">
                       <img
-                        src={product.image}
+                        src={product.images[0].path}
                         alt={product.name?.en}
                         className="w-full h-full object-cover"
                       />
@@ -442,7 +442,7 @@ export default function CategoriesPage() {
                       >
                         <div className="w-full h-[408px] bg-gray-200 rounded-lg overflow-hidden">
                           <img
-                            src={product.image}
+                            src={product.images[0].path}
                             alt={product.name?.en}
                             className="w-full h-full object-cover"
                           />

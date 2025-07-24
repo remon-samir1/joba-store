@@ -210,7 +210,7 @@ export default function ProductListPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
-                              <Link to={`/dashboard/products/edit/${product.id}`}>
+                              <Link to={`/dashboard/products/edit/${product.slug}`}>
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit
                               </Link>
