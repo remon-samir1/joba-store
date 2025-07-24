@@ -1,0 +1,44 @@
+.OrderDetails{
+  
+}
+.OrderDetails .invoices h4{
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--main-color);
+  margin-bottom: 10px;
+}
+.OrderDetails .details{
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  
+  gap: 30vh;
+}
+.OrderDetails .details .hedaers , .OrderDetails .details .data{
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  flex-direction: column;
+  gap: 25px;
+} 
+.OrderDetails .details .hedaers p, .OrderDetails .details .data p{
+font-size: 1rem;
+color: var(--text-color);
+font-weight: 700;
+}
+.OrderDetails .DateSelectBox{
+  background-color: #f6f8fc;
+  height: 2.8rem;
+  width: 240px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 15px;
+}
+.OrderDetails .DateSelectBox select{
+  background-color: transparent !important;
+  flex: 1;
+  color: gray;
+}

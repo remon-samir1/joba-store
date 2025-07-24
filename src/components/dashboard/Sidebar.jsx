@@ -27,7 +27,7 @@ const mainNavigation = [
   { name: "Coupon Code", href: "/dashboard/coupons", icon: Ticket },
   { name: "Categories", href: "/dashboard/categories", icon: Grid3X3 },
   { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
-  { name: "Popup maker", href: "/dashboard/popup-maker", icon: Megaphone },
+  // { name: "Popup maker", href: "/dashboard/popup-maker", icon: Megaphone },
 ];
 
 // Product section navigation
@@ -86,8 +86,8 @@ export function Sidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          "flex h-full flex-col bg-white shadow-[0px_3px_4px_0px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:w-[260px]",
-          "fixed inset-y-0 left-0 z-50 w-[260px]",
+          "flex fixed top-0 h-full flex-col bg-white shadow-[0px_3px_4px_0px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:w-[260px]",
+          "fixed inset-y-0 top-0 left-0 z-50 w-[260px]",
           isMobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full lg:translate-x-0",

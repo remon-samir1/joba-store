@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './RequestModal.css'
+import { Axios } from '../../../components/Helpers/Axios';
 const OrderRequestModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -29,7 +30,7 @@ const OrderRequestModal = ({ isOpen, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Order request submitted:', formData);
-    // Handle form submission logic here
+  Axios.post('/')
     onClose?.();
   };
 

@@ -29,6 +29,11 @@ import CartPage from "../app/cart/CartPage.jsx";
 import BlogPage from "../app/blog/Blog.jsx";
 import WishlistPage from "../app/wishlist/Wishlits.jsx";
 import CheckoutPage from "../app/Checkout/Checkout.jsx";
+import InvoicesDetails from "./pages/dashboard/InvoicesDetails";
+import AddCategory from "./pages/dashboard/AddCategory";
+import UpdateCategory from "./pages/dashboard/UpdateCategory";
+import { CouponManagement } from "./pages/dashboard/AddCoupon/AddCounpon";
+// import AddCoupon from "./pages/dashboard/AddCoupon";
 
 const queryClient = new QueryClient();
 
@@ -58,11 +63,15 @@ function App() {
                   <Route path="orders" element={<OrdersPage />} />
                   <Route path="customers" element={<CustomersPage />} />
                   <Route path="coupons" element={<CouponsPage />} />
+                  <Route path="coupons/add" element={<CouponManagement />} />
                   <Route
                     path="categories"
                     element={<CategoriesManagementPage />}
                   />
+                  <Route path="categories/add" element={<AddCategory />} />
+                  <Route path="categories/edit/:id" element={<UpdateCategory />} />
                   <Route path="invoices" element={<InvoicesPage />} />
+                  <Route path="/dashboard/invoices/:id" element={<InvoicesDetails />} />
                   <Route path="popup-maker" element={<PopupMakerPage />} />
                   <Route path="products" element={<ProductListPage />} />
                   <Route path="products/add" element={<AddProductPage />} />

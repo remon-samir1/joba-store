@@ -382,8 +382,8 @@ export default function CategoriesPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                       <button
   onClick={(e) => {
-    e.preventDefault(); // يمنع الذهاب لصفحة المنتج
-    e.stopPropagation(); // يمنع الانتقال من اللينك
+    e.preventDefault(); 
+    e.stopPropagation(); 
     handleAddToWishlist( e,product.slug , product.is_favorite);
   }}
   className="absolute top-4 right-4 w-8 h-8 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/70 transition-colors"
@@ -411,9 +411,10 @@ export default function CategoriesPage() {
                           </div>
                           <div className="w-10 h-0.5 bg-white mx-auto"></div>
                         </div>
-                        <button className="w-full bg-primary text-white py-3 rounded flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-colors">
+                        <button 
+                         className="w-full bg-primary text-white py-3 rounded flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-colors">
                           <ShoppingCart className="h-4 w-4" />
-                          Add to cart
+                          View Details
                         </button>
                       </div>
                     </div>

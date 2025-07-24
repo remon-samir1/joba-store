@@ -10,6 +10,5 @@ export const Axios = axios.create({
     Authorization: "Bearer " + token,
 
     "X-Guest-Token": "karl",
-    "Content-Type":'application/json'
   },
 });
