@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Home,
   ShoppingCart,
@@ -18,6 +18,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { Axios } from "../../../components/Helpers/Axios";
 
 // Main menu navigation
 const mainNavigation = [
@@ -28,6 +29,7 @@ const mainNavigation = [
   { name: "Categories", href: "/dashboard/categories", icon: Grid3X3 },
   { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
   // { name: "Popup maker", href: "/dashboard/popup-maker", icon: Megaphone },
+
 ];
 
 // Product section navigation
@@ -43,6 +45,7 @@ const adminNavigation = [
 ];
 
 export function Sidebar() {
+
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

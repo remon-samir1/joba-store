@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 // Main menu navigation
+
 const mainNavigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Order Management", href: "/dashboard/orders", icon: ShoppingCart },
