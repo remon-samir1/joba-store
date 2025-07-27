@@ -29,13 +29,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, Download, MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Download,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
 import { Link } from "react-router-dom";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [stats, setStats] = useState({
@@ -46,14 +54,20 @@ export default function OrdersPage() {
   });
 
   useEffect(() => {
+    setLoading(true);
     Axios.get("/admin/orders")
       .then((res) => {
         const { data } = res;
         console.log(res);
+        setLoading(false);
         setOrders(data.data.orders.data);
         setStats(data.data.stats);
       })
-      .catch((err) => console.error("Error fetching orders:", err));
+      .catch((err) => {
+        setLoading(false);
+
+        console.error("Error fetching orders:", err);
+      });
   }, []);
   function handleExport() {
     if (!filteredOrders.length) return;
@@ -138,6 +152,16 @@ export default function OrdersPage() {
     },
   ];
 
+  const handleDelete = async (id) => {
+    try {
+      await Axios.delete(`admin/orders/${id}`).then((data) => {
+        console.log(data);
+        setOrders(orders.filter((data) => data.id !== id));
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   function getStatusBadge(status) {
     switch (status.toLowerCase()) {
       case "delivered":
@@ -162,9 +186,9 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="flex-1 overflow-hidden">
       <DashboardHeader title="Order Management" />
-      <div className="p-6 space-y-6">
+      <div className="md:p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {orderStats?.map((stat, index) => (
             <Card key={index}>
@@ -194,11 +218,11 @@ export default function OrdersPage() {
           ))}
         </div>
 
-        <Card>
+        <Card className="overflow-auto w-[94vw] md:w-full">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-center gap-3 md:justify-between  flex-wrap">
               <CardTitle>Recent Orders</CardTitle>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center flex-wrap justify-center gap-3 md:justify-betwee space-x-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -245,7 +269,13 @@ export default function OrdersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredOrders.length === 0 ? (
+                {loading ? (
+                  <div className="text-center mx-auto col-span-12 w-full  p-8">
+                    <p className="text-base text-gray-400 font-semibold">
+                      Loading...
+                    </p>
+                  </div>
+                ) : filteredOrders.length === 0 ? (
                   <div className="text-center mx-auto col-span-12 w-full  p-8">
                     <p className="text-base text-gray-400 font-semibold">
                       No Orders !
@@ -267,7 +297,11 @@ export default function OrdersPage() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{order.items[0].product?.name?.en}</TableCell>
+                      <TableCell>
+                        {order.items.length !== 0
+                          ? order.items[0].product?.name?.en
+                          : "Product Deleted"}
+                      </TableCell>
                       <TableCell>
                         {new Date(order.created_at).toLocaleString("en-GB")}
                       </TableCell>
@@ -296,29 +330,30 @@ export default function OrdersPage() {
                         EGP {order.total}
                       </TableCell>
                       <TableCell>
-                      <div className="col-span-2">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link >
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-red-600"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
+                        <div className="col-span-2">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {/* <DropdownMenuItem asChild>
+                                <Link>
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Edit
+                                </Link>
+                              </DropdownMenuItem> */}
+                              <DropdownMenuItem
+                                onClick={() => handleDelete(order.id)}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))

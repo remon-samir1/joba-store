@@ -29,11 +29,11 @@ import CartPage from "../app/cart/CartPage.jsx";
 import BlogPage from "../app/blog/Blog.jsx";
 import WishlistPage from "../app/wishlist/Wishlits.jsx";
 import CheckoutPage from "../app/Checkout/Checkout.jsx";
-import InvoicesDetails from "./pages/dashboard/InvoicesDetails";
 import AddCategory from "./pages/dashboard/AddCategory";
 import UpdateCategory from "./pages/dashboard/UpdateCategory";
 import { CouponManagement } from "./pages/dashboard/AddCoupon/AddCounpon";
 import UpdateProduct from "./pages/dashboard/UpdateProduct";
+import { InvoiceDetails } from "./pages/dashboard/InvoicesDetails";
 // import AddCoupon from "./pages/dashboard/AddCoupon";
 
 const queryClient = new QueryClient();
@@ -72,7 +72,7 @@ function App() {
                   <Route path="categories/add" element={<AddCategory />} />
                   <Route path="categories/edit/:id" element={<UpdateCategory />} />
                   <Route path="invoices" element={<InvoicesPage />} />
-                  <Route path="/dashboard/invoices/:id" element={<InvoicesDetails />} />
+                  <Route path="text" element={<InvoiceDetails />} />
                   <Route path="popup-maker" element={<PopupMakerPage />} />
                   <Route path="products" element={<ProductListPage />} />
                   <Route path="products/add" element={<AddProductPage />} />

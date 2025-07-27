@@ -1,531 +1,3 @@
-// "use client";
-
-// import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Badge } from "../../components/ui/badge";
-// import { Button } from "../../components/ui/button";
-// import { Input } from "../../components/ui/input";
-// import { Checkbox } from "../../components/ui/checkbox";
-// // import { Progress } from "../../components/ui/progress";
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table";
-// import { Search, Plus, MoreHorizontal } from "lucide-react";
-// import {
-//   LineChart,
-//   Line,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-//   ResponsiveContainer,
-//   PieChart,
-//   Pie,
-//   Cell,
-// } from "@/components/dashboard/charts";
-// import { Axios } from "../../../components/Helpers/Axios";
-// import { useEffect, useState } from "react";
-// import { Link } from "react-router-dom";
-// import TransformDate from "../../../components/Helpers/TransformDate";
-
-// const chartData = [
-//   { name: "Jan", value: 10 },
-//   { name: "Feb", value: 15 },
-//   { name: "Mar", value: 20 },
-//   { name: "Apr", value: 25 },
-//   { name: "May", value: 30 },
-//   { name: "Jun", value: 20 },
-//   { name: "Jul", value: 25 },
-//   { name: "Aug", value: 35 },
-//   { name: "Sep", value: 30 },
-//   { name: "Oct", value: 25 },
-//   { name: "Nov", value: 30 },
-//   { name: "Dec", value: 40 },
-// ];
-
-// const pieData = [
-//   { name: "Out of stock", value: 30, color: "#F15A24" },
-//   { name: "In stock", value: 70, color: "#2D3748" },
-// ];
-
-// const recentCoupons = [
-//   {
-//     code: "wg15456",
-//     discount: "25% OFF",
-//     usage: 60,
-//     total: 100,
-//     expiry: "Sep 13, 2025",
-//     status: "Active",
-//     academyStatus: "Active",
-//   },
-//   {
-//     code: "wg15456",
-//     discount: "25% OFF",
-//     usage: 60,
-//     total: 100,
-//     expiry: "Sep 13, 2025",
-//     status: "Expired",
-//     academyStatus: "Expired",
-//   },
-// ];
-
-// const subscribedCustomers = [
-//   {
-//     code: "wg15456",
-//     email: "Margo.coldenber4@hotmail.com",
-//     discount: "20% OFF",
-//     used: "Yes",
-//     expiry: "Sep 13, 2025",
-//     academyStatus: "Active",
-//   },
-//   {
-//     code: "wg15456",
-//     email: "Margo.coldenber4@hotmail.com",
-//     discount: "25% OFF",
-//     used: "No",
-//     expiry: "Sep 13, 2025",
-//     academyStatus: "Expired",
-//   },
-//   {
-//     code: "wg15456",
-//     email: "Margo.coldenber4@hotmail.com",
-//     discount: "25% OFF",
-//     used: "No",
-//     expiry: "Sep 13, 2025",
-//     academyStatus: "Active",
-//   },
-//   {
-//     code: "wg15456",
-//     email: "Margo.coldenber4@hotmail.com",
-//     discount: "25% OFF",
-//     used: "No",
-//     expiry: "Sep 13, 2025",
-//     academyStatus: "Active",
-//   },
-//   {
-//     code: "wg15456",
-//     email: "Margo.coldenber4@hotmail.com",
-//     discount: "25% OFF",
-//     used: "No",
-//     expiry: "Sep 13, 2025",
-//     academyStatus: "Active",
-//   },
-// ];
-
-// export default function CouponsPage() {
-//   const [stats, setStats] = useState([]);
-//   const [coupons, setCoupons] = useState([]);
-//   useEffect(() => {
-//     Axios.get("/admin/coupons").then((data) => {
-//       setStats(data.data.data.stats);
-//       setCoupons(data.data.data.coupons.data);
-//       console.log(data);
-//     });
-//   }, []);
-//   const couponStats = [
-//     {
-//       title: "Active coupons",
-//       value: stats?.active,
-//       icon: "📋",
-//       color: "bg-orange-100 text-orange-600",
-//     },
-//     {
-//       title: "Total redemptions",
-//       value: stats?.total_redemptions,
-//       icon: "🎁",
-//       color: "bg-green-100 text-green-600",
-//     },
-//     {
-//       title: "Revenue impact",
-//       value: stats?.revenue_impact,
-//       icon: "💰",
-//       color: "bg-purple-100 text-purple-600",
-//     },
-//   ];
-//   return (
-//     <div className="flex-1 overflow-auto">
-//       <DashboardHeader title="Coupon Code" />
-
-//       <div className="p-6 space-y-6">
-//         {/* Header with Create Button */}
-//         <div className="flex items-center justify-between">
-//           <h2 className="text-2xl font-bold">Coupon</h2>
-//           <Link
-//             to="add"
-//             className="bg-orange-500 flex items-center text-white gap-2 px-5 py-2 rounded hover:bg-orange-600"
-//           >
-//             <Plus className="h-4 w-4 mr-2" />
-//             Create new coupon
-//           </Link>
-//         </div>
-
-//         {/* Stats Cards */}
-//         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-//           {couponStats.map((stat, index) => (
-//             <Card key={index}>
-//               <CardContent className="p-6">
-//                 <div className="flex items-center space-x-4">
-//                   <div
-//                     className={`w-12 h-12 rounded-lg flex items-center justify-center ${stat.color}`}
-//                   >
-//                     <span className="text-lg">{stat.icon}</span>
-//                   </div>
-//                   <div>
-//                     <div className="text-2xl font-bold">{stat.value}</div>
-//                     <div className="text-sm text-gray-500">{stat.title}</div>
-//                   </div>
-//                 </div>
-//               </CardContent>
-//             </Card>
-//           ))}
-//         </div>
-
-//         {/* Charts Section */}
-//         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-//           {/* Redemptions Trends */}
-//           <Card>
-//             <CardHeader>
-//               <CardTitle>Redemptions trends</CardTitle>
-//               <div className="flex space-x-4 text-sm">
-//                 <span className="text-orange-500 cursor-pointer">7 days</span>
-//                 <span className="text-gray-500 cursor-pointer">30 days</span>
-//                 <span className="text-gray-500 cursor-pointer">90 days</span>
-//               </div>
-//             </CardHeader>
-//             <CardContent>
-//               <div className="h-64">
-//                 <ResponsiveContainer width="100%" height="100%">
-//                   <LineChart data={stats?.redemptions_trends}>
-//                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-//                     <XAxis dataKey="date" axisLine={false} tickLine={false} />
-//                     <YAxis axisLine={false} tickLine={false} />
-//                     <Line
-//                       type="monotone"
-//                       dataKey="redemption"
-//                       stroke="#F15A24"
-//                       strokeWidth={3}
-//                       dot={false}
-//                       activeDot={{ r: 6, fill: "#F15A24" }}
-//                     />
-//                   </LineChart>
-//                 </ResponsiveContainer>
-//               </div>
-//             </CardContent>
-//           </Card>
-
-//           {/* Usage Chart */}
-//           <Card>
-//             <CardHeader>
-//               <CardTitle>Usage</CardTitle>
-//               <div className="flex items-center space-x-4 text-xs text-gray-500">
-//                 <div className="flex items-center space-x-2">
-//                   <div className="w-3 h-3 bg-orange-500 rounded"></div>
-//                   <span>Out of stock</span>
-//                 </div>
-//                 <div className="flex items-center space-x-2">
-//                   <div className="w-3 h-3 bg-gray-700 rounded"></div>
-//                   <span>In stock</span>
-//                 </div>
-//                 <span className="ml-auto">12.769</span>
-//               </div>
-//             </CardHeader>
-//             <CardContent>
-//               <div className="flex items-center justify-center h-64">
-//                 <ResponsiveContainer width="100%" height="100%">
-//                   <PieChart>
-//                     <Pie
-//                       data={stats?.usage_chart                      }
-//                       cx="50%"
-//                       cy="50%"
-//                       innerRadius={60}
-//                       outerRadius={120}
-//                       paddingAngle={5}
-//                       dataKey="value"
-//                     >
-//                       {pieData.map((entry, index) => (
-//                         <Cell key={`cell-${index}`} fill={entry.label === 'Unused' ? "#F15A24"  : "#2D3748" } />
-//                       ))}
-//                     </Pie>
-//                   </PieChart>
-//                 </ResponsiveContainer>
-//               </div>
-//             </CardContent>
-//           </Card>
-//         </div>
-
-//         {/* Recent Coupons */}
-//         <Card>
-//           <CardHeader>
-//             <CardTitle>Recent coupon</CardTitle>
-//             <div className="relative max-w-md">
-//               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-//               <Input
-//                 type="text"
-//                 placeholder="Search data, users, or reports"
-//                 className="pl-10"
-//               />
-//             </div>
-//           </CardHeader>
-//           <CardContent>
-//             <Table>
-//               <TableHeader>
-//                 <TableRow>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Code
-//                   </TableHead>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Discount
-//                   </TableHead>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Usage
-//                   </TableHead>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Expiry
-//                   </TableHead>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Status
-//                   </TableHead>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Active from academy
-//                   </TableHead>
-//                 </TableRow>
-//               </TableHeader>
-//               <TableBody>
-//                 {coupons?.map((coupon, index) => (
-//                   <TableRow key={index}>
-//                     <TableCell className="font-medium">
-//                       <div className="flex items-center space-x-2">
-//                         <span className="text-blue-500 text-sm">📋</span>
-//                         <span>{coupon.code}</span>
-//                       </div>
-//                     </TableCell>
-//                     <TableCell>{coupon.value}</TableCell>
-//                     <TableCell>
-//                       <div className="flex items-center space-x-3">
-//                         {/* <Progress
-//                           value={(coupon.usage / coupon.total) * 100}
-//                           className="w-20 h-2"
-//                         /> */}
-//                         <span className="text-sm text-gray-600">
-//                           {coupon.usage}/{coupon.total}
-//                         </span>
-//                       </div>
-//                     </TableCell>
-//                     <TableCell className="text-sm">{TransformDate(coupon.expires_at)}</TableCell>
-//                     <TableCell>
-//                       <Badge
-//                         variant={
-//                           coupon.is_activeus ===1 ? "default" : "destructive"
-//                         }
-//                         className={
-//                           coupon.is_active === true
-//                             ? "bg-green-100 text-green-700 hover:bg-green-100"
-//                             : "bg-red-100 text-red-700 hover:bg-red-100"
-//                         }
-//                       >
-//                         {coupon.is_active === true? 'Active' : 'Unactive'}
-//                       </Badge>
-//                     </TableCell>
-//                     <TableCell>
-//                       <Badge
-//                         variant={
-//                           coupon.active_from_academy    === 1
-//                             ? "default"
-//                             : "destructive"
-//                         }
-//                         className={
-//                           coupon.active_from_academy === 1
-//                             ? "bg-green-100 text-green-700 hover:bg-green-100"
-//                             : "bg-red-100 text-red-700 hover:bg-red-100"
-//                         }
-//                       >
-//                         {coupon.active_from_academy === 1 ? 'Active' : 'Unactive'}
-//                       </Badge>
-//                     </TableCell>
-//                   </TableRow>
-//                 ))}
-//               </TableBody>
-//             </Table>
-
-//             {/* Pagination */}
-//             <div className="flex items-center justify-between mt-6">
-//               <Button variant="outline" className="text-gray-600">
-//                 ← Previous
-//               </Button>
-//               <div className="flex space-x-1">
-//                 <Button
-//                   size="sm"
-//                   className="bg-orange-500 text-white hover:bg-orange-600 w-8 h-8"
-//                 >
-//                   1
-//                 </Button>
-//                 <Button variant="outline" size="sm" className="w-8 h-8">
-//                   2
-//                 </Button>
-//                 <Button variant="outline" size="sm" className="w-8 h-8">
-//                   3
-//                 </Button>
-//                 <Button variant="outline" size="sm" className="w-8 h-8">
-//                   4
-//                 </Button>
-//                 <Button variant="outline" size="sm" className="w-8 h-8">
-//                   5
-//                 </Button>
-//                 <span className="flex items-center px-2">...</span>
-//                 <Button variant="outline" size="sm" className="w-8 h-8">
-//                   24
-//                 </Button>
-//               </div>
-//               <Button variant="outline" className="text-gray-600">
-//                 Next →
-//               </Button>
-//             </div>
-//           </CardContent>
-//         </Card>
-
-//         {/* Subscribed Customers */}
-//         <Card>
-//           <CardHeader>
-//             <CardTitle>Subscribed customers</CardTitle>
-//             <div className="flex items-center space-x-4 flex-wrap gap-2">
-//               <div className="relative">
-//                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-//                 <Input
-//                   type="text"
-//                   placeholder="Search data, users, or reports"
-//                   className="pl-10 w-80"
-//                 />
-//               </div>
-//               <div className="flex items-center space-x-2">
-//                 <Checkbox id="select-all" />
-//                 <label htmlFor="select-all" className="text-sm">
-//                   Select all
-//                 </label>
-//               </div>
-//               <Button
-//                 variant="destructive"
-//                 size="sm"
-//                 className="bg-red-500 hover:bg-red-600"
-//               >
-//                 Delete
-//               </Button>
-//               <Button
-//                 size="sm"
-//                 className="bg-orange-500 text-white hover:bg-orange-600"
-//               >
-//                 Export mail
-//               </Button>
-//               <Button
-//                 size="sm"
-//                 className="bg-green-500 text-white hover:bg-green-600"
-//               >
-//                 Import mail
-//               </Button>
-//             </div>
-//           </CardHeader>
-//           <CardContent>
-//             <Table>
-//               <TableHeader>
-//                 <TableRow>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Code
-//                   </TableHead>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Email
-//                   </TableHead>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Discount
-//                   </TableHead>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Used
-//                   </TableHead>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Expiry
-//                   </TableHead>
-//                   <TableHead className="text-xs font-medium text-gray-500">
-//                     Active from academy
-//                   </TableHead>
-//                 </TableRow>
-//               </TableHeader>
-//               <TableBody>
-//                 {subscribedCustomers.map((customer, index) => (
-//                   <TableRow key={index}>
-//                     <TableCell className="font-medium">
-//                       <div className="flex items-center space-x-2">
-//                         <span className="text-blue-500 text-sm">📋</span>
-//                         <span>{customer.code}</span>
-//                       </div>
-//                     </TableCell>
-//                     <TableCell className="text-sm">{customer.email}</TableCell>
-//                     <TableCell>{customer.discount}</TableCell>
-//                     <TableCell>{customer.used}</TableCell>
-//                     <TableCell className="text-sm">{customer.expiry}</TableCell>
-//                     <TableCell>
-//                       <Badge
-//                         variant={
-//                           customer.academyStatus === "Active"
-//                             ? "default"
-//                             : "destructive"
-//                         }
-//                         className={
-//                           customer.academyStatus === "Active"
-//                             ? "bg-green-100 text-green-700 hover:bg-green-100"
-//                             : "bg-red-100 text-red-700 hover:bg-red-100"
-//                         }
-//                       >
-//                         {customer.academyStatus}
-//                       </Badge>
-//                     </TableCell>
-//                   </TableRow>
-//                 ))}
-//               </TableBody>
-//             </Table>
-
-//             {/* Pagination */}
-//             <div className="flex items-center justify-between mt-6">
-//               <Button variant="outline" className="text-gray-600">
-//                 ← Previous
-//               </Button>
-//               <div className="flex space-x-1">
-//                 <Button
-//                   size="sm"
-//                   className="bg-orange-500 text-white hover:bg-orange-600 w-8 h-8"
-//                 >
-//                   1
-//                 </Button>
-//                 <Button variant="outline" size="sm" className="w-8 h-8">
-//                   2
-//                 </Button>
-//                 <Button variant="outline" size="sm" className="w-8 h-8">
-//                   3
-//                 </Button>
-//                 <Button variant="outline" size="sm" className="w-8 h-8">
-//                   4
-//                 </Button>
-//                 <Button variant="outline" size="sm" className="w-8 h-8">
-//                   5
-//                 </Button>
-//                 <span className="flex items-center px-2">...</span>
-//                 <Button variant="outline" size="sm" className="w-8 h-8">
-//                   24
-//                 </Button>
-//               </div>
-//               <Button variant="outline" className="text-gray-600">
-//                 Next →
-//               </Button>
-//             </div>
-//           </CardContent>
-//         </Card>
-//       </div>
-//     </div>
-//   );
-// }
-
-// src/pages/dashboard/coupons.jsx
 "use client";
 
 import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
@@ -589,68 +61,78 @@ export default function CouponsPage() {
   const [couponSearch, setCouponSearch] = useState("");
   const [couponStatusFilter, setCouponStatusFilter] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  
+  const [page, setPage] = useState(1);
   useEffect(() => {
-    Axios.get("/admin/coupons").then((data) => {
+    Axios.get(`/admin/coupons?page=${page}`).then((data) => {
+      console.log(data);
       setStats(data.data.data.stats);
       setCoupons(data.data.data.coupons.data);
     });
-  }, []);
+  }, [page]);
 
   // حساب العملاء المشتركين من جميع الكوبونات
   const allSubscribedCustomers = useMemo(() => {
-    return coupons.flatMap(coupon => {
-      if (!coupon.subscribed_customers || !Array.isArray(coupon.subscribed_customers)) return [];
-      
-      return coupon.subscribed_customers.map(customer => ({
+    return coupons.flatMap((coupon) => {
+      if (
+        !coupon.subscribed_customers ||
+        !Array.isArray(coupon.subscribed_customers)
+      )
+        return [];
+
+      return coupon.subscribed_customers.map((customer) => ({
         ...customer,
         couponCode: coupon.code,
         couponDiscount: coupon.value,
         couponType: coupon.type,
         couponExpiry: coupon.expires_at,
         couponAcademyStatus: coupon.active_from_academy,
-        couponId: coupon.id
+        couponId: coupon.id,
       }));
     });
   }, [coupons]);
 
   // تصفية العملاء المشتركين
   const filteredSubscribedCustomers = useMemo(() => {
-    return allSubscribedCustomers.filter(customer => {
+    return allSubscribedCustomers.filter((customer) => {
       // البحث حسب البريد الإلكتروني أو كود الكوبون
-      const matchesSearch = 
-        (customer.email && customer.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (customer.couponCode && customer.couponCode.toLowerCase().includes(searchTerm.toLowerCase()));
-      
+      const matchesSearch =
+        (customer.email &&
+          customer.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (customer.couponCode &&
+          customer.couponCode.toLowerCase().includes(searchTerm.toLowerCase()));
+
       // التصفية حسب حالة الأكاديمية
-      const matchesAcademyFilter = 
-        academyFilter === "all" || 
+      const matchesAcademyFilter =
+        academyFilter === "all" ||
         (academyFilter === "active" && customer.couponAcademyStatus == 1) ||
         (academyFilter === "unactive" && customer.couponAcademyStatus != 1);
-      
+
       // التصفية حسب حالة الاستخدام
-      const matchesUsageFilter = 
-        usageFilter === "all" || 
+      const matchesUsageFilter =
+        usageFilter === "all" ||
         (usageFilter === "used" && customer.orders?.length > 0) ||
-        (usageFilter === "unused" && (!customer.orders || customer.orders.length === 0));
-      
+        (usageFilter === "unused" &&
+          (!customer.orders || customer.orders.length === 0));
+
       return matchesSearch && matchesAcademyFilter && matchesUsageFilter;
     });
   }, [allSubscribedCustomers, searchTerm, academyFilter, usageFilter]);
 
   // تصفية الكوبونات
   const filteredCoupons = useMemo(() => {
-    return coupons.filter(coupon => {
+    return coupons.filter((coupon) => {
       // البحث حسب كود الكوبون
-      const matchesSearch = couponSearch === "" || 
-        (coupon.code && coupon.code.toLowerCase().includes(couponSearch.toLowerCase()));
-      
+      const matchesSearch =
+        couponSearch === "" ||
+        (coupon.code &&
+          coupon.code.toLowerCase().includes(couponSearch.toLowerCase()));
+
       // التصفية حسب حالة الكوبون
-      const matchesStatusFilter = 
-        couponStatusFilter === "all" || 
+      const matchesStatusFilter =
+        couponStatusFilter === "all" ||
         (couponStatusFilter === "active" && coupon.is_active) ||
         (couponStatusFilter === "inactive" && !coupon.is_active);
-      
+
       return matchesSearch && matchesStatusFilter;
     });
   }, [coupons, couponSearch, couponStatusFilter]);
@@ -680,7 +162,7 @@ export default function CouponsPage() {
   // معالجة تحديد/إلغاء تحديد جميع العملاء
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedCustomers(filteredSubscribedCustomers.map(c => c.id));
+      setSelectedCustomers(filteredSubscribedCustomers.map((c) => c.id));
     } else {
       setSelectedCustomers([]);
     }
@@ -691,7 +173,9 @@ export default function CouponsPage() {
     if (checked) {
       setSelectedCustomers([...selectedCustomers, id]);
     } else {
-      setSelectedCustomers(selectedCustomers.filter(customerId => customerId !== id));
+      setSelectedCustomers(
+        selectedCustomers.filter((customerId) => customerId !== id),
+      );
     }
   };
 
@@ -729,7 +213,10 @@ export default function CouponsPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {couponStats.map((stat, index) => (
-            <Card key={index} className="shadow-sm hover:shadow-md transition-shadow">
+            <Card
+              key={index}
+              className="shadow-sm hover:shadow-md transition-shadow"
+            >
               <CardContent className="p-6">
                 <div className="flex items-center space-x-4">
                   <div
@@ -738,7 +225,9 @@ export default function CouponsPage() {
                     <span className="text-lg">{stat.icon}</span>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-800">{stat.value || 0}</div>
+                    <div className="text-2xl font-bold text-gray-800">
+                      {stat.value || 0}
+                    </div>
                     <div className="text-sm text-gray-500">{stat.title}</div>
                   </div>
                 </div>
@@ -752,11 +241,19 @@ export default function CouponsPage() {
           {/* Redemptions Trends */}
           <Card className="border rounded-lg">
             <CardHeader>
-              <CardTitle className="text-gray-800">Redemptions trends</CardTitle>
+              <CardTitle className="text-gray-800">
+                Redemptions trends
+              </CardTitle>
               <div className="flex space-x-4 text-sm">
-                <span className="text-orange-500 cursor-pointer font-medium">7 days</span>
-                <span className="text-gray-500 cursor-pointer hover:text-gray-700">30 days</span>
-                <span className="text-gray-500 cursor-pointer hover:text-gray-700">90 days</span>
+                <span className="text-orange-500 cursor-pointer font-medium">
+                  7 days
+                </span>
+                <span className="text-gray-500 cursor-pointer hover:text-gray-700">
+                  30 days
+                </span>
+                <span className="text-gray-500 cursor-pointer hover:text-gray-700">
+                  90 days
+                </span>
               </div>
             </CardHeader>
             <CardContent>
@@ -808,7 +305,9 @@ export default function CouponsPage() {
                       outerRadius={120}
                       paddingAngle={5}
                       dataKey="value"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) =>
+                        `${name}: ${(percent * 100).toFixed(0)}%`
+                      }
                     >
                       {pieData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
@@ -826,7 +325,7 @@ export default function CouponsPage() {
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-4">
               <CardTitle className="text-gray-800">Recent coupon</CardTitle>
-              
+
               <div className="flex flex-wrap items-center gap-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -838,26 +337,26 @@ export default function CouponsPage() {
                     onChange={(e) => setCouponSearch(e.target.value)}
                   />
                   {couponSearch && (
-                    <X 
+                    <X
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 cursor-pointer"
                       onClick={() => setCouponSearch("")}
                     />
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-2">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="flex items-center gap-2 border-gray-300"
                     onClick={() => setIsFilterOpen(!isFilterOpen)}
                   >
                     <Filter className="h-4 w-4" />
                     Filters
                   </Button>
-                  
+
                   {(couponSearch || couponStatusFilter !== "all") && (
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       className="text-orange-600 hover:bg-orange-50"
                       onClick={resetFilters}
                     >
@@ -868,14 +367,16 @@ export default function CouponsPage() {
                 </div>
               </div>
             </div>
-            
+
             {/* Filter Dropdown */}
             {isFilterOpen && (
               <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select 
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Status
+                    </label>
+                    <select
                       value={couponStatusFilter}
                       onChange={(e) => setCouponStatusFilter(e.target.value)}
                       className="w-full rounded-md border border-gray-300 bg-white py-2 px-3 focus:outline-none focus:ring-1 focus:ring-orange-500"
@@ -889,17 +390,29 @@ export default function CouponsPage() {
               </div>
             )}
           </CardHeader>
-          
+
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-xs font-medium text-gray-500">Code</TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Discount</TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Usage</TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Expiry</TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Status</TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Active from academy</TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Code
+                  </TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Discount
+                  </TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Usage
+                  </TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Expiry
+                  </TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Status
+                  </TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Active from academy
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -908,12 +421,15 @@ export default function CouponsPage() {
                     <TableCell colSpan={6} className="text-center py-8">
                       <div className="flex flex-col items-center justify-center">
                         <Search className="h-12 w-12 text-gray-400 mb-3" />
-                        <h3 className="text-lg font-medium text-gray-900">No coupons found</h3>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          No coupons found
+                        </h3>
                         <p className="text-gray-500 mt-1">
-                          Try adjusting your search or filter to find what you're looking for.
+                          Try adjusting your search or filter to find what
+                          you're looking for.
                         </p>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           className="mt-3 text-orange-600 hover:bg-orange-50"
                           onClick={resetFilters}
                         >
@@ -933,22 +449,25 @@ export default function CouponsPage() {
                       </TableCell>
                       <TableCell>
                         <span className="font-medium">
-                          {coupon.type === 'percentage' 
-                            ? `${coupon.value}% OFF` 
+                          {coupon.type === "percentage"
+                            ? `${coupon.value}% OFF`
                             : `$${coupon.value} OFF`}
                         </span>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-3">
                           <div className="w-20 h-2 bg-gray-200 rounded-full">
-                            <div 
+                            <div
                               className={`h-full rounded-full ${
-                                coupon.used / coupon.max_uses > 0.7 
-                                  ? 'bg-green-500' 
-                                  : 'bg-orange-500'
+                                coupon.used / coupon.max_uses > 0.7
+                                  ? "bg-green-500"
+                                  : "bg-orange-500"
                               }`}
-                              style={{ 
-                                width: `${Math.min(100, (coupon.used / coupon.max_uses) * 100)}%` 
+                              style={{
+                                width: `${Math.min(
+                                  100,
+                                  (coupon.used / coupon.max_uses) * 100,
+                                )}%`,
                               }}
                             />
                           </div>
@@ -969,19 +488,25 @@ export default function CouponsPage() {
                               : "bg-red-100 text-red-700 hover:bg-red-100"
                           }
                         >
-                          {coupon.is_active ? 'Active' : 'Inactive'}
+                          {coupon.is_active ? "Active" : "Inactive"}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={coupon.active_from_academy === 1 ? "default" : "destructive"}
+                          variant={
+                            coupon.active_from_academy === 1
+                              ? "default"
+                              : "destructive"
+                          }
                           className={
                             coupon.active_from_academy === 1
                               ? "bg-green-100 text-green-700 hover:bg-green-100"
                               : "bg-red-100 text-red-700 hover:bg-red-100"
                           }
                         >
-                          {coupon.active_from_academy === 1 ? 'Active' : 'Inactive'}
+                          {coupon.active_from_academy === 1
+                            ? "Active"
+                            : "Inactive"}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -992,34 +517,20 @@ export default function CouponsPage() {
 
             {/* Pagination */}
             <div className="flex items-center justify-between mt-6">
-              <Button variant="outline" className="text-gray-600 border rounded-md px-4 py-2">
+              <Button
+                onClick={() => setPage((prev) => prev !== 1 && prev - 1)}
+                variant="outline"
+                className="text-gray-600 border rounded-md px-4 py-2"
+              >
                 ← Previous
               </Button>
-              <div className="flex space-x-1">
-                <Button
-                  size="sm"
-                  className="bg-orange-500 text-white hover:bg-orange-600 w-8 h-8 rounded-md"
-                >
-                  1
-                </Button>
-                <Button variant="outline" size="sm" className="w-8 h-8 rounded-md">
-                  2
-                </Button>
-                <Button variant="outline" size="sm" className="w-8 h-8 rounded-md">
-                  3
-                </Button>
-                <Button variant="outline" size="sm" className="w-8 h-8 rounded-md">
-                  4
-                </Button>
-                <Button variant="outline" size="sm" className="w-8 h-8 rounded-md">
-                  5
-                </Button>
-                <span className="flex items-center px-2 text-gray-500">...</span>
-                <Button variant="outline" size="sm" className="w-8 h-8 rounded-md">
-                  24
-                </Button>
-              </div>
-              <Button variant="outline" className="text-gray-600 border rounded-md px-4 py-2">
+
+              <Button
+                variant="outline"
+                onClick={()=>setPage(prev =>prev + 1)}
+
+                className="text-gray-600 border rounded-md px-4 py-2"
+              >
                 Next →
               </Button>
             </div>
@@ -1029,7 +540,9 @@ export default function CouponsPage() {
         {/* Subscribed Customers */}
         <Card className="border rounded-lg">
           <CardHeader>
-            <CardTitle className="text-gray-800">Subscribed customers</CardTitle>
+            <CardTitle className="text-gray-800">
+              Subscribed customers
+            </CardTitle>
             <div className="flex flex-wrap items-center gap-4">
               <div className="relative w-full md:w-80">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -1041,18 +554,20 @@ export default function CouponsPage() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 {searchTerm && (
-                  <X 
+                  <X
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 cursor-pointer"
                     onClick={() => setSearchTerm("")}
                   />
                 )}
               </div>
-              
+
               <div className="flex flex-wrap gap-3">
                 {/* Academy Status Filter */}
                 <div className="flex items-center space-x-2">
-                  <label className="text-sm text-gray-600">Academy Status:</label>
-                  <select 
+                  <label className="text-sm text-gray-600">
+                    Academy Status:
+                  </label>
+                  <select
                     value={academyFilter}
                     onChange={(e) => setAcademyFilter(e.target.value)}
                     className="border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
@@ -1062,11 +577,11 @@ export default function CouponsPage() {
                     <option value="unactive">Inactive</option>
                   </select>
                 </div>
-                
+
                 {/* Usage Status Filter */}
                 <div className="flex items-center space-x-2">
                   <label className="text-sm text-gray-600">Usage:</label>
-                  <select 
+                  <select
                     value={usageFilter}
                     onChange={(e) => setUsageFilter(e.target.value)}
                     className="border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
@@ -1076,20 +591,27 @@ export default function CouponsPage() {
                     <option value="unused">Unused</option>
                   </select>
                 </div>
-                
+
                 {/* Actions */}
                 <div className="flex items-center space-x-3 ml-2">
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="select-all" 
-                      checked={selectedCustomers.length === filteredSubscribedCustomers.length && filteredSubscribedCustomers.length > 0}
+                    <Checkbox
+                      id="select-all"
+                      checked={
+                        selectedCustomers.length ===
+                          filteredSubscribedCustomers.length &&
+                        filteredSubscribedCustomers.length > 0
+                      }
                       onCheckedChange={handleSelectAll}
                     />
-                    <label htmlFor="select-all" className="text-sm text-gray-600">
+                    <label
+                      htmlFor="select-all"
+                      className="text-sm text-gray-600"
+                    >
                       Select all
                     </label>
                   </div>
-                  
+
                   {/* <Button
                     variant="destructive"
                     size="sm"
@@ -1099,7 +621,7 @@ export default function CouponsPage() {
                   >
                     Delete ({selectedCustomers.length})
                   </Button> */}
-                  
+
                   {/* <Button
                     size="sm"
                     className="bg-orange-500 text-white hover:bg-orange-600 px-3 py-1.5"
@@ -1110,7 +632,7 @@ export default function CouponsPage() {
               </div>
             </div>
           </CardHeader>
-          
+
           <CardContent>
             <Table>
               <TableHeader>
@@ -1118,22 +640,36 @@ export default function CouponsPage() {
                   <TableHead className="w-8">
                     <span className="sr-only">Select</span>
                   </TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Code</TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Email</TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Discount</TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Used</TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Expiry</TableHead>
-                  <TableHead className="text-xs font-medium text-gray-500">Active from academy</TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Code
+                  </TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Email
+                  </TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Discount
+                  </TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Used
+                  </TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Expiry
+                  </TableHead>
+                  <TableHead className="text-xs font-medium text-gray-500">
+                    Active from academy
+                  </TableHead>
                 </TableRow>
               </TableHeader>
-              
+
               <TableBody>
                 {filteredSubscribedCustomers.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-8">
                       <div className="flex flex-col items-center justify-center">
                         <Search className="h-12 w-12 text-gray-400 mb-3" />
-                        <h3 className="text-lg font-medium text-gray-900">No customers found</h3>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          No customers found
+                        </h3>
                         <p className="text-gray-500 mt-1">
                           No customers match your search or filter criteria.
                         </p>
@@ -1144,9 +680,11 @@ export default function CouponsPage() {
                   filteredSubscribedCustomers.map((customer, index) => (
                     <TableRow key={index} className="hover:bg-gray-50">
                       <TableCell>
-                        <Checkbox 
+                        <Checkbox
                           checked={selectedCustomers.includes(customer.id)}
-                          onCheckedChange={(checked) => handleSelectCustomer(customer.id, checked)}
+                          onCheckedChange={(checked) =>
+                            handleSelectCustomer(customer.id, checked)
+                          }
                         />
                       </TableCell>
                       <TableCell className="font-medium">
@@ -1156,25 +694,29 @@ export default function CouponsPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-gray-800">
-                        {customer.email || 'N/A'}
+                        {customer.email || "N/A"}
                       </TableCell>
                       <TableCell>
                         <span className="font-medium">
-                          {customer.couponType === 'percentage' 
-                            ? `${customer.couponDiscount}% OFF` 
+                          {customer.couponType === "percentage"
+                            ? `${customer.couponDiscount}% OFF`
                             : `$${customer.couponDiscount} OFF`}
                         </span>
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={customer.orders?.length > 0 ? "default" : "secondary"}
+                          variant={
+                            customer.orders?.length > 0
+                              ? "default"
+                              : "secondary"
+                          }
                           className={
                             customer.orders?.length > 0
                               ? "bg-green-100 text-green-700 hover:bg-green-100"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-100"
                           }
                         >
-                          {customer.orders?.length > 0 ? 'Yes' : 'No'}
+                          {customer.orders?.length > 0 ? "Yes" : "No"}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-gray-600">
@@ -1182,14 +724,20 @@ export default function CouponsPage() {
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={customer.couponAcademyStatus == 1 ? "default" : "destructive"}
+                          variant={
+                            customer.couponAcademyStatus == 1
+                              ? "default"
+                              : "destructive"
+                          }
                           className={
                             customer.couponAcademyStatus == 1
                               ? "bg-green-100 text-green-700 hover:bg-green-100"
                               : "bg-red-100 text-red-700 hover:bg-red-100"
                           }
                         >
-                          {customer.couponAcademyStatus == 1 ? 'Active' : 'Inactive'}
+                          {customer.couponAcademyStatus == 1
+                            ? "Active"
+                            : "Inactive"}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -1199,8 +747,11 @@ export default function CouponsPage() {
             </Table>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between mt-6">
-              <Button variant="outline" className="text-gray-600 border rounded-md px-4 py-2">
+            {/* <div className="flex items-center justify-between mt-6">
+              <Button
+                variant="outline"
+                className="text-gray-600 border rounded-md px-4 py-2"
+              >
                 ← Previous
               </Button>
               <div className="flex space-x-1">
@@ -1210,27 +761,52 @@ export default function CouponsPage() {
                 >
                   1
                 </Button>
-                <Button variant="outline" size="sm" className="w-8 h-8 rounded-md">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-8 h-8 rounded-md"
+                >
                   2
                 </Button>
-                <Button variant="outline" size="sm" className="w-8 h-8 rounded-md">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-8 h-8 rounded-md"
+                >
                   3
                 </Button>
-                <Button variant="outline" size="sm" className="w-8 h-8 rounded-md">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-8 h-8 rounded-md"
+                >
                   4
                 </Button>
-                <Button variant="outline" size="sm" className="w-8 h-8 rounded-md">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-8 h-8 rounded-md"
+                >
                   5
                 </Button>
-                <span className="flex items-center px-2 text-gray-500">...</span>
-                <Button variant="outline" size="sm" className="w-8 h-8 rounded-md">
+                <span className="flex items-center px-2 text-gray-500">
+                  ...
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-8 h-8 rounded-md"
+                >
                   24
                 </Button>
               </div>
-              <Button variant="outline" className="text-gray-600 border rounded-md px-4 py-2">
+              <Button
+                variant="outline"
+                className="text-gray-600 border rounded-md px-4 py-2"
+              >
                 Next →
               </Button>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>

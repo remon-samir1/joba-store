@@ -1,6 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Trash2 } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -22,6 +30,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Axios } from "../../../components/Helpers/Axios";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+
 // Helper functions
 function handleExport(customersToExport) {
   if (!customersToExport.length) return;
@@ -61,12 +70,44 @@ const DashboardHeader = ({ title }) => (
   </div>
 );
 
+// شاشة التحميل البرتقالية
+const OrangeLoader = () => (
+  <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
+    <div className="flex flex-col items-center">
+      {/* شعار ثلاثي الأبعاد برتقالي */}
+      <div className="relative w-32 h-32 mb-8">
+        <div className="absolute inset-0 rounded-full bg-orange-500 opacity-20 animate-ping-slow"></div>
+        <div className="absolute inset-4 rounded-full border-8 border-orange-400 border-t-transparent animate-spin-slow"></div>
+        <div className="absolute inset-8 rounded-full border-8 border-orange-300 border-b-transparent animate-spin-reverse"></div>
+        <div className="absolute inset-12 rounded-full border-8 border-orange-200 border-l-transparent animate-ping"></div>
+      </div>
+      
+      {/* النص والرسالة */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-orange-700 mb-2">Loading Customers</h2>
+        <p className="text-orange-600 max-w-md mb-6">
+          Fetching your customer data, please wait...
+        </p>
+        
+        {/* شريط التقدم البرتقالي */}
+        <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function CustomersPage() {
   const [customers, setCustomers] = useState([]);
   const [stats, setStats] = useState(null);
   const [pagination, setPagination] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [isDeleting, setIsDeleting] = useState(null);
 
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState("");
@@ -76,7 +117,7 @@ export default function CustomersPage() {
   // Fetch data
   useEffect(() => {
     setIsLoading(true);
-    Axios.get("/admin/customers")
+    Axios.get(`/admin/customers?page=${page}`)
       .then((response) => {
         const { data } = response;
         setCustomers(data.data.customers.data);
@@ -97,7 +138,7 @@ export default function CustomersPage() {
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+  }, [page]);
 
   // Filter customers based on search and filters
   const filteredCustomers = useMemo(() => {
@@ -145,11 +186,7 @@ export default function CustomersPage() {
     : [];
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <p>Loading customers...</p>
-      </div>
-    );
+    return <OrangeLoader />;
   }
 
   if (error) {
@@ -159,7 +196,24 @@ export default function CustomersPage() {
       </div>
     );
   }
-
+  
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this customer?")) return;
+    
+    setIsDeleting(id);
+    try {
+      await Axios.post(`admin/customers/${id}`, { _method: "DELETE" }).then((data) => {
+        console.log(data);
+        setCustomers(customers.filter((data) => data.id !== id));
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to delete customer. Please try again.");
+    } finally {
+      setIsDeleting(null);
+    }
+  };
+  
   return (
     <div className="flex-1 overflow-auto">
       <DashboardHeader title="Customers" />
@@ -302,9 +356,32 @@ export default function CustomersPage() {
                         {formatDate(customer.created_at)}
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => handleDelete(customer.id)}
+                              className="text-red-600"
+                              disabled={isDeleting === customer.id}
+                            >
+                              {isDeleting === customer.id ? (
+                                <div className="flex items-center">
+                                  <div className="w-4 h-4 border-t-2 border-r-2 border-red-600 rounded-full animate-spin mr-2"></div>
+                                  Deleting
+                                </div>
+                              ) : (
+                                <>
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
@@ -339,12 +416,14 @@ export default function CustomersPage() {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={() => setPage((prev) => (prev !== 1 ? prev - 1 : prev))}
                     disabled={!pagination.prev_page_url}
                   >
                     Previous
                   </Button>
                   <Button
                     variant="outline"
+                    onClick={() => setPage((prev) => prev + 1)}
                     size="sm"
                     disabled={!pagination.next_page_url}
                   >
@@ -356,6 +435,45 @@ export default function CustomersPage() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* إضافة أنماط CSS للرسوم المتحركة */}
+      <style jsx>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        @keyframes spin-reverse {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+        
+        @keyframes progress {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
+        @keyframes ping-slow {
+          0% { transform: scale(0.9); opacity: 0.8; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .animate-spin-slow {
+          animation: spin-slow 4s linear infinite;
+        }
+        
+        .animate-spin-reverse {
+          animation: spin-reverse 3s linear infinite;
+        }
+        
+        .animate-progress {
+          animation: progress 2s ease-in-out infinite alternate;
+        }
+        
+        .animate-ping-slow {
+          animation: ping-slow 1.5s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
 import {
@@ -12,7 +11,6 @@ import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { Label } from "../../components/ui/label";
 import { Switch } from "../../components/ui/switch";
-import axios from "axios";
 import { Checkbox } from "../../components/ui/checkbox";
 import {
   Select,
@@ -21,15 +19,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Upload, Plus, Calendar, X } from "lucide-react";
+import { Search, Upload, Plus, Calendar, X, Image as ImageIcon } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
-import Notifcation from "../../../components/Notification";
-import Loading from "../../../components/Loading/Loading";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Notifcation from "../../../components/Notification";
+
+// Modern Loading Screen Component
+const ModernLoadingScreen = () => (
+  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+    <div className="relative">
+      <div className="w-24 h-24 rounded-full border-8 border-orange-500 border-t-transparent animate-spin"></div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-16 h-16 rounded-full border-4 border-white border-t-transparent animate-spin-reverse"></div>
+      </div>
+    </div>
+    <p className="mt-6 text-xl font-bold text-white animate-pulse">
+      Adding product...
+    </p>
+    <p className="mt-2 text-orange-300">
+      This may take a few moments
+    </p>
+  </div>
+);
 
 export default function AddProductPage() {
-  const [loading , setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [productData, setProductData] = useState({
     productName: "",
     productDescription: "",
@@ -50,9 +65,10 @@ export default function AddProductPage() {
 
   const [variations, setVariations] = useState([{ weight: "", price: "" }]);
   const [attachment, setAttachment] = useState(null);
-  const [productImage, setProductImage] = useState(null);
-  const [additionalImages, setAdditionalImages] = useState([]);
-  const [formError, setFormError] = useState(null);
+  const [productImages, setProductImages] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [categories, setCategories] = useState([]);
+  const nav = useNavigate();
 
   // Generic handler for text inputs and textareas
   const handleChange = (e) => {
@@ -70,6 +86,7 @@ export default function AddProductPage() {
       [id]: checked,
     }));
   };
+  
   // Handler for Switches
   const handleSwitchChange = (id, checked) => {
     setProductData((prevData) => ({
@@ -118,7 +135,7 @@ export default function AddProductPage() {
     if (!productData.productTag) errors.push('Product Tag');
     
     // Product image validation
-    if (!productImage) errors.push('Product Image');
+    if (productImages.length === 0) errors.push('Product Image');
 
     // Variations validation
     let variationErrors = [];
@@ -142,30 +159,53 @@ export default function AddProductPage() {
     return errors;
   };
 
-  // Handlers for file uploads with type restrictions
-  const handleFileChange = (e, setter, allowedTypes) => {
-    const file = e.target.files[0];
+  // Handlers for image uploads
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const validImages = files.filter(file => 
+      file.type.includes('image/jpeg') || 
+      file.type.includes('image/png') ||
+      file.type.includes('image/gif')
+    );
     
-    if (file) {
-      if (allowedTypes && !allowedTypes.some(type => file.type.includes(type))) {
-        const allowedTypesStr = allowedTypes.map(t => t.split('/')[1]).join(', ');
-        alert(`Invalid file type. Allowed types: ${allowedTypesStr}`);
-        return;
-      }
-      
-      setter(file);
+    if (validImages.length === 0) {
+      toast.error('Only image files (JPEG, PNG, GIF) are allowed');
+      return;
+    }
+    
+    if (validImages.length + productImages.length > 10) {
+      toast.error('Maximum 10 images allowed');
+      return;
+    }
+    
+    setProductImages([...productImages, ...validImages]);
+  };
+
+  // Remove an image
+  const removeImage = (index) => {
+    const newImages = productImages.filter((_, i) => i !== index);
+    setProductImages(newImages);
+    
+    // Adjust current image index if needed
+    if (index === currentImageIndex) {
+      setCurrentImageIndex(newImages.length > 0 ? 0 : -1);
+    } else if (index < currentImageIndex) {
+      setCurrentImageIndex(currentImageIndex - 1);
     }
   };
 
-  const handleSubmit = async (e , pending) => {
+  const handleSubmit = async (e, pending) => {
     e.preventDefault();
-    setFormError(null);
-    setLoading(true)
+    setLoading(true);
+    
     // Validate form
     const validationErrors = validateForm();
     
     if (validationErrors.length > 0) {
-      setFormError(`Please fill in all required fields:\n- ${validationErrors.join('\n- ')}`);
+      validationErrors.forEach(error => {
+        toast.error(error);
+      });
+      setLoading(false);
       return;
     }
 
@@ -179,8 +219,7 @@ export default function AddProductPage() {
     formData.append("stock", productData.stockQuantity);
     formData.append("category_id", productData.productCategory);
     formData.append("is_featured", productData.isBestSeller ? 1 : 0);
-    if(pending){
-
+    if (pending) {
       formData.append("status", "pending");
     }
 
@@ -190,8 +229,7 @@ export default function AddProductPage() {
     }
 
     // Images
-    formData.append("images[]", productImage);
-    additionalImages.forEach((img) => {
+    productImages.forEach((img) => {
       formData.append("images[]", img);
     });
 
@@ -208,116 +246,75 @@ export default function AddProductPage() {
     }
 
     try {
-      const res = await Axios.post("admin/products", formData, {
+      await Axios.post("admin/products", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }).then(()=>{
-  toast.success('product Created Successfly')
-  setTimeout(() => {
-    nav(-1)
-  }, 2000);
-        setLoading(false)
-      })
-      console.log("✅ Product added successfully", res.data);
-      // Reset form after successful submission
-      setProductData({
-        productName: "",
-        productDescription: "",
-        productPrice: "",
-        discountedPrice: "",
-        salesPrice: "",
-        taxIncluded: "yes",
-        expirationStart: "",
-        expirationEnd: "",
-        stockQuantity: "",
-        stockStatus: "in-stock",
-        unlimitedStock: false,
-        isBestSeller: false,
-        isNewArrival: false,
-        productCategory: "",
-        productTag: "",
+      }).then(() => {
+        toast.success("Product created successfully!");
+        setTimeout(() => {
+          nav(-1);
+        }, 2000);
+        setLoading(false);
       });
-      setVariations([{ weight: "", price: "" }]);
-      setAttachment(null);
-      setProductImage(null);
-      setAdditionalImages([]);
-      
-      // Show success notification
-      Notifcation.showSuccess("Product added successfully!");
-      
     } catch (error) {
-      console.error("❌ Error submitting form:", error.response?.data || error);
-      setFormError("Failed to add product. Please try again.");
+      console.error("Error submitting form:", error.response?.data || error);
+      toast.error("Failed to add product. Please try again.");
+      setLoading(false);
     }
   };
 
-  const [categories, setCategories] = useState([]);
-  const [tags, setTags] = useState([]);
   useEffect(() => {
     Axios.get("/categories").then((data) => {
       setCategories(data.data.data.data);
     });
     Axios.get("/tags").then((data) => {
-      // setCategories(data.data.data.data);
       console.log(data);
     });
-
   }, []);
 
   return (
-    <div className="flex-1">
-      {
-        loading && <Loading/>
-      }
+    <div className="flex-1 bg-gray-50 min-h-screen">
+      {loading && <ModernLoadingScreen />}
       <DashboardHeader title="Add Products" />
-      <Notifcation />
-
+<Notifcation/>
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Add New Product</h2>
+        <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+          <h2 className="text-2xl font-bold text-gray-800">Add New Product</h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               type="text"
               placeholder="Search product for add"
-              className="pl-10 w-80"
+              className="pl-10 w-80 border-gray-300"
             />
           </div>
         </div>
-
-        {/* Form error message */}
-        {formError && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-            <strong className="font-bold">Error! </strong>
-            <span className="block sm:inline">{formError}</span>
-          </div>
-        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Product Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Basic Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic Details</CardTitle>
+            <Card className="border border-gray-200 rounded-xl shadow-sm">
+              <CardHeader className="bg-gray-50 border-b">
+                <CardTitle className="text-lg font-semibold text-gray-800">Basic Details</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 pt-4">
                 <div>
-                  <Label htmlFor="productName">Product Name *</Label>
+                  <Label htmlFor="productName" className="text-gray-700">Product Name *</Label>
                   <Input
                     id="productName"
                     value={productData.productName}
                     onChange={handleChange}
-                    placeholder="Seasonal Allergies"
-                    className="mt-1"
+                    placeholder="Product name"
+                    className="mt-1 border-gray-300"
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="productDescription">
+                  <Label htmlFor="productDescription" className="text-gray-700">
                     Product Description *
                   </Label>
                   <Textarea
@@ -325,7 +322,7 @@ export default function AddProductPage() {
                     value={productData.productDescription}
                     onChange={handleChange}
                     placeholder="Describe your product here..."
-                    className="mt-1 min-h-32"
+                    className="mt-1 min-h-32 border-gray-300"
                     required
                   />
                 </div>
@@ -333,20 +330,20 @@ export default function AddProductPage() {
             </Card>
 
             {/* Pricing */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Pricing</CardTitle>
+            <Card className="border border-gray-200 rounded-xl shadow-sm">
+              <CardHeader className="bg-gray-50 border-b">
+                <CardTitle className="text-lg font-semibold text-gray-800">Pricing</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 pt-4">
                 <div>
-                  <Label htmlFor="productPrice">Product Price *</Label>
+                  <Label htmlFor="productPrice" className="text-gray-700">Product Price *</Label>
                   <Input
                     id="productPrice"
                     type="number"
                     value={productData.productPrice}
                     onChange={handleChange}
-                    placeholder="EGP 999.89"
-                    className="mt-1"
+                    placeholder="Price in EGP"
+                    className="mt-1 border-gray-300"
                     required
                     min="0"
                   />
@@ -354,7 +351,7 @@ export default function AddProductPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="discountedPrice">
+                    <Label htmlFor="discountedPrice" className="text-gray-700">
                       Discounted Price (Optional)
                     </Label>
                     <div className="flex items-center space-x-2 mt-1">
@@ -364,8 +361,8 @@ export default function AddProductPage() {
                         type="number"
                         value={productData.discountedPrice}
                         onChange={handleChange}
-                        placeholder="999.89"
-                        className="flex-1"
+                        placeholder="Discounted price"
+                        className="flex-1 border-gray-300"
                         min="0"
                       />
                       <span className="text-sm text-gray-500">Sales</span>
@@ -374,15 +371,15 @@ export default function AddProductPage() {
                         type="number"
                         value={productData.salesPrice}
                         onChange={handleChange}
-                        placeholder="EGP 900.89"
-                        className="flex-1"
+                        placeholder="Sales price"
+                        className="flex-1 border-gray-300"
                         min="0"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label>Tax Included *</Label>
+                    <Label className="text-gray-700">Tax Included *</Label>
                     <div className="flex items-center space-x-4 mt-2">
                       <div className="flex items-center space-x-2">
                         <Checkbox
@@ -391,9 +388,10 @@ export default function AddProductPage() {
                           onCheckedChange={() =>
                             handleSelectChange("taxIncluded", "yes")
                           }
-                          required
+        
+                          className="border-gray-300 data-[state=checked]:bg-orange-500"
                         />
-                        <Label htmlFor="tax-yes">Yes</Label>
+                        <Label htmlFor="tax-yes" className="text-gray-700">Yes</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Checkbox
@@ -402,15 +400,16 @@ export default function AddProductPage() {
                           onCheckedChange={() =>
                             handleSelectChange("taxIncluded", "no")
                           }
+                          className="border-gray-300 data-[state=checked]:bg-orange-500"
                         />
-                        <Label htmlFor="tax-no">No</Label>
+                        <Label htmlFor="tax-no" className="text-gray-700">No</Label>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <Label>Expiration *</Label>
+                  <Label className="text-gray-700">Expiration *</Label>
                   <div className="grid grid-cols-2 gap-4 mt-1">
                     <div className="relative">
                       <Input
@@ -418,6 +417,7 @@ export default function AddProductPage() {
                         type="date"
                         value={productData.expirationStart}
                         onChange={handleChange}
+                        className="border-gray-300"
                         required
                       />
                     </div>
@@ -427,6 +427,7 @@ export default function AddProductPage() {
                         type="date"
                         value={productData.expirationEnd}
                         onChange={handleChange}
+                        className="border-gray-300"
                         required
                       />
                     </div>
@@ -437,10 +438,10 @@ export default function AddProductPage() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-10 gap-4 items-end">
                     <div className="col-span-4">
-                      <Label>Variation weight *</Label>
+                      <Label className="text-gray-700">Variation weight *</Label>
                     </div>
                     <div className="col-span-4">
-                      <Label>Variation Pricing *</Label>
+                      <Label className="text-gray-700">Variation Pricing *</Label>
                     </div>
                     <div className="col-span-2"></div>
                   </div>
@@ -456,6 +457,7 @@ export default function AddProductPage() {
                           placeholder="e.g., 10kg"
                           value={variation.weight}
                           onChange={(e) => handleVariationChange(index, e)}
+                          className="border-gray-300"
                           required
                         />
                       </div>
@@ -466,6 +468,7 @@ export default function AddProductPage() {
                           placeholder="e.g., EGP 350"
                           value={variation.price}
                           onChange={(e) => handleVariationChange(index, e)}
+                          className="border-gray-300"
                           required
                           min="0"
                         />
@@ -476,8 +479,9 @@ export default function AddProductPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => removeVariation(index)}
+                            className="text-red-500 hover:bg-red-50"
                           >
-                            <X className="h-4 w-4 text-red-500" />
+                            <X className="h-4 w-4" />
                           </Button>
                         )}
                       </div>
@@ -488,7 +492,7 @@ export default function AddProductPage() {
                     type="button"
                     variant="outline"
                     onClick={addVariation}
-                    className="w-full bg-orange-500 text-white hover:bg-orange-600"
+                    className="w-full bg-orange-500 text-white hover:bg-orange-600 border-none"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add new variation
@@ -498,33 +502,47 @@ export default function AddProductPage() {
             </Card>
 
             {/* Add Attachment */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Add attachment</CardTitle>
+            <Card className="border border-gray-200 rounded-xl shadow-sm">
+              <CardHeader className="bg-gray-50 border-b">
+                <CardTitle className="text-lg font-semibold text-gray-800">Add attachment</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <Label
                   htmlFor="attachment-file"
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer block"
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer flex flex-col items-center justify-center"
                 >
+                  <div className="mb-3">
+                    <Upload className="h-6 w-6 text-gray-500" />
+                  </div>
+                  <span className="text-gray-500 mb-3">
+                    {attachment ? attachment.name : "File: PDF, DOCX etc."}
+                  </span>
                   <input
                     id="attachment-file"
                     type="file"
                     className="hidden"
-                    onChange={(e) => handleFileChange(e, setAttachment, [
-                      "application/pdf",
-                      "application/msword",
-                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    ])}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        if (
+                          !["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"].some(
+                            (type) => file.type.includes(type)
+                          )
+                        ) {
+                          toast.error(
+                            "Invalid file type. Allowed types: PDF, DOC, DOCX"
+                          );
+                          return;
+                        }
+                        setAttachment(file);
+                      }
+                    }}
                     accept=".pdf,.doc,.docx"
                   />
-                  <span className="text-gray-500">
-                    {attachment ? attachment.name : "File: PDF, DOCX etc."}
-                  </span>
                   <Button
                     type="button"
                     variant="outline"
-                    className="ml-4 bg-orange-500 text-white hover:bg-orange-600"
+                    className="bg-orange-500 text-white hover:bg-orange-600 border-none"
                     onClick={() =>
                       document.getElementById("attachment-file").click()
                     }
@@ -536,15 +554,15 @@ export default function AddProductPage() {
             </Card>
 
             {/* Inventory */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Inventory</CardTitle>
+            <Card className="border border-gray-200 rounded-xl shadow-sm">
+              <CardHeader className="bg-gray-50 border-b">
+                <CardTitle className="text-lg font-semibold text-gray-800">Inventory</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 pt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="stockQuantity">
-                      Stock Quantity {!productData.unlimitedStock && '*'}
+                    <Label htmlFor="stockQuantity" className="text-gray-700">
+                      Stock Quantity {!productData.unlimitedStock && "*"}
                     </Label>
                     <Input
                       id="stockQuantity"
@@ -552,14 +570,14 @@ export default function AddProductPage() {
                       value={productData.stockQuantity}
                       onChange={handleChange}
                       placeholder="100"
-                      className="mt-1"
+                      className="mt-1 border-gray-300"
                       disabled={productData.unlimitedStock}
                       required={!productData.unlimitedStock}
                       min="0"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="stockStatus">Stock Status *</Label>
+                    <Label htmlFor="stockStatus" className="text-gray-700">Stock Status *</Label>
                     <Select
                       value={productData.stockStatus}
                       onValueChange={(value) =>
@@ -567,7 +585,7 @@ export default function AddProductPage() {
                       }
                       required
                     >
-                      <SelectTrigger className="mt-1" id="stockStatus">
+                      <SelectTrigger className="mt-1 border-gray-300" id="stockStatus">
                         <SelectValue placeholder="Select Status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -588,8 +606,9 @@ export default function AddProductPage() {
                     onCheckedChange={(checked) =>
                       handleSwitchChange("unlimitedStock", checked)
                     }
+                    className="data-[state=checked]:bg-orange-500"
                   />
-                  <Label htmlFor="unlimitedStock">Unlimited Stock</Label>
+                  <Label htmlFor="unlimitedStock" className="text-gray-700">Unlimited Stock</Label>
                 </div>
 
                 <div className="space-y-2">
@@ -600,8 +619,9 @@ export default function AddProductPage() {
                       onCheckedChange={(checked) =>
                         handleCheckedChange("isBestSeller", checked)
                       }
+                      className="border-gray-300 data-[state=checked]:bg-orange-500"
                     />
-                    <Label htmlFor="isBestSeller">
+                    <Label htmlFor="isBestSeller" className="text-gray-700">
                       Highlight this product in a best seller section.
                     </Label>
                   </div>
@@ -612,8 +632,9 @@ export default function AddProductPage() {
                       onCheckedChange={(checked) =>
                         handleCheckedChange("isNewArrival", checked)
                       }
+                      className="border-gray-300 data-[state=checked]:bg-orange-500"
                     />
-                    <Label htmlFor="isNewArrival">
+                    <Label htmlFor="isNewArrival" className="text-gray-700">
                       Highlight this product in a new arrivals section.
                     </Label>
                   </div>
@@ -624,80 +645,128 @@ export default function AddProductPage() {
             {/* Action Buttons */}
             <div className="flex space-x-4">
               <Button
-               onClick={(e)=>handleSubmit(e, true)}
-                
+                onClick={(e) => handleSubmit(e, true)}
                 variant="outline"
-                className="flex-1 bg-gray-500 text-white hover:bg-gray-600"
+                className="flex-1 bg-gray-500 text-white hover:bg-gray-600 border-none"
               >
                 Save to draft
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-orange-500 hover:bg-orange-600"
+                className="flex-1 bg-orange-500 hover:bg-orange-600 border-none"
               >
                 Add Product
               </Button>
             </div>
           </div>
 
-          {/* Right Column - Product Image and Categories */}
+          {/* Right Column - Product Images and Categories */}
           <div className="space-y-6">
-            {/* Upload Product Image */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Upload Product Image *</CardTitle>
+            {/* Upload Product Images */}
+            <Card className="border border-gray-200 rounded-xl shadow-sm">
+              <CardHeader className="bg-gray-50 border-b">
+                <CardTitle className="text-lg font-semibold text-gray-800">Upload Product Images *</CardTitle>
                 <p className="text-sm text-gray-500">
-                  Main Product Image (Required)
+                  Add multiple images (Required)
                 </p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <Label
-                  htmlFor="product-image-upload"
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer block"
-                >
-                  <input
-                    id="product-image-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleFileChange(e, setProductImage, ["image"])}
-                    required
-                  />
-                  <div className="w-full h-40 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-                    {productImage ? (
+              <CardContent className="space-y-4 pt-4">
+                {/* Main Image Preview */}
+                <div className="relative w-full h-64 rounded-lg border border-dashed border-gray-300 overflow-hidden bg-gray-100">
+                  {productImages.length > 0 ? (
+                    <>
                       <img
-                        src={URL.createObjectURL(productImage)}
-                        alt="Product Preview"
-                        className="h-full w-full object-cover rounded-lg"
+                        src={URL.createObjectURL(
+                          productImages[currentImageIndex]
+                        )}
+                        alt={`Product Preview ${currentImageIndex + 1}`}
+                        className="w-full h-full object-contain"
                       />
-                    ) : (
-                      <span className="text-gray-500">Product Image</span>
-                    )}
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById("product-image-upload").click();
-                    }}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        onClick={() => removeImage(currentImageIndex)}
+                      >
+                        <X className="w-5 h-5" />
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center">
+                      <ImageIcon className="w-12 h-12 text-gray-400 mb-2" />
+                      <span className="text-gray-500">No images selected</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Thumbnail Previews */}
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {productImages.map((img, index) => (
+                    <div
+                      key={index}
+                      className={`relative cursor-pointer border-2 rounded ${
+                        index === currentImageIndex
+                          ? "border-orange-500"
+                          : "border-transparent"
+                      }`}
+                      onClick={() => setCurrentImageIndex(index)}
+                    >
+                      <img
+                        src={URL.createObjectURL(img)}
+                        alt={`Thumbnail ${index + 1}`}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeImage(index);
+                        }}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Upload Button */}
+                <div className="mt-4">
+                  <Label
+                    htmlFor="product-images-upload"
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer block"
                   >
-                    <Upload className="h-4 w-4 mr-2" />
-                    {productImage ? "Replace" : "Browse"}
-                  </Button>
-                </Label>
+                    <input
+                      id="product-images-upload"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
+                    <div className="flex flex-col items-center justify-center">
+                      <Upload className="h-6 w-6 text-gray-500 mb-2" />
+                      <p className="text-sm font-medium text-gray-700">
+                        Click to upload
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        PNG, JPG, GIF up to 10MB
+                      </p>
+                    </div>
+                  </Label>
+                </div>
               </CardContent>
             </Card>
 
             {/* Categories */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Categories</CardTitle>
+            <Card className="border border-gray-200 rounded-xl shadow-sm">
+              <CardHeader className="bg-gray-50 border-b">
+                <CardTitle className="text-lg font-semibold text-gray-800">Categories</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 pt-4">
                 <div>
-                  <Label htmlFor="productCategory">Product Categories *</Label>
+                  <Label htmlFor="productCategory" className="text-gray-700">Product Categories *</Label>
                   <Select
                     value={productData.productCategory}
                     onValueChange={(value) =>
@@ -705,19 +774,21 @@ export default function AddProductPage() {
                     }
                     required
                   >
-                    <SelectTrigger className="mt-1" id="productCategory">
+                    <SelectTrigger className="mt-1 border-gray-300" id="productCategory">
                       <SelectValue placeholder="Select your product category" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories?.map((data) => (
-                        <SelectItem key={data.id} value={data.id}>{data.name}</SelectItem>
+                        <SelectItem key={data.id} value={data.id}>
+                          {data.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <Label htmlFor="productTag">Product Tag *</Label>
+                  <Label htmlFor="productTag" className="text-gray-700">Product Tag *</Label>
                   <Select
                     value={productData.productTag}
                     onValueChange={(value) =>
@@ -725,7 +796,7 @@ export default function AddProductPage() {
                     }
                     required
                   >
-                    <SelectTrigger className="mt-1" id="productTag">
+                    <SelectTrigger className="mt-1 border-gray-300" id="productTag">
                       <SelectValue placeholder="Select your product tag" />
                     </SelectTrigger>
                     <SelectContent>

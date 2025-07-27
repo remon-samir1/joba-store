@@ -30,6 +30,36 @@ import { toast } from "react-toastify";
 
 const ITEMS_PER_PAGE = 8;
 
+// شاشة التحميل البرتقالية
+const OrangeLoader = () => (
+  <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
+    <div className="flex flex-col items-center">
+      {/* شعار ثلاثي الأبعاد برتقالي */}
+      <div className="relative w-32 h-32 mb-8">
+        <div className="absolute inset-0 rounded-full bg-orange-500 opacity-20 animate-ping-slow"></div>
+        <div className="absolute inset-4 rounded-full border-8 border-orange-400 border-t-transparent animate-spin-slow"></div>
+        <div className="absolute inset-8 rounded-full border-8 border-orange-300 border-b-transparent animate-spin-reverse"></div>
+        <div className="absolute inset-12 rounded-full border-8 border-orange-200 border-l-transparent animate-ping"></div>
+      </div>
+      
+      {/* النص والرسالة */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-orange-700 mb-2">Loading Products</h2>
+        <p className="text-orange-600 max-w-md mb-6">
+          Fetching your product data, please wait...
+        </p>
+        
+        {/* شريط التقدم البرتقالي */}
+        <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function ProductListPage() {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -37,13 +67,18 @@ export default function ProductListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState(new Set());
+  const [loading, setLoading] = useState(true); // حالة التحميل
 
   useEffect(() => {
-    Axios.get("/products").then((res) => {
-      const data = res.data?.data || [];
-      setProducts(data);
-      setFilteredProducts(data);
-    });
+    setLoading(true);
+    Axios.get("/products")
+      .then((res) => {
+        const data = res.data?.data || [];
+        setProducts(data);
+        setFilteredProducts(data);
+      })
+      .catch(error => console.error(error))
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -123,6 +158,8 @@ export default function ProductListPage() {
 
   return (
     <div className="flex-1 overflow-auto">
+      {loading && <OrangeLoader />}
+      
       <DashboardHeader title="Product List" />
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
@@ -258,6 +295,45 @@ export default function ProductListPage() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* إضافة أنماط CSS للرسوم المتحركة */}
+      <style jsx>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        @keyframes spin-reverse {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+        
+        @keyframes progress {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
+        @keyframes ping-slow {
+          0% { transform: scale(0.9); opacity: 0.8; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .animate-spin-slow {
+          animation: spin-slow 4s linear infinite;
+        }
+        
+        .animate-spin-reverse {
+          animation: spin-reverse 3s linear infinite;
+        }
+        
+        .animate-progress {
+          animation: progress 2s ease-in-out infinite alternate;
+        }
+        
+        .animate-ping-slow {
+          animation: ping-slow 1.5s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }

@@ -13,22 +13,22 @@ import { toast } from "react-toastify";
 import Notifcation from "../../../components/Notification";
 import { useNavigate, useParams } from "react-router-dom";
 import StringSlice from "../../../components/Helpers/StringSlice";
-import Loading from "../../../components/Loading/Loading";
 
 const UpdateCategory = () => {
   const { id } = useParams();
-  const [loading , setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [imageChange, setImageChange] = useState(false);
   const [categoryData, setCategoryData] = useState({
     name: "",
     slug: "",
     image: "",
   });
-  const nav = useNavigate()
+  const nav = useNavigate();
+  
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     Axios.get("/categories").then((data) => {
-      setLoading(false)
+      setLoading(false);
       setCategoryData(data.data.data.data.filter((prev) => prev.slug == id)[0]);
     });
   }, []);
@@ -50,12 +50,17 @@ const UpdateCategory = () => {
       }));
     }
   };
-  console.log(categoryData);
-  const handleSubmit = (e) => {
-    setLoading(true)
-    e.preventDefault();
-    console.log("Submitting category:", categoryData);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    if (!categoryData.image) {
+      toast.warn("Please select image");
+      setLoading(false);
+      return;
+    }
+    
     const formData = new FormData();
     formData.append("name", categoryData.name);
     formData.append("slug", categoryData.slug);
@@ -64,26 +69,64 @@ const UpdateCategory = () => {
     }
     formData.append("_method", "PUT");
 
-    if (!categoryData.image) {
-      toast.warn("Please select image");
-      return;
-    }
-    Axios.post(`admin/categories/${id} `, formData).then((data) =>{
-setLoading(false)
-toast.success('Updated Successfly')
-setTimeout(() => {
-  nav(-1)
-}, 2000);
-    }
-    );
-    setCategoryData({ name: "", slug: "", image: null });
-    e.target.reset(); // Reset the form including file input
+    Axios.post(`admin/categories/${id}`, formData)
+      .then((data) => {
+        setLoading(false);
+        toast.success('Category updated successfully!');
+        setTimeout(() => {
+          nav(-1);
+        }, 1500);
+        setCategoryData({ name: "", slug: "", image: null });
+        e.target.reset();
+      })
+      .catch(error => {
+        setLoading(false);
+        toast.error('Error updating category');
+        console.error(error);
+      });
   };
 
+  // شاشة التحميل المحترفة
+  const ProfessionalLoader = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 animate-pulse-once">
+        <div className="flex flex-col items-center">
+          
+          {/* Spinner Animation */}
+          <div className="relative w-24 h-24 mb-6">
+            <div className="absolute inset-0 rounded-full border-6 border-blue-500 border-t-transparent animate-spin-slow"></div>
+            <div className="absolute inset-3 rounded-full border-6 border-green-400 border-b-transparent animate-spin-reverse"></div>
+            <div className="absolute inset-6 rounded-full border-6 border-purple-500 border-l-transparent animate-ping"></div>
+          </div>
+          
+          {/* Text Content */}
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Updating Category</h3>
+          <p className="text-gray-600 text-center mb-6">
+            Saving your changes...
+          </p>
+          
+          {/* Animated Progress */}
+          <div className="w-full bg-gray-200 rounded-full h-2 mb-4 overflow-hidden">
+            <div 
+              className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full animate-progress"
+            ></div>
+          </div>
+          
+          {/* Status Indicator */}
+          <div className="flex items-center mt-2">
+            <div className="w-3 h-3 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+            <span className="text-sm text-gray-600">Applying changes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="lg:col-span-12  space-y-6 mt-6 mx-5">
+    <div className="lg:col-span-12 space-y-6 mt-6 mx-5 relative">
+      {loading && <ProfessionalLoader />}
+      
       <Notifcation />
-      {loading &&<Loading/>}
       <Card>
         <CardHeader>
           <CardTitle>Update Category</CardTitle>
@@ -100,6 +143,7 @@ setTimeout(() => {
                 placeholder="e.g., Electronics"
                 className="mt-1"
                 required
+                disabled={loading}
               />
             </div>
 
@@ -113,6 +157,7 @@ setTimeout(() => {
                 placeholder="e.g., electronics"
                 className="mt-1"
                 required
+                disabled={loading}
               />
             </div>
 
@@ -125,6 +170,7 @@ setTimeout(() => {
                 onChange={handleImageChange}
                 className="mt-1"
                 accept="image/*"
+                disabled={loading}
               />
               {categoryData.image && (
                 <p className="text-sm text-muted-foreground mt-1">
@@ -137,7 +183,22 @@ setTimeout(() => {
 
             {/* Submit Button */}
             <div className="flex justify-end pt-4">
-              <Button type="submit">Update Category</Button>
+              <Button 
+                type="submit"
+                className="transition-all duration-300 hover:scale-[1.02]"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="flex items-center">
+                    <span className="mr-2">Updating</span>
+                    <span className="flex">
+                      <span className="animate-bounce">.</span>
+                      <span className="animate-bounce delay-100">.</span>
+                      <span className="animate-bounce delay-200">.</span>
+                    </span>
+                  </span>
+                ) : 'Update Category'}
+              </Button>
             </div>
           </form>
         </CardContent>

@@ -22,7 +22,36 @@ import { Search, Filter, Download, Eye, Plus, Calendar } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-// ... استيرادات أخرى
+
+// شاشة التحميل البرتقالية
+const OrangeLoader = () => (
+  <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
+    <div className="flex flex-col items-center">
+      {/* شعار ثلاثي الأبعاد برتقالي */}
+      <div className="relative w-32 h-32 mb-8">
+        <div className="absolute inset-0 rounded-full bg-orange-500 opacity-20 animate-ping-slow"></div>
+        <div className="absolute inset-4 rounded-full border-8 border-orange-400 border-t-transparent animate-spin-slow"></div>
+        <div className="absolute inset-8 rounded-full border-8 border-orange-300 border-b-transparent animate-spin-reverse"></div>
+        <div className="absolute inset-12 rounded-full border-8 border-orange-200 border-l-transparent animate-ping"></div>
+      </div>
+      
+      {/* النص والرسالة */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-orange-700 mb-2">Loading Invoices</h2>
+        <p className="text-orange-600 max-w-md mb-6">
+          Fetching your invoice data, please wait...
+        </p>
+        
+        {/* شريط التقدم البرتقالي */}
+        <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState([]);
@@ -38,7 +67,6 @@ export default function InvoicesPage() {
       try {
         const response = await Axios.get("/admin/invoices");
         setInvoices(response.data.data.data);
-        console.log(response); 
         const total = response.data.data.data.length;
         const paid = response.data.data.data.filter(
           (inv) => inv.status === "Paid",
@@ -97,11 +125,7 @@ export default function InvoicesPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        Loading invoices...
-      </div>
-    );
+    return <OrangeLoader />;
   }
 
   return (
@@ -176,9 +200,7 @@ export default function InvoicesPage() {
                   <TableHead>Invoice ID</TableHead>
                   <TableHead>Customer</TableHead>
                   <TableHead>Issue Date</TableHead>
-                  {/* <TableHead>Due Date</TableHead> */}
                   <TableHead>Status</TableHead>
-                  {/* <TableHead>Payment Method</TableHead> */}
                   <TableHead>Amount</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -198,7 +220,6 @@ export default function InvoicesPage() {
                     <TableCell className="text-sm">
                       {invoice.date}
                     </TableCell>
-                    {/* <TableCell className="text-sm">{invoice.dueDate}</TableCell> */}
                     <TableCell>
                       <Badge
                         variant={
@@ -265,6 +286,45 @@ export default function InvoicesPage() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* إضافة أنماط CSS للرسوم المتحركة */}
+      <style jsx>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        @keyframes spin-reverse {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+        
+        @keyframes progress {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
+        @keyframes ping-slow {
+          0% { transform: scale(0.9); opacity: 0.8; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .animate-spin-slow {
+          animation: spin-slow 4s linear infinite;
+        }
+        
+        .animate-spin-reverse {
+          animation: spin-reverse 3s linear infinite;
+        }
+        
+        .animate-progress {
+          animation: progress 2s ease-in-out infinite alternate;
+        }
+        
+        .animate-ping-slow {
+          animation: ping-slow 1.5s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }

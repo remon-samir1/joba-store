@@ -1,277 +1,3 @@
-// "use client";
-// import { useEffect, useState } from "react";
-// import { Link } from "react-router-dom";
-// import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-// import { Badge } from "@/components/ui/badge";
-// import { Checkbox } from "@/components/ui/checkbox";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-// import {
-//   Search,
-//   ArrowLeft,
-//   ArrowRight,
-//   MoreHorizontal,
-//   Plus,
-//   Edit,
-//   Trash2,
-// } from "lucide-react";
-// import { Axios } from "../../../components/Helpers/Axios";
-// import Loading from "../../../components/Loading/Loading";
-// import { toast } from "react-toastify";
-// import Notifcation from "../../../components/Notification";
-
-// const ITEMS_PER_PAGE = 8;
-
-// export default function CategoriesManagementPage() {
-//   const [loading, setLoading] = useState();
-//   const [categories, setCategories] = useState([]);
-//   const [filteredCategories, setFilteredCategories] = useState([]);
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [selectAll, setSelectAll] = useState(false);
-//   const [selectedCategories, setSelectedCategories] = useState(new Set());
-
-//   useEffect(() => {
-//     setLoading(true);
-//     Axios.get("/categories")
-//       .then((res) => {
-//         console.log(res);
-//         setLoading(false);
-//         const data = Array.isArray(res.data?.data.data)
-//           ? res.data.data.data
-//           : [];
-//         setCategories(data);
-
-//         setFilteredCategories(data);
-//       })
-//       .catch((err) => {
-//         console.error("Failed to fetch categories", err);
-//         setCategories([]);
-//         setLoading(false);
-
-//         setFilteredCategories([]);
-//       });
-//   }, []);
-
-//   useEffect(() => {
-//     const filtered = Array.isArray(categories)
-//       ? categories.filter((c) =>
-//           c.name?.toLowerCase().includes(searchQuery.toLowerCase()),
-//         )
-//       : [];
-
-//     setFilteredCategories(filtered);
-//     setCurrentPage(1);
-//   }, [searchQuery, categories]);
-
-//   const totalPages = Math.ceil(filteredCategories.length / ITEMS_PER_PAGE);
-//   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-//   const currentCategories = Array.isArray(filteredCategories)
-//     ? filteredCategories.slice(startIndex, startIndex + ITEMS_PER_PAGE)
-//     : [];
-
-//   const handleSelectAll = (checked) => {
-//     setSelectAll(checked);
-//     setSelectedCategories(
-//       checked ? new Set(currentCategories.map((c) => c.id)) : new Set(),
-//     );
-//   };
-
-//   const handleSelectCategory = (id, checked) => {
-//     const newSelected = new Set(selectedCategories);
-//     checked ? newSelected.add(id) : newSelected.delete(id);
-//     setSelectedCategories(newSelected);
-//   };
-
-//   const handleDeleteCategory = async (id) => {
-//     try {
-//       await Axios.delete(`admin/categories/${id}`).then((data) =>
-//         console.log(data),
-//       );
-//       toast.success("Deleted Successfly");
-//       const updated = categories.filter((c) => c.slug !== id);
-//       setCategories(updated);
-//     } catch (err) {
-//       console.error("Failed to delete", err);
-//     }
-//   };
-
-//   const handleBulkDelete = async () => {
-//     if (selectedCategories.size === 0) {
-//       alert("No categories selected");
-//       return;
-//     }
-//     const ids = Array.from(selectedCategories);
-//     for (let id of ids) {
-//       await handleDeleteCategory(id);
-//     }
-//     setSelectedCategories(new Set());
-//     setSelectAll(false);
-//   };
-
-//   return (
-//     <div className="flex-1 overflow-auto">
-//       <Notifcation />
-//       {loading && <Loading />}
-//       <DashboardHeader title="Category List" />
-//       <div className="p-6 space-y-6">
-//         <div className="flex items-center justify-between">
-//           <h2 className="text-2xl font-bold text-gray-900">Category List</h2>
-//           <Link to="/dashboard/categories/add">
-//             <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-//               <Plus className="h-4 w-4 mr-2" /> Add Category
-//             </Button>
-//           </Link>
-//         </div>
-
-//         <Card className="shadow-lg">
-//           <CardContent className="p-0">
-//             <div className="p-6 border-b border-gray-200">
-//               <div className="flex items-center justify-between">
-//                 <div className="relative w-64">
-//                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-//                   <Input
-//                     type="text"
-//                     placeholder="Search your category"
-//                     value={searchQuery}
-//                     onChange={(e) => setSearchQuery(e.target.value)}
-//                     className="pl-10 bg-gray-50 border-gray-200"
-//                   />
-//                 </div>
-//                 <Button
-//                   onClick={handleBulkDelete}
-//                   className="bg-red-500 text-white border-red-500 hover:bg-red-600"
-//                 >
-//                   <Trash2 className="h-4 w-4 mr-2" />
-//                   Delete ({selectedCategories.size})
-//                 </Button>
-//               </div>
-//             </div>
-
-//             <div className="bg-orange-100 px-6 py-4">
-//               <div className="grid grid-cols-12 gap-4 items-center">
-//                 <div className="col-span-4 flex items-center space-x-3">
-//                   <Checkbox
-//                     checked={selectAll}
-//                     onCheckedChange={handleSelectAll}
-//                   />
-//                   <span className="text-sm font-medium text-gray-900">
-//                     Category name
-//                   </span>
-//                 </div>
-//                 <div className="col-span-3">Description</div>
-//                 <div className="col-span-3">Created Date</div>
-//                 <div className="col-span-2">Action</div>
-//               </div>
-//             </div>
-
-//             <div className="divide-y divide-gray-200">
-//               {currentCategories.length === 0 ? (
-//                 <div className="text-center py-10 text-gray-500">
-//                   No categories found
-//                 </div>
-//               ) : (
-//                 currentCategories.map((category) => (
-//                   <div key={category.id} className="px-6 py-4 hover:bg-gray-50">
-//                     <div className="grid grid-cols-12 gap-4 items-center">
-//                       <div className="col-span-4 flex items-center space-x-3">
-//                         <Checkbox
-//                           checked={selectedCategories.has(category.id)}
-//                           onCheckedChange={(checked) =>
-//                             handleSelectCategory(category.id, checked)
-//                           }
-//                         />
-//                         <span className="text-sm font-medium text-gray-900">
-//                           {category.name}
-//                         </span>
-//                       </div>
-
-//                       <div className="col-span-3">
-//                         <span className="text-sm text-gray-600">
-//                           {category.description?.slice(0, 60)}
-//                         </span>
-//                       </div>
-
-//                       <div className="col-span-3">
-//                         <span className="text-sm text-gray-600">
-//                           {new Date(category.created_at).toLocaleDateString(
-//                             "en-GB",
-//                             {
-//                               day: "2-digit",
-//                               month: "short",
-//                               year: "numeric",
-//                             },
-//                           )}
-//                         </span>
-//                       </div>
-
-//                       <div className="col-span-2">
-//                         <DropdownMenu>
-//                           <DropdownMenuTrigger asChild>
-//                             <Button variant="ghost" size="sm">
-//                               <MoreHorizontal className="h-4 w-4" />
-//                             </Button>
-//                           </DropdownMenuTrigger>
-//                           <DropdownMenuContent align="end">
-//                             <DropdownMenuItem asChild>
-//                               <Link
-//                                 to={`/dashboard/categories/edit/${category.id}`}
-//                               >
-//                                 <Edit className="h-4 w-4 mr-2" /> Edit
-//                               </Link>
-//                             </DropdownMenuItem>
-//                             <DropdownMenuItem
-//                               className="text-red-600"
-//                               onClick={() =>
-//                                 handleDeleteCategory(category.slug)
-//                               }
-//                             >
-//                               <Trash2 className="h-4 w-4 mr-2" /> Delete
-//                             </DropdownMenuItem>
-//                           </DropdownMenuContent>
-//                         </DropdownMenu>
-//                       </div>
-//                     </div>
-//                   </div>
-//                 ))
-//               )}
-//             </div>
-
-//             <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
-//               <Button
-//                 variant="outline"
-//                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-//                 disabled={currentPage === 1}
-//               >
-//                 <ArrowLeft className="h-4 w-4 mr-1" /> Previous
-//               </Button>
-//               <span className="text-sm">
-//                 Page {currentPage} of {totalPages}
-//               </span>
-//               <Button
-//                 variant="outline"
-//                 onClick={() =>
-//                   setCurrentPage(Math.min(totalPages, currentPage + 1))
-//                 }
-//                 disabled={currentPage === totalPages}
-//               >
-//                 Next <ArrowRight className="h-4 w-4 ml-1" />
-//               </Button>
-//             </div>
-//           </CardContent>
-//         </Card>
-//       </div>
-//     </div>
-//   );
-// }
-
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -296,10 +22,8 @@ import {
   Trash2,
   Filter,
   X,
-  Loader
 } from "lucide-react";
 import { Axios, baseURL } from "../../../components/Helpers/Axios";
-import Loading from "../../../components/Loading/Loading";
 import { toast } from "react-toastify";
 import Notifcation from "../../../components/Notification";
 
@@ -317,6 +41,36 @@ export default function CategoriesManagementPage() {
   const [sortDirection, setSortDirection] = useState("asc");
   const [showFilters, setShowFilters] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(null);
+
+  // شاشة التحميل البرتقالية
+  const OrangeLoader = () => (
+    <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
+      <div className="flex flex-col items-center">
+        {/* شعار ثلاثي الأبعاد برتقالي */}
+        <div className="relative w-32 h-32 mb-8">
+          <div className="absolute inset-0 rounded-full bg-orange-500 opacity-20 animate-ping-slow"></div>
+          <div className="absolute inset-4 rounded-full border-8 border-orange-400 border-t-transparent animate-spin-slow"></div>
+          <div className="absolute inset-8 rounded-full border-8 border-orange-300 border-b-transparent animate-spin-reverse"></div>
+          <div className="absolute inset-12 rounded-full border-8 border-orange-200 border-l-transparent animate-ping"></div>
+        </div>
+        
+        {/* النص والرسالة */}
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-orange-700 mb-2">Loading Categories</h2>
+          <p className="text-orange-600 max-w-md mb-6">
+            Fetching your categories data, please wait...
+          </p>
+          
+          {/* شريط التقدم البرتقالي */}
+          <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   const fetchCategories = useCallback(async () => {
     setLoading(true);
@@ -440,7 +194,7 @@ export default function CategoriesManagementPage() {
   return (
     <div className="flex-1 overflow-auto bg-gray-50">
       <Notifcation />
-      {loading && <Loading />}
+      {loading && <OrangeLoader />}
       <DashboardHeader title="Category Management" />
       
       <div className="p-6 space-y-6">
@@ -587,7 +341,6 @@ export default function CategoriesManagementPage() {
                         <div className="flex items-center">
                           <div className="rounded-xl w-10 h-10 flex items-center justify-center mr-3">
                         <img src={`${category.image}`} alt=""  className="w-full h-full object-cover"/>
-                            {/* <span className="text-xs font-bold text-gray-500">IMG</span> */}
                           </div>
                           <span className="text-sm font-medium text-gray-900">
                             {category.name}
@@ -634,11 +387,15 @@ export default function CategoriesManagementPage() {
                               disabled={deleteLoading === category.id}
                             >
                               {deleteLoading === category.id ? (
-                                <Loader className="h-4 w-4 mr-2 animate-spin" />
+                                <div className="flex items-center">
+                                  <div className="w-4 h-4 border-t-2 border-r-2 border-red-600 rounded-full animate-spin mr-2"></div>
+                                  Deleting
+                                </div>
                               ) : (
-                                <Trash2 className="h-4 w-4 mr-2" />
+                                <>
+                                  <Trash2 className="h-4 w-4 mr-2" /> Delete
+                                </>
                               )}
-                              Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -724,6 +481,45 @@ export default function CategoriesManagementPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* إضافة أنماط CSS للرسوم المتحركة */}
+      <style jsx>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        @keyframes spin-reverse {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+        
+        @keyframes progress {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
+        @keyframes ping-slow {
+          0% { transform: scale(0.9); opacity: 0.8; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .animate-spin-slow {
+          animation: spin-slow 4s linear infinite;
+        }
+        
+        .animate-spin-reverse {
+          animation: spin-reverse 3s linear infinite;
+        }
+        
+        .animate-progress {
+          animation: progress 2s ease-in-out infinite alternate;
+        }
+        
+        .animate-ping-slow {
+          animation: ping-slow 1.5s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }
