@@ -224,7 +224,7 @@ export default function ProductListPage() {
                           onCheckedChange={(checked) => handleSelectProduct(product.id, checked)}
                         />
                         <div className="w-10 h-10 bg-gray-100 rounded">
-                          <img src={product.image} className="w-full h-full object-cover rounded" />
+                          <img src={product.images[0].path} className="w-full h-full object-cover rounded" />
                         </div>
                         <span className="text-sm font-medium text-gray-900">{product.name?.en}</span>
                       </div>

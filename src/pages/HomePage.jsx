@@ -8,6 +8,7 @@ import {
   Heart,
   ShoppingCart,
   Star,
+  Loader2
 } from "lucide-react";
 import axios from "axios";
 import { Axios, baseURL } from "../../components/Helpers/Axios";
@@ -152,17 +153,111 @@ function Hero() {
   );
 }
 
-// Categories Section Component
+// Loading Skeleton Component
+function SkeletonLoader({ type = "card", count = 4 }) {
+  if (type === "category") {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 gap-4 auto-rows-fr lg:h-[800px]">
+        {Array.from({ length: count }).map((_, index) => (
+          <div
+            key={index}
+            className={`relative overflow-hidden rounded-lg bg-gray-200 animate-pulse ${
+              index === 0
+                ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full"
+                : "h-48 sm:h-56 lg:h-full"
+            }`}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-4 sm:left-6 lg:left-8">
+              <div
+                className={`h-6 bg-gray-300 rounded ${
+                  index === 0 ? "w-3/4 mb-4" : "w-1/2"
+                }`}
+              ></div>
+              {index === 0 && (
+                <>
+                  <div className="h-4 bg-gray-300 rounded w-5/6 mb-4"></div>
+                  <div className="h-4 bg-gray-300 rounded w-4/6 mb-4"></div>
+                  <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
+  if (type === "product") {
+    return (
+      <div className="overflow-x-auto pb-4">
+        <div className="flex gap-3 sm:gap-4 w-fit">
+          {Array.from({ length: count }).map((_, index) => (
+            <div key={index} className="w-64 sm:w-72 flex-shrink-0">
+              <div className="relative w-full h-80 sm:h-96 lg:h-[408px] rounded-lg overflow-hidden bg-gray-200 animate-pulse">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div className="absolute top-4 right-4 w-8 h-8 bg-gray-300 rounded-full"></div>
+                <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 text-white">
+                  <div className="text-center mb-4 sm:mb-6">
+                    <div className="h-6 bg-gray-300 rounded w-3/4 mx-auto mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto mb-3"></div>
+                    <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto mb-4"></div>
+                    <div className="w-8 h-0.5 bg-gray-300 mx-auto"></div>
+                  </div>
+                  <div className="w-full h-10 bg-gray-300 rounded"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-center h-64">
+      <Loader2 className="h-12 w-12 text-primary animate-spin" />
+    </div>
+  );
+}
+
+// Empty State Component
+function EmptyState({ message, icon: Icon = ShoppingCart }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-lg">
+      <div className="bg-gray-200 rounded-full p-4 mb-4">
+        <Icon className="h-12 w-12 text-gray-500" />
+      </div>
+      <h3 className="text-xl font-medium text-gray-700 mb-2">No data available</h3>
+      <p className="text-gray-500 text-center max-w-md">{message}</p>
+    </div>
+  );
+}
+
+// Categories Section Component
 function Categories() {
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    Axios.get("/categories").then((data) => {
-      setCategories(data.data.data.data.slice(-4));
-      console.log(data);
-    });
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await Axios.get("/categories");
+        setCategories(response.data.data.data.slice(-4));
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+        setError("Failed to load categories. Please try again later.");
+        toast.error("Failed to load categories");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
   }, []);
-  console.log(categories);
+
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -178,56 +273,76 @@ function Categories() {
           </Link>
         </div>
 
+        {/* Loading State */}
+        {loading && <SkeletonLoader type="category" />}
+
+        {/* Error State */}
+        {error && !loading && (
+          <EmptyState 
+            message="We encountered an issue loading categories. Please try again later." 
+            icon={Loader2}
+          />
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && categories.length === 0 && (
+          <EmptyState 
+            message="No categories available at the moment. Check back soon!" 
+          />
+        )}
+
         {/* Dynamic Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 gap-4 auto-rows-fr lg:h-[800px]">
-          {categories?.map((category, index) => (
-            <Link
-              to={`/categories/${category.slug || category.id}`}
-              key={category.id}
-              className={`relative overflow-hidden rounded-lg group cursor-pointer 
-                ${
-                  index === 0
-                    ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full"
-                    : "h-48 sm:h-56 lg:h-full"
-                }`}
-            >
-              <img
-                src={category.image || "https://via.placeholder.com/300"}
-                alt={category.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-4 sm:left-6 lg:left-8 text-white">
-                <h3
-                  className={`font-bold leading-tight ${
+        {!loading && !error && categories.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 gap-4 auto-rows-fr lg:h-[800px]">
+            {categories?.map((category, index) => (
+              <Link
+                to={`/categories/${category.slug || category.id}`}
+                key={category.id}
+                className={`relative overflow-hidden rounded-lg group cursor-pointer 
+                  ${
                     index === 0
-                      ? "text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-2 sm:mb-4 lg:mb-6"
-                      : "text-lg sm:text-xl"
+                      ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full"
+                      : "h-48 sm:h-56 lg:h-full"
                   }`}
-                >
-                  {category.name}
-                </h3>
-                {index === 0 && (
-                  <>
-                    <p className="text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 lg:mb-8 max-w-md opacity-90">
-                      {category.description ||
-                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry."}
-                    </p>
-                    <button className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-full text-white hover:bg-primary/90 transition-colors">
-                      <ChevronRight className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />
-                    </button>
-                  </>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
+              >
+                <img
+                  src={category.image || "https://via.placeholder.com/300"}
+                  alt={category.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-4 sm:left-6 lg:left-8 text-white">
+                  <h3
+                    className={`font-bold leading-tight ${
+                      index === 0
+                        ? "text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-2 sm:mb-4 lg:mb-6"
+                        : "text-lg sm:text-xl"
+                    }`}
+                  >
+                    {category.name}
+                  </h3>
+                  {index === 0 && (
+                    <>
+                      <p className="text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 lg:mb-8 max-w-md opacity-90">
+                        {category.description ||
+                          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."}
+                      </p>
+                      <button className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-full text-white hover:bg-primary/90 transition-colors">
+                        <ChevronRight className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />
+                      </button>
+                    </>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
 }
-// Product Card Component
 
+// Product Card Component
 function ProductCard({
   name,
   category,
@@ -250,7 +365,7 @@ function ProductCard({
     return (
       <div className="relative w-full h-80 sm:h-96 lg:h-[408px] rounded-lg overflow-hidden group cursor-pointer">
         <img
-          src={ images[0].path}
+          src={images?.[0]?.path || "https://via.placeholder.com/300"}
           alt={name}
           className="w-full h-full object-cover"
         />
@@ -270,9 +385,9 @@ function ProductCard({
           }}
           className="absolute top-3 sm:top-4 right-3 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/70 transition-colors"
         >
-          
-            <Heart className={`h-4 w-4 ${is_favorite  && "fill-red-500 text-red-500"}`} />
-  
+          <Heart
+            className={`h-4 w-4 ${is_favorite && "fill-red-500 text-red-500"}`}
+          />
         </button>
 
         {/* Product Info */}
@@ -309,7 +424,7 @@ function ProductCard({
     <div className="bg-white rounded-lg overflow-hidden group cursor-pointer">
       <div className="relative">
         <img
-          src={image}
+          src={image || "https://via.placeholder.com/300"}
           alt={name}
           className="w-full h-80 sm:h-96 lg:h-[408px] object-cover"
         />
@@ -323,7 +438,7 @@ function ProductCard({
 
         {/* Heart Icon */}
         <button className="absolute top-4 sm:top-6 right-4 sm:right-6 w-7 h-7 sm:w-8 sm:h-8 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/70 transition-colors">
-        {is_favorite ? (
+          {is_favorite ? (
             <Heart className="h-4 w-4 fill-red-500 text-red-500" />
           ) : (
             <Heart className="h-4 w-4" />
@@ -357,17 +472,29 @@ function ProductCard({
 }
 
 // New Products Section
-
 function NewProducts() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   useEffect(() => {
-    Axios
-      .get("/products")
-      .then((data) => {
-        setProducts(data.data.data);
-        console.log(data);
-      });
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await Axios.get("/products");
+        setProducts(response.data.data);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setError("Failed to load new products. Please try again later.");
+        toast.error("Failed to load new products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
+
   const [isWishlisted, setIsWishlisted] = useState([]);
 
   const handleAddToWishlist = async (e, slug, is_favorite) => {
@@ -376,18 +503,18 @@ function NewProducts() {
     setIsWishlisted(slug);
     try {
       if (is_favorite) {
-        const response = await Axios.delete(`/wishlist/${slug}`).then(() => {
-          toast.success(`Removed From wishlist !`);
+        await Axios.delete(`/wishlist/${slug}`).then(() => {
+          toast.success(`Removed From wishlist!`);
 
           setProducts(
             products.map((prev) =>
-              prev.slug == slug ? { ...prev, is_favorite : false } : prev,
+              prev.slug == slug ? { ...prev, is_favorite: false } : prev,
             ),
           );
         });
       } else {
-        const response = await Axios.post(`/wishlist/${slug}`).then(() => {
-          toast.success(`Added to wishlist !`);
+        await Axios.post(`/wishlist/${slug}`).then(() => {
+          toast.success(`Added to wishlist!`);
           setProducts(
             products.map((prev) =>
               prev.slug == slug ? { ...prev, is_favorite: true } : prev,
@@ -400,6 +527,7 @@ function NewProducts() {
       toast.error("Failed to add to wishlist. Please try again.");
     }
   };
+
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-background">
       <Notifcation />
@@ -416,33 +544,53 @@ function NewProducts() {
           </Link>
         </div>
 
+        {/* Loading State */}
+        {loading && <SkeletonLoader type="product" count={4} />}
+
+        {/* Error State */}
+        {error && !loading && (
+          <EmptyState 
+            message="We encountered an issue loading new products. Please try again later." 
+            icon={Loader2}
+          />
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && products.length === 0 && (
+          <EmptyState 
+            message="No new products available at the moment. Check back soon!" 
+          />
+        )}
+
         {/* Products Scroll */}
-        <div className="overflow-x-auto pb-4">
-          <div className="flex gap-3 sm:gap-4 w-fit">
-            {products?.map((product, index) => (
-              <div key={index} className="w-64 sm:w-72 flex-shrink-0">
-                <Link to={`/products/${product?.id}`}>
-                  <ProductCard
-                    setIsWishlisted={setIsWishlisted}
-                    isWishlisted={isWishlisted}
-                    handleAddToWishlist={handleAddToWishlist}
-                    slug={product.slug}
-                    id={product.id}
-                    images={product?.images}
-                    is_favorite={product.is_favorite}
-                    name={product.name.en}
-                    price={product.price}
-                    originalPrice={product.price}
-                    image={product.image}
-                    title={product.title}
-                    category={product.category.name}
-                    variant="overlay"
-                  />
-                </Link>
-              </div>
-            ))}
+        {!loading && !error && products.length > 0 && (
+          <div className="overflow-x-auto pb-4">
+            <div className="flex gap-3 sm:gap-4 w-fit">
+              {products?.map((product, index) => (
+                <div key={index} className="w-64 sm:w-72 flex-shrink-0">
+                  <Link to={`/products/${product?.id}`}>
+                    <ProductCard
+                      setIsWishlisted={setIsWishlisted}
+                      isWishlisted={isWishlisted}
+                      handleAddToWishlist={handleAddToWishlist}
+                      slug={product.slug}
+                      id={product.id}
+                      images={product?.images}
+                      is_favorite={product.is_favorite}
+                      name={product.name.en}
+                      price={product.price}
+                      originalPrice={product.price}
+                      image={product.image}
+                      title={product.title}
+                      category={product.category?.name || "Uncategorized"}
+                      variant="overlay"
+                    />
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
@@ -450,25 +598,45 @@ function NewProducts() {
 
 // Best Seller Section
 function BestSeller() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
+  useEffect(() => {
+    const fetchBestSellers = async () => {
+      try {
+        setLoading(true);
+        const response = await Axios.get("/best-sellers");
+        setProducts(response.data.data);
+      } catch (err) {
+        console.error("Error fetching best sellers:", err);
+        setError("Failed to load best sellers. Please try again later.");
+        toast.error("Failed to load best sellers");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBestSellers();
+  }, []);
+
   const handleAddToWishlist = async (e, slug, is_favorite) => {
     e.stopPropagation();
     e.preventDefault();
-    // setIsWishlisted(slug);
     try {
       if (is_favorite) {
-        const response = await Axios.delete(`/wishlist/${slug}`).then(() => {
-          toast.success(`Removed From wishlist !`);
+        await Axios.delete(`/wishlist/${slug}`).then(() => {
+          toast.success(`Removed From wishlist!`);
 
           setProducts(
             products.map((prev) =>
-              prev.slug == slug ? { ...prev, is_favorite : false } : prev,
+              prev.slug == slug ? { ...prev, is_favorite: false } : prev,
             ),
           );
         });
       } else {
-        const response = await Axios.post(`/wishlist/${slug}`).then(() => {
-          toast.success(`Added to wishlist !`);
+        await Axios.post(`/wishlist/${slug}`).then(() => {
+          toast.success(`Added to wishlist!`);
           setProducts(
             products.map((prev) =>
               prev.slug == slug ? { ...prev, is_favorite: true } : prev,
@@ -481,12 +649,6 @@ function BestSeller() {
       toast.error("Failed to add to wishlist. Please try again.");
     }
   };
-const [products , setProducts] = useState([]);
-useEffect(()=>{
-  Axios.get('/best-sellers').then(data =>{
-    setProducts(data.data.data)
-    console.log(data)})
-},[])
 
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-background">
@@ -498,30 +660,52 @@ useEffect(()=>{
           </h2>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="bg-gray-200 rounded-lg overflow-hidden animate-pulse h-80 sm:h-96 lg:h-[408px]"></div>
+            ))}
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !loading && (
+          <EmptyState 
+            message="We encountered an issue loading best sellers. Please try again later." 
+            icon={Loader2}
+          />
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && products.length === 0 && (
+          <EmptyState 
+            message="No best sellers available at the moment. Check back soon!" 
+          />
+        )}
+
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {products?.map((product, index) => (
-            <Link
-              key={index}
-              // to={`/products/${product.name.en.toLowerCase().replace(/\s+/g, "-")}-${index + 10}`}
-            >
-                    <ProductCard
-                  
-                    handleAddToWishlist={handleAddToWishlist}
-                    slug={product.slug}
-                    id={product.id}
-                    is_favorite={product.is_favorite}
-                    name={product.name.en}
-                    price={product.price}
-                    originalPrice={product.price}
-                    image={product.image}
-                    title={product.title}
-                    category={product.category.name}
-                    variant="overlay"
-                  />
-            </Link>
-          ))}
-        </div>
+        {!loading && !error && products.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {products?.map((product, index) => (
+              <Link key={index} to={`/products/${product?.id}`}>
+                <ProductCard
+                  handleAddToWishlist={handleAddToWishlist}
+                  slug={product.slug}
+                  id={product.id}
+                  is_favorite={product.is_favorite}
+                  name={product.name.en}
+                  price={product.price}
+                  originalPrice={product.price}
+                  image={product.image}
+                  title={product.title}
+                  category={product.category?.name || "Uncategorized"}
+                  variant="overlay"
+                />
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -566,130 +750,6 @@ function DiscountSection() {
     </section>
   );
 }
-
-// Testimonials Section
-
-// function Testimonials() {
-//   const testimonials = [
-//     {
-//       name: "Andre Silva - Your Beloved Customer",
-//       quote: '"It\'s Great Shop!"',
-//       content:
-//         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ipsum eget libero elementum amet.",
-//       image:
-//         "https://cdn.builder.io/api/v1/image/assets/TEMP/8a4605409ba2cdf73575101a5df89a2366802105?width=448",
-//       active: false,
-//     },
-//     {
-//       name: "Andre Silva - Your Beloved Customer",
-//       quote: '"It\'s Great Shop!"',
-//       content:
-//         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ipsum eget libero elementum amet.",
-//       image:
-//         "https://cdn.builder.io/api/v1/image/assets/TEMP/04546ca2e0940da28c8678b37d97aca15a753334?width=448",
-//       active: true,
-//     },
-//     {
-//       name: "Andre Silva - Your Beloved Customer",
-//       quote: '"It\'s Great Shop!"',
-//       content:
-//         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ipsum eget libero elementum amet.",
-//       image:
-//         "https://cdn.builder.io/api/v1/image/assets/TEMP/6c7d4613f3f2a464e77c63f2ddf89596edc45721?width=448",
-//       active: false,
-//     },
-//   ];
-
-//   return (
-//     <section className="py-12 sm:py-16 lg:py-20 bg-orange-50">
-//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//         {/* Section Header */}
-//         <div className="text-center mb-12 sm:mb-16">
-//           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
-//             Our Clients say
-//           </h2>
-//         </div>
-
-//         {/* Testimonials */}
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
-//           {testimonials.map((testimonial, index) => (
-//             <div
-//               key={index}
-//               className={`rounded-lg overflow-hidden ${
-//                 testimonial.active ? "bg-primary text-white" : "bg-white"
-//               }`}
-//             >
-//               <div className="p-4 sm:p-6 lg:p-8 h-48 sm:h-56 lg:h-64 flex flex-col">
-//                 {/* Stars */}
-//                 <div className="flex gap-1 mb-4 sm:mb-6">
-//                   {[...Array(5)].map((_, i) => (
-//                     <Star
-//                       key={i}
-//                       className={`h-3 w-3 sm:h-4 sm:w-4 ${
-//                         testimonial.active
-//                           ? "fill-white text-white"
-//                           : "fill-gray-300 text-gray-300"
-//                       }`}
-//                     />
-//                   ))}
-//                 </div>
-
-//                 {/* Quote */}
-//                 <h3
-//                   className={`text-lg sm:text-xl lg:text-2xl font-bold mb-3 sm:mb-4 ${
-//                     testimonial.active ? "text-white" : "text-gray-600"
-//                   }`}
-//                 >
-//                   {testimonial.quote}
-//                 </h3>
-
-//                 {/* Content */}
-//                 <p
-//                   className={`text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-1 ${
-//                     testimonial.active ? "text-gray-100" : "text-gray-600"
-//                   }`}
-//                 >
-//                   {testimonial.content}
-//                 </p>
-
-//                 {/* Name */}
-//                 <p
-//                   className={`font-semibold text-sm sm:text-base ${
-//                     testimonial.active ? "text-white" : "text-gray-600"
-//                   }`}
-//                 >
-//                   {testimonial.name}
-//                 </p>
-//               </div>
-
-//               {/* Image */}
-//               <div className="p-3 sm:p-4">
-//                 <img
-//                   src={testimonial.image}
-//                   alt={testimonial.name}
-//                   className="w-full h-32 sm:h-40 lg:h-48 object-cover rounded-lg"
-//                 />
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-
-//         {/* Dots Indicator */}
-//         <div className="flex justify-center gap-3 sm:gap-4">
-//           {[...Array(5)].map((_, i) => (
-//             <div
-//               key={i}
-//               className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ${
-//                 i === 2 ? "bg-primary" : "bg-gray-300"
-//               }`}
-//             ></div>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-<Testimonials/>
 
 // Main Homepage Component
 export default function HomePage() {

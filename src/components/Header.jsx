@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect, useRef, useContext } from "react";
 import {
   Search,
@@ -12,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import juba from '../assets/juba.svg'
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -22,26 +21,78 @@ import {
 import { Axios } from "../../components/Helpers/Axios";
 import CartContext, { CartCh } from "../../Context/CartContext";
 
+// Keyboard layout mapping
+const arabicToEnglishMap = {
+  ض: "ف",
+  ص: "س",
+  ث: "th",
+  ق: "k",
+  ف: "f",
+  غ: "gh",
+  ع: "a",
+  ه: "h",
+  خ: "kh",
+  ح: "h",
+  ج: "g",
+  د: "d",
+  ش: "sh",
+  س: "s",
+  ي: "i",
+  ب: "b",
+  ل: "l",
+  ا: "a",
+  ت: "t",
+  ن: "n",
+  م: "m",
+  ك: "c",
+  ط: "t",
+  ئ: "a",
+  ء: "a",
+  ؤ: "a",
+  ر: "r",
+  ﻻ: "la",
+  ى: "e",
+  ة: "t",
+  و: "o",
+  ز: "z",
+  ظ: "z",
+  " ": " ",
+};
+
+const englishToArabicMap = Object.fromEntries(
+  Object.entries(arabicToEnglishMap).map(([arabic, english]) => [
+    english,
+    arabic,
+  ]),
+);
+
+// Helper function for keyboard layout conversion
+function convertByKeyboardMap(str, map) {
+  return str
+    .split("")
+    .map((char) => map[char] || char)
+    .join("");
+}
+
 export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("EN");
-  const [cartItemCount, setCartItemCount] = useState(3);
+  const [cartItemCount, setCartItemCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const searchContainerRef = useRef(null);
 
-  // Mock product suggestions
-  const [products , setProducts] = useState([])
-  useEffect(()=>{
-    Axios.get('/products').then(data=>{
-      setProducts(data.data.data)
-      console.log(data.data.data)})
-  },[])
-  
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    Axios.get("/products").then((data) => {
+      setProducts(data.data.data);
+    });
+  }, []);
 
   // Filter suggestions based on search query
   useEffect(() => {
@@ -50,22 +101,36 @@ export function Header() {
       setShowSuggestions(false);
       return;
     }
-    const filtered = products?.filter(suggestion => {
-      const productName = suggestion?.name?.en?.toLowerCase?.();
-      return productName?.includes(searchQuery.toLowerCase());
-    });
-    
-    console.log(filtered);
 
-    
-    setSuggestions(filtered.slice(0,5));
+    const q = searchQuery.toLowerCase();
+    const qToEnglish = convertByKeyboardMap(q, arabicToEnglishMap);
+    const qToArabic = convertByKeyboardMap(q, englishToArabicMap);
+
+    const filtered = products.filter((product) => {
+      const nameEn = (product?.name?.en || "").toLowerCase();
+      const nameAr = (product?.name?.ar || "").toLowerCase();
+
+      return (
+        nameEn.includes(q) ||
+        nameAr.includes(q) ||
+        nameEn.includes(qToEnglish) ||
+        nameAr.includes(qToEnglish) ||
+        nameEn.includes(qToArabic) ||
+        nameAr.includes(qToArabic)
+      );
+    });
+
+    setSuggestions(filtered.slice(0, 5));
     setShowSuggestions(filtered.length > 0);
-  }, [searchQuery]);
+  }, [searchQuery, products]);
 
   // Handle outside clicks to close suggestions
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target)
+      ) {
         setShowSuggestions(false);
       }
     };
@@ -80,12 +145,12 @@ export function Header() {
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setShowSuggestions(false);
+      setIsMobileSearchOpen(false);
     }
   };
 
   const handleSuggestionClick = (suggestion) => {
-    setSearchQuery(suggestion);
-    window.location.pathname=`/products/${suggestion.id}` 
+    navigate(`/products/${suggestion.id}`);
     setShowSuggestions(false);
     setIsMobileSearchOpen(false);
   };
@@ -95,20 +160,19 @@ export function Header() {
     { code: "ES", name: "Español", flag: "🇪🇸" },
     { code: "FR", name: "Français", flag: "🇫🇷" },
     { code: "DE", name: "Deutsch", flag: "🇩🇪" },
+    { code: "AR", name: "العربية", flag: "🇸🇦" },
   ];
-const [cart , setCart] = useState(0)
-  const cartcontext = useContext(CartCh)
-  const change = cartcontext.cartChange
-  console.log(cartcontext);
-  useEffect(() => {
-    Axios.get("/cart").then(
-      (data) => {
 
-        setCart(data.data.data.items?.length);
-        console.log(data.data.data.items);
-      },
-    );
+  const [cart, setCart] = useState(0);
+  const cartcontext = useContext(CartCh);
+  const change = cartcontext.cartChange;
+
+  useEffect(() => {
+    Axios.get("/cart").then((data) => {
+      setCart(data.data.data.items?.length || 0);
+    });
   }, [change]);
+
   return (
     <header className="w-full">
       {/* Top bar with white background */}
@@ -117,24 +181,31 @@ const [cart , setCart] = useState(0)
           <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <Link href="/">
+              <Link to="/">
+                <div className="w-32 h-20 md:w-36 md:h-24">
+
                 <img
-                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/0aa0d0b8b67264875fdf6d340f16e9e702eb3d4d?width=263"
+                  src={juba}
                   alt="Goba Store Logo"
-                  className="h-8 sm:h-10 lg:h-12 w-auto"
-                />
+                  className="w-full h-full object-cover"
+                  />
+                  </div>
               </Link>
             </div>
 
             {/* Desktop Search and Language */}
             <div className="hidden lg:flex items-center gap-6 xl:gap-8">
               {/* Search Bar with Suggestions */}
-              <form onSubmit={handleSearch} className="relative" ref={searchContainerRef}>
+              <form
+                onSubmit={handleSearch}
+                className="relative"
+                ref={searchContainerRef}
+              >
                 <div className="flex items-center bg-white border border-gray-300 rounded-full px-4 xl:px-6 py-2 xl:py-3 w-64 xl:w-80">
                   <Search className="h-4 xl:h-5 w-4 xl:w-5 text-gray-400 mr-2 xl:mr-3" />
                   <input
                     type="text"
-                    placeholder="Search products..."
+                    placeholder="Search our Products.."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => searchQuery && setShowSuggestions(true)}
@@ -149,18 +220,29 @@ const [cart , setCart] = useState(0)
                     </button>
                   )}
                 </div>
-                
+
                 {/* Suggestions Dropdown */}
                 {showSuggestions && suggestions.length > 0 && (
                   <div className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 z-50">
-                    {suggestions?.map((suggestion, index) => (
+                    {suggestions.map((suggestion, index) => (
                       <div
                         key={index}
-                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
+                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex flex-col gap-1"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
-                        <Search className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-700">{suggestion.name.en}</span>
+                        <div className="flex items-center gap-3">
+                          <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          <span className="text-gray-700">
+                            {suggestion.name.en}
+                          </span>
+                        </div>
+                        {suggestion.name.ar && (
+                          <div className="flex items-center gap-3 text-right mr-7">
+                            <span className="text-gray-500 text-sm">
+                              {suggestion.name.ar}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -198,7 +280,7 @@ const [cart , setCart] = useState(0)
 
             {/* Mobile Search Icon */}
             <div className="lg:hidden flex items-center">
-              <button 
+              <button
                 className="p-2 text-gray-400 hover:text-gray-600"
                 onClick={() => setIsMobileSearchOpen(true)}
               >
@@ -214,7 +296,7 @@ const [cart , setCart] = useState(0)
         <div className="lg:hidden bg-white border-b py-3 px-4">
           <div className="relative" ref={searchContainerRef}>
             <form onSubmit={handleSearch} className="flex items-center">
-              <button 
+              <button
                 type="button"
                 className="mr-2 text-gray-500"
                 onClick={() => {
@@ -228,7 +310,7 @@ const [cart , setCart] = useState(0)
                 <Search className="h-5 w-5 text-gray-400 mr-3" />
                 <input
                   type="text"
-                  placeholder="Search products..."
+                  placeholder="Search our Products.."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchQuery && setShowSuggestions(true)}
@@ -242,22 +324,33 @@ const [cart , setCart] = useState(0)
                   className="ml-2 text-primary font-medium"
                   onClick={handleSearch}
                 >
-                  Search
+                  بحث
                 </button>
               )}
             </form>
-            
+
             {/* Mobile Suggestions */}
             {showSuggestions && suggestions.length > 0 && (
               <div className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 z-50">
-                {suggestions?.map((suggestion, index) => (
+                {suggestions.map((suggestion, index) => (
                   <div
                     key={index}
-                    className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 border-b border-gray-100 last:border-0"
+                    className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex flex-col gap-1 border-b border-gray-100 last:border-0"
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
-                    <Search className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-700">{suggestion.name.en}</span>
+                    <div className="flex items-center gap-3">
+                      <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <span className="text-gray-700">
+                        {suggestion.name.en}
+                      </span>
+                    </div>
+                    {suggestion.name.ar && (
+                      <div className="flex items-center gap-3 text-right mr-7">
+                        <span className="text-gray-500 text-sm">
+                          {suggestion.name.ar}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -292,7 +385,7 @@ const [cart , setCart] = useState(0)
                     : "text-white hover:text-gray-200"
                 }`}
               >
-                Home
+              Home
               </Link>
               <Link
                 to="/categories"
@@ -302,7 +395,7 @@ const [cart , setCart] = useState(0)
                     : "text-white hover:text-gray-200"
                 }`}
               >
-                Categories
+              Categories
               </Link>
               <Link
                 to="/about"
@@ -312,7 +405,7 @@ const [cart , setCart] = useState(0)
                     : "text-white hover:text-gray-200"
                 }`}
               >
-                About
+              About
               </Link>
               <Link
                 to="/blog"
@@ -322,7 +415,7 @@ const [cart , setCart] = useState(0)
                     : "text-white hover:text-gray-200"
                 }`}
               >
-                Blog
+          Blog
               </Link>
               <Link
                 to="/contact"
@@ -342,7 +435,7 @@ const [cart , setCart] = useState(0)
                     : "text-white hover:text-gray-200"
                 }`}
               >
-                Dashboard
+              Dashboard
               </Link>
             </nav>
 
@@ -354,7 +447,7 @@ const [cart , setCart] = useState(0)
                   to="/help"
                   className="px-2 lg:px-4 py-2 text-white hover:text-gray-200 font-semibold text-sm lg:text-base"
                 >
-                  Help
+                help
                 </Link>
                 <div className="w-px h-6 bg-white/30 mx-2"></div>
                 <Link
@@ -365,7 +458,7 @@ const [cart , setCart] = useState(0)
                       : "text-white hover:text-gray-200"
                   }`}
                 >
-                  Support team
+                  Support
                 </Link>
               </div>
 
@@ -382,12 +475,8 @@ const [cart , setCart] = useState(0)
                     <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-gray-900 text-white rounded-full w-5 sm:w-6 h-5 sm:h-6 flex items-center justify-center text-xs font-medium">
                       {cart > 99 ? "99+" : cart}
                     </div>
-                  )}
+                  )} 
                 </Link>
-{/* 
-                <Link to="/profile">
-                  <User className="h-6 sm:h-7 lg:h-8 w-6 sm:w-7 lg:w-8 text-white hover:text-gray-200 transition-colors" />
-                </Link> */}
               </div>
             </div>
           </div>
@@ -406,7 +495,10 @@ const [cart , setCart] = useState(0)
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
-                <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-8" />
+                <div className="w-36 h-20 shrink-0 ">
+
+                <img src={juba} className="w-full h-full object-cover " />
+                </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-gray-600 hover:text-gray-900"
@@ -426,7 +518,7 @@ const [cart , setCart] = useState(0)
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                  Home
+              Home
                 </Link>
                 <Link
                   to="/categories"
@@ -437,7 +529,7 @@ const [cart , setCart] = useState(0)
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                  Categories
+                Categories
                 </Link>
                 <Link
                   to="/about"
@@ -448,7 +540,7 @@ const [cart , setCart] = useState(0)
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                  About
+              About
                 </Link>
                 <Link
                   to="/blog"
@@ -459,7 +551,7 @@ const [cart , setCart] = useState(0)
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                  Blog
+              Blog
                 </Link>
                 <Link
                   to="/contact"
@@ -470,7 +562,7 @@ const [cart , setCart] = useState(0)
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                  Contact us
+                Contact us
                 </Link>
                 <Link
                   to="/help"
@@ -503,20 +595,20 @@ const [cart , setCart] = useState(0)
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                  Dashboard
+                Dashboard
                 </Link>
               </nav>
 
               {/* Mobile User Actions */}
               <div className="mt-8 pt-8 border-t space-y-4">
-                <Link
+                {/* <Link
                   to="/profile"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:text-primary hover:bg-gray-50 rounded transition-colors"
                 >
                   <User className="h-5 w-5" />
-                  <span>My Account</span>
-                </Link>
+                  <span>M</span>
+                </Link> */}
                 <Link
                   to="/wishlist"
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -531,7 +623,7 @@ const [cart , setCart] = useState(0)
                   className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:text-primary hover:bg-gray-50 rounded transition-colors"
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  <span>Cart ({cartItemCount})</span>
+                  <span>Cart ({cart})</span>
                 </Link>
               </div>
             </div>
