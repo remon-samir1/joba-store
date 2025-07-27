@@ -69,13 +69,13 @@ export default function ProductDetailPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 mt-11 gap-12 mb-16">
             <div className="lg:col-span-2">
-              {
+              {/* {
                 product?.stock > 0 &&
               <OrderForm sizeId={selectedSize} productId={id} />
-              }
+              } */}
             </div>
             <div>
-              <CartTotals productId={id} sizeId={product} />
+              {/* <CartTotals productId={id} sizeId={product} /> */}
             </div>
           </div>
 

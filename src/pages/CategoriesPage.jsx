@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Footer } from "@/components/Footer";
-import Notification from '../../components/Notification'
+import Notification from "../../components/Notification";
 import {
   Search,
   Filter,
@@ -59,7 +59,6 @@ export default function CategoriesPage() {
   const [medicalMixturesExpanded, setMedicalMixturesExpanded] = useState(true);
   const [wishlist, setWishlist] = useState([]);
 
-
   const handleAddToWishlist = async (e, slug, is_favorite) => {
     e.stopPropagation();
     e.preventDefault();
@@ -70,7 +69,7 @@ export default function CategoriesPage() {
 
           setProducts(
             products.map((prev) =>
-              prev.slug == slug ? { ...prev, is_favorite : false } : prev,
+              prev.slug == slug ? { ...prev, is_favorite: false } : prev,
             ),
           );
         });
@@ -173,7 +172,7 @@ export default function CategoriesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Notification/>
+      <Notification />
       <Header />
       {/* <section className="relative h-64 sm:h-80 lg:h-96 bg-white overflow-hidden">
         <div className="absolute inset-0">
@@ -381,20 +380,23 @@ export default function CategoriesPage() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                       <button
-  onClick={(e) => {
-    e.preventDefault(); 
-    e.stopPropagation(); 
-    handleAddToWishlist( e,product.slug , product.is_favorite);
-  }}
-  className="absolute top-4 right-4 w-8 h-8 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/70 transition-colors"
->
-
-{product.is_favorite ? (
-            <Heart className="h-4 w-4 fill-red-500 text-red-500" />
-          ) : (
-            <Heart className="h-4 w-4" />
-          )}
-</button>
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAddToWishlist(
+                            e,
+                            product.slug,
+                            product.is_favorite,
+                          );
+                        }}
+                        className="absolute top-4 right-4 w-8 h-8 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/70 transition-colors"
+                      >
+                        {product.is_favorite ? (
+                          <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+                        ) : (
+                          <Heart className="h-4 w-4" />
+                        )}
+                      </button>
 
                       <div className="absolute bottom-6 left-6 right-6 text-white">
                         <div className="text-center mb-6">
@@ -411,8 +413,7 @@ export default function CategoriesPage() {
                           </div>
                           <div className="w-10 h-0.5 bg-white mx-auto"></div>
                         </div>
-                        <button 
-                         className="w-full bg-primary text-white py-3 rounded flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-colors">
+                        <button className="w-full bg-primary text-white py-3 rounded flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-colors">
                           <ShoppingCart className="h-4 w-4" />
                           View Details
                         </button>
