@@ -271,13 +271,13 @@ export function ProductDetails({
   sizes,
   slug,
 }) {
-  const [quantity, setQuantity] = useState(2);
+  const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [showDocModal, setShowDocModal] = useState(false);
-
+const [sizePrice , setSizePrice] = useState(sizes[0].price)
   const cartcontext = useContext(CartCh);
   const change = cartcontext.setCartChange;
-
+console.log(sizePrice);
   const handleQuantityChange = (change) => {
     const newQuantity = quantity + change;
     if (newQuantity >= 1) {
@@ -331,7 +331,7 @@ export function ProductDetails({
       <div className="space-y-6">
         <div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">{name}</h1>
-          <div className="text-3xl font-semibold text-primary mb-6">{price}</div>
+          <div className="text-3xl font-semibold text-primary mb-6">{+price + +sizePrice}</div>
 
           <div className="flex items-center gap-2 mb-6">
             <div className="flex items-center">
@@ -418,10 +418,12 @@ export function ProductDetails({
           <Button
             key={size.id}
             variant="outline"
-            onClick={() => setSelectedSize(size.id)}
+            onClick={() =>{
+              setSizePrice(size.price)
+              setSelectedSize(size.id)}}
             className={`border-gray-900 text-gray-900 hover:bg-gray-50 px-4 py-2 ${
               selectedSize === size.id
-                ? "bg-gray-900 text-white hover:bg-gray-800"
+                ? "bg-primary text-white hover:shadow-md"
                 : ""
             }`}
           >
