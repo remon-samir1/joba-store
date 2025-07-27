@@ -33,7 +33,9 @@ import AddCategory from "./pages/dashboard/AddCategory";
 import UpdateCategory from "./pages/dashboard/UpdateCategory";
 import { CouponManagement } from "./pages/dashboard/AddCoupon/AddCounpon";
 import UpdateProduct from "./pages/dashboard/UpdateProduct";
-import { InvoiceDetails } from "./pages/dashboard/InvoicesDetails";
+
+import { Settings } from "./pages/dashboard/Settings";
+import InvoicesDetails from "./pages/dashboard/InvoicesDetails.jsx";
 // import AddCoupon from "./pages/dashboard/AddCoupon";
 
 const queryClient = new QueryClient();
@@ -70,23 +72,18 @@ function App() {
                     element={<CategoriesManagementPage />}
                   />
                   <Route path="categories/add" element={<AddCategory />} />
-                  <Route path="categories/edit/:id" element={<UpdateCategory />} />
+                  <Route
+                    path="categories/edit/:id"
+                    element={<UpdateCategory />}
+                  />
                   <Route path="invoices" element={<InvoicesPage />} />
-                  <Route path="text" element={<InvoiceDetails />} />
+                  <Route path="invoices/:id" element={<InvoicesDetails />} />
                   <Route path="popup-maker" element={<PopupMakerPage />} />
                   <Route path="products" element={<ProductListPage />} />
                   <Route path="products/add" element={<AddProductPage />} />
                   <Route path="products/edit/:id" element={<UpdateProduct />} />
                   <Route path="reviews" element={<ReviewsPage />} />
-                  <Route
-                    path="settings"
-                    element={
-                      <div className="p-8">
-                        <h1 className="text-2xl font-bold">Settings</h1>
-                        <p>Settings page coming soon...</p>
-                      </div>
-                    }
-                  />
+                  <Route path="settings" element={<Settings />} />
                 </Routes>
               </DashboardLayout>
             }

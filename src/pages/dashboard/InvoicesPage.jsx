@@ -23,11 +23,9 @@ import { Axios } from "../../../components/Helpers/Axios";
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 
-// شاشة التحميل البرتقالية
 const OrangeLoader = () => (
   <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
     <div className="flex flex-col items-center">
-      {/* شعار ثلاثي الأبعاد برتقالي */}
       <div className="relative w-32 h-32 mb-8">
         <div className="absolute inset-0 rounded-full bg-orange-500 opacity-20 animate-ping-slow"></div>
         <div className="absolute inset-4 rounded-full border-8 border-orange-400 border-t-transparent animate-spin-slow"></div>
@@ -35,14 +33,12 @@ const OrangeLoader = () => (
         <div className="absolute inset-12 rounded-full border-8 border-orange-200 border-l-transparent animate-ping"></div>
       </div>
       
-      {/* النص والرسالة */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-orange-700 mb-2">Loading Invoices</h2>
         <p className="text-orange-600 max-w-md mb-6">
           Fetching your invoice data, please wait...
         </p>
         
-        {/* شريط التقدم البرتقالي */}
         <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
           <div 
             className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"
