@@ -611,7 +611,7 @@ export default function AddProductPage() {
                   <Label htmlFor="unlimitedStock" className="text-gray-700">Unlimited Stock</Label>
                 </div>
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="isBestSeller"
@@ -638,7 +638,7 @@ export default function AddProductPage() {
                       Highlight this product in a new arrivals section.
                     </Label>
                   </div>
-                </div>
+                </div> */}
               </CardContent>
             </Card>
 

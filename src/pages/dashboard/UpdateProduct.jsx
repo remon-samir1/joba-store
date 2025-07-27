@@ -67,7 +67,7 @@ export default function UpdateProduct() {
     unlimitedStock: false,
     isBestSeller: false,
     isNewArrival: false,
-    productCategory: "",
+    productCategory: 0,
     productTag: "",
   });
 
@@ -90,7 +90,7 @@ export default function UpdateProduct() {
           (prev) => prev.slug === id,
         )[0];
         setInitialData(product);
-        console.log(productsRes);
+        console.log(product);
         // Set product data
         setProductData({
           productName: product.name?.en || "",
@@ -106,7 +106,7 @@ export default function UpdateProduct() {
           unlimitedStock: product.unlimited_stock || false,
           isBestSeller: product.is_featured || false,
           isNewArrival: product.is_new_arrival || false,
-          productCategory: product.category?.id || "",
+          productCategory:String(product.category_id),
           productTag: product.tags?.[0] || "",
         });
 
@@ -337,6 +337,7 @@ export default function UpdateProduct() {
       setLoading(false);
     }
   };
+  console.log(productData);
 
   return (
     <div className="flex-1 bg-gray-50 min-h-screen">
@@ -705,7 +706,7 @@ export default function UpdateProduct() {
                   </Label>
                 </div>
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="isBestSeller"
@@ -732,7 +733,7 @@ export default function UpdateProduct() {
                       Highlight this product in a new arrivals section.
                     </Label>
                   </div>
-                </div>
+                </div> */}
               </CardContent>
             </Card>
 
@@ -780,7 +781,9 @@ export default function UpdateProduct() {
                         />
                       ) : (
                         <img
-                          src={ URL.createObjectURL(productImages[currentImageIndex].file  )}
+                          src={URL.createObjectURL(
+                            productImages[currentImageIndex].files,
+                          )}
                           alt={`Product Preview ${currentImageIndex + 1}`}
                           className="w-full h-full object-contain"
                         />
@@ -883,21 +886,21 @@ export default function UpdateProduct() {
                     Product Categories *
                   </Label>
                   <Select
-                    value={productData?.productCategory}
+                    value={String(productData?.productCategory )}
                     onValueChange={(value) =>
-                      handleSelectChange("productCategory", value)
+                      handleSelectChange("productCategory",value)
                     }
                   >
                     <SelectTrigger
                       className="mt-1 border-gray-300"
                       id="productCategory"
                     >
-                      <SelectValue placeholder="Select your product category" />
+                      {/* <SelectValue  placeholder="Select your product category" /> */}
                     </SelectTrigger>
                     <SelectContent>
                       {categories?.map((data) => (
-                        <SelectItem key={data.id} value={data.id}>
-                          {data.name}
+                        <SelectItem placeholder={String(data.name)} key={String(data.id)} value={String(data.id)}>
+                          {String(data.name)}
                         </SelectItem>
                       ))}
                     </SelectContent>
