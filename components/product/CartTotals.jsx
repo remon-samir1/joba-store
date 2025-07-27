@@ -52,7 +52,7 @@ export function CartTotals({ quantity}) {
         </div>
 
         {/* Send Request Button */}
-        <Button
+        {/* <Button
           onClick={() => {
             const orderForm = document.getElementById("order-form");
             if (orderForm) {
@@ -72,7 +72,7 @@ export function CartTotals({ quantity}) {
           className="w-full bg-primary hover:bg-primary/90 text-white py-4"
         >
           Send Request
-        </Button>
+        </Button> */}
       </div>
 
     

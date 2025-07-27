@@ -47,6 +47,7 @@ const mockReviews = [
 
 export function ReviewsSection({ slug }) {
   const [reviews, setReviews] = useState([]);
+  const [change , setChange] = useState(false)
   const [newReview, setNewReview] = useState({
     name: "",
     email: "",
@@ -58,7 +59,7 @@ export function ReviewsSection({ slug }) {
       setReviews(data.data.data.data);
       console.log(data);
     });
-  }, []);
+  }, [change]);
   const [loading, setLoading] = useState(false);
   const handleSubmitReview = async (e) => {
     e.preventDefault();
@@ -71,6 +72,7 @@ export function ReviewsSection({ slug }) {
         comment: newReview.comment,
       });
       console.log(response);
+      setChange(prev => !prev)
       setLoading(false);
 
       toast.success("Review submitted successfully!");

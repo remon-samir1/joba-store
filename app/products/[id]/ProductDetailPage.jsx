@@ -53,6 +53,9 @@ export default function ProductDetailPage() {
               name={product?.name?.en}
               price={product?.price}
               rating={product?.rating}
+              attachment_path={product?.attachment_path
+              }
+
               selectedSize={selectedSize}
               setSelectedSize={setSelectedSize}
               slug={product?.slug}

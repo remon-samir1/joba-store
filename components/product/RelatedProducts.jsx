@@ -144,7 +144,7 @@ export function RelatedProducts({ slug }) {
                   <div className="relative group cursor-pointer bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all h-80 lg:h-[408px]">
                     <div className="relative h-full w-full bg-gradient-to-b from-transparent to-black/40">
                       <img
-                        src={product.image || `${baseURL}/${product.image}`}
+                        src={product.images[0]?.path}
                         alt={product.name.en}
                         className="w-full h-full object-cover"
                       />

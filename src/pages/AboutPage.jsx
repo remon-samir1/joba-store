@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Star, ArrowRight } from "lucide-react";
+import Testimonials from "./Testmonials";
 
 export default function AboutPage() {
   return (
@@ -93,7 +94,7 @@ export default function AboutPage() {
             </div>
 
             {/* Bottom Right Images */}
-            <div className="flex flex-col sm:flex-row gap-4 lg:gap-8 mt-8 lg:mt-0 lg:absolute lg:right-0 lg:bottom-0">
+            <div className="flex flex-col sm:flex-row gap-4 lg:gap-8 mt-8 lg:mt-0 lg:absolute lg:right-0 lg:bottom-[-60px]">
               <div className="w-full sm:w-48 lg:w-[308px] h-48 lg:h-[219px] rounded-xl border border-gray-200 bg-gray-300 overflow-hidden">
                 <img
                   src="https://cdn.builder.io/api/v1/image/assets/TEMP/0b6428fb792f07dc0ec81d9486be3cd60998a97f?width=614"
@@ -113,13 +114,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 bg-white">
+      {/* <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
-            {/* Left side - Testimonial Card */}
             <div className="w-full max-w-[553px] bg-[#F5F6F8] rounded-lg p-6 flex flex-col min-h-[303px]">
-              {/* Avatar */}
               <div className="w-20 h-20 rounded-full bg-gray-300 mb-8 overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=80&h=80&fit=crop&crop=face"
@@ -128,7 +126,6 @@ export default function AboutPage() {
                 />
               </div>
 
-              {/* Review Text */}
               <div className="flex-1 mb-8">
                 <p className="text-[#656565] text-base leading-relaxed">
                   Lorem ipsum dolor sit amet consectetur. Adipiscing viverra
@@ -137,7 +134,6 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              {/* Name and Stars */}
               <div>
                 <div className="text-[#1D1919] font-semibold text-base mb-4">
                   Andre Silva - Your Beloved Customer
@@ -157,7 +153,6 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* Right side - Slider dots */}
             <div className="flex lg:flex-col items-center gap-4 lg:gap-10">
               <div className="flex lg:flex-col gap-4 lg:gap-7">
                 <div className="w-3 h-3 rounded-full bg-gray-300"></div>
@@ -167,8 +162,8 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </section>
-
+      </section> */}
+<Testimonials/>
       {/* Newsletter Section */}
       <section className="py-20 bg-[#F9F9F9]">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
