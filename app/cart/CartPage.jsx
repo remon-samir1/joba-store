@@ -13,6 +13,8 @@ const CartPage = () => {
 
   const cartcontext = useContext(CartCh)
   const change = cartcontext.setCartChange
+  const [discount , setDiscount] = useState('')
+  const [apply , setApply] = useState(false)
   const removeItem = (slug) => {
     Axios.post(
       `/cart/${slug}`, {_method : 'DELETE' }
@@ -26,6 +28,7 @@ const CartPage = () => {
 
 
   const [cart, setCart] = useState([]);
+  const [discountValue , setDiscountValue] = useState('')
   const subtotal = cart?.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0,
@@ -41,13 +44,14 @@ const CartPage = () => {
 
   };
   useEffect(() => {
-    Axios.get("/cart").then(
+    Axios.get(`/cart?coupon_code=${discount}`).then(
       (data) => {
         setCart(data.data.data.items);
-        console.log(data.data.data.items);
+        setDiscountValue(data.data.data.discount)
+        console.log(data.data.data);
       },
     );
-  }, []);
+  }, [apply]);
   return (
     <div className="cart-page">
       <Notifcation />
@@ -111,10 +115,10 @@ const CartPage = () => {
                     </button>
 
                     <div className="product-image">
-                      <img
-                        src={item.product.image}
+                      {/* <img
+                        src={item.product.images[0]?.path}
                         alt={item.product.name.en}
-                      />
+                      /> */}
                     </div>
 
                     <div className="product-name">{item.product.name.en}</div>
@@ -154,11 +158,12 @@ const CartPage = () => {
               <input
                 type="text"
                 placeholder="Coupon code"
+                onChange={(e)=>setDiscount(e.target.value)}
                 // value={couponCode}
                 // onChange={(e) => setCouponCode(e.target.value)}
                 className="coupon-input"
               />
-              <button className="apply-btn">Apply</button>
+              <button className="apply-btn" onChange={()=>setApply(prev=>!prev)}>Apply</button>
             </div>
           </div>
 
@@ -169,6 +174,13 @@ const CartPage = () => {
               <span className="totals-label">Subtotal</span>
               <span className="totals-value">EGP {total.toFixed(2)}</span>
             </div>
+            {
+              discount !== '' &&
+              <div className="totals-row">
+              <span className="totals-label">Discount</span>
+              <span className="totals-value">EGP {discountValue}</span>
+            </div>
+            }
             <div className="totals-row">
               <span className="totals-label">Shipping</span>
               <span className="totals-value">Free Shipping</span>

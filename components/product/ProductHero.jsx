@@ -31,14 +31,14 @@ export function ProductHero({
   };
 
   return (
-    <div className="flex !w-[200px] gap-8 lg:gap-12 mb-8">
+    <div className="flex !w-[250px] gap-8 lg:gap-12 mb-8">
       {/* Product Image */}
       <div className="relative">
-        <div className="aspect-square !w-[200px] bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="aspect-square !w-[200px] bg-white  border-gray-200 rounded-lg overflow-hidden">
           <img
             src={additionalImages[currentImageIndex]?.path}
             alt={name}
-            className="w-[40vw] h-[400px] object-cover"
+            className="w-[50vw] h-[400px] object-cover"
           />
         </div>
 

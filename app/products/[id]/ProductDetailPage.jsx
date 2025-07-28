@@ -41,7 +41,7 @@ export default function ProductDetailPage() {
 
       <main className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-start justify-between gap-3 md:flex-row flex-col md:!gap-24">
+          <div className="flex items-start justify-between  px-5 gap-3 md:flex-row flex-col md:!gap-24">
             <ProductHero
               // reviews={product?.reviews}
               image={product?.image}
