@@ -469,7 +469,7 @@ console.log(sizePrice);
 
       {showDocModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg w-full max-w-4xl h-[80vh] relative shadow-lg">
+          <div className="bg-white rounded-lg w-full max-w-4xl h-[100vh] relative shadow-lg">
             <button
               className="absolute top-2 left-[40%] text-gray-700 hover:text-red-600 text-2xl font-bold"
               onClick={() => setShowDocModal(false)}
@@ -481,7 +481,7 @@ console.log(sizePrice);
                 attachment_path
               )}&embedded=true`}
               title="Document Viewer"
-              className="w-full h-full rounded-b-lg"
+              className="w-full h-[80vh] rounded-b-lg"
             ></iframe>
           </div>
         </div>
