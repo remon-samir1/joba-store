@@ -288,6 +288,7 @@ console.log(sizePrice);
   const handleAddToCart = async () => {
     const data = {
       product_size_id: selectedSize,
+
       total_price: price * quantity,
     };
 
@@ -297,7 +298,7 @@ console.log(sizePrice);
         return;
       }
 
-      const response = await Axios.post(`/cart/${slug}`, data);
+      const response = await Axios.post(`/cart/${slug}` ,{_method : 'POST'}, data);
       change((prev) => !prev);
       toast.success(`Added ${quantity} items (${selectedSize}) to cart!`);
     } catch (error) {

@@ -14,8 +14,8 @@ const CartPage = () => {
   const cartcontext = useContext(CartCh)
   const change = cartcontext.setCartChange
   const removeItem = (slug) => {
-    Axios.delete(
-      `/cart/${slug}`,
+    Axios.post(
+      `/cart/${slug}`, {_method : 'DELETE' }
     ).then((data) => {
       console.log(data);
       toast.success(`Deleted Successfly !`);

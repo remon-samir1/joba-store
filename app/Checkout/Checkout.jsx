@@ -1,18 +1,169 @@
 import React, { useEffect, useState, useRef } from "react";
-import "./CheckOut.css";
-import { Header } from "../../src/components/Header";
 import { Axios } from "../../components/Helpers/Axios";
+import { Header } from "../../src/components/Header";
 import { Footer } from "../../components/Footer";
 import { toast } from "react-toastify";
 import Notifcation from "../../components/Notification";
 import Loading from "../../components/Loading/Loading";
 import image from "../../src/assets/done.svg";
 import { Link } from "react-router-dom";
+
 const CheckoutPage = () => {
   const scrollRef = useRef();
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  
+  // Define all styles as JavaScript objects
+  const styles = {
+    page: {
+      width: '100%',
+      minHeight: '100vh',
+      backgroundColor: '#f8f8f8'
+    },
+    container: {
+      maxWidth: '1336px',
+      margin: '0 auto',
+      padding: '20px 7vw'
+    },
+    header: {
+      maxWidth: '1173px',
+      margin: '0 auto 80px',
+      padding: '0 20px'
+    },
+    title: {
+      color: '#333',
+      fontSize: '40px',
+      fontWeight: 600,
+      marginBottom: '24px'
+    },
+    description: {
+      color: '#666',
+      fontSize: '20px',
+      fontWeight: 400,
+      lineHeight: 1.6,
+      maxWidth: '1132px'
+    },
+    content: {
+      display: 'flex',
+      // flexWrap:'wrap',
+      justifyContent:'space-between',
+      gap: '32px',
+      alignItems: 'flex-start'
+    },
+    formSection: {
+      flex: 1,
+      maxWidth: '599px'
+    },
+    summarySection: {
+      width: '400px',
+      flexShrink: 0
+    },
+    sectionTitle: {
+      color: '#333',
+      fontSize: '18px',
+      fontWeight: 600,
+      marginBottom: '33px'
+    },
+    formGroup: {
+      marginBottom: '21px'
+    },
+    label: {
+      display: 'block',
+      color: '#333',
+      fontSize: '16px',
+      fontWeight: 600,
+      marginBottom: '12px'
+    },
+    input: {
+      width: '100%',
+      padding: '10px 19px',
+      border: '1.156px solid #F15A24',
+      borderRadius: '4.625px',
+      backgroundColor: '#fff',
+      fontSize: '16px',
+      fontWeight: 400,
+      color: '#333',
+      outline: 'none'
+    },
+    textarea: {
+      height: '115px',
+      resize: 'vertical'
+    },
+    formRow: {
+      display: 'flex',
+      gap: '16px'
+    },
+    submitButton: {
+      width: '100%',
+      padding: '15px 20px',
+      backgroundColor: '#F15A24',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '6.696px',
+      fontSize: '16px',
+      fontWeight: 700,
+      cursor: 'pointer'
+    },
+    summary: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '42px'
+    },
+    totalsTitle: {
+      color: '#333',
+      fontSize: '20px',
+      fontWeight: 600,
+      padding: '20px',
+      margin: 0
+    },
+    totalsRow: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '27px 40px',
+      borderBottom: '0.837px solid #e0e0e0'
+    },
+    totalRow: {
+      fontWeight: 600
+    },
+    doneContainer: {
+      width: '90%',
+      maxWidth: '42rem',
+      margin: '3rem auto 4rem',
+      padding: '2rem',
+      backgroundColor: '#fff',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      borderRadius: '0.75rem',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+      gap: '1.5rem'
+    },
+    imageContainer: {
+      width: '7rem',
+      height: '7rem'
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'contain'
+    },
+    doneButton: {
+      display: 'inline-block',
+      color: '#fff',
+      backgroundColor: '#F15A24',
+      padding: '0.5rem 2rem',
+      borderRadius: '9999px',
+      textDecoration: 'none'
+    },
+    responsive: {
+      /* Responsive styles would be implemented using window width checks */
+    }
+  };
+
   useEffect(() => {
     Axios.get("/cart").then((data) => {
       setCart(data.data.data.items);
@@ -53,7 +204,6 @@ const CheckoutPage = () => {
     setLoading(true);
     const items = cart.map((item) => ({
       product_id: item.product.id,
-      // product_size_id: item.size_id || null,
       quantity: item.quantity,
     }));
 
@@ -69,15 +219,13 @@ const CheckoutPage = () => {
       shipping_email: formData.shipping_email,
       coupon_code: formData.coupon_code || null,
     };
-    console.log(payload);
+    
     try {
       const response = await Axios.post("/orders", payload);
-      console.log(response);
       toast.success("Order placed successfully!");
       setLoading(false);
       setDone(true)
     } catch (error) {
-      console.error("Order error:", error.response?.data);
       if(items.length === 0){
         toast.warn('Please Add Items To Cart First')
       }
@@ -87,55 +235,55 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div ref={scrollRef}>
-                {loading && <Loading />}
+    <div ref={scrollRef}  style={styles.page}>
+      {loading && <Loading />}
       {done ? (
-        <div className="">
+        <div>
           <Header/>
-          
-    <div className="w-[90%] max-w-2xl mx-auto p-8 mt-12 mb-16 bg-white shadow-lg rounded-xl flex flex-col justify-center items-center text-center space-y-6">
-      <div className="w-28 h-28">
-        <img src={image} alt="Order Done" className="w-full h-full object-contain" />
-      </div>
-      
-      <h3 className="text-2xl font-semibold text-gray-800">Thanks for your order!</h3>
-      
-      <p className="text-base text-gray-600 leading-relaxed">
-        A proforma invoice has been issued and sent to your email. Our Juba team will be in touch shortly to confirm the payment.
-      </p>
-      
-      <Link to="/" className="inline-block text-white bg-primary hover:bg-primary/90 px-8 py-2 rounded-full transition">
-        Continue shopping
-      </Link>
-    </div>
+          <div style={styles.doneContainer}>
+            <div style={styles.imageContainer}>
+              <img src={image} alt="Order Done" style={styles.image} />
+            </div>
+            
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#333' }}>
+              Thanks for your order!
+            </h3>
+            
+            <p style={{ color: '#666', lineHeight: 1.6 }}>
+              A proforma invoice has been issued and sent to your email. Our team will be in touch shortly to confirm the payment.
+            </p>
+            
+            <Link to="/" style={styles.doneButton}>
+              Continue shopping
+            </Link>
+          </div>
           <Footer/>
         </div>
       ) : (
-        <div className="checkout-page" >
+        <div style={styles.page}>
           <Header />
-
           <Notifcation />
 
-          <main className="checkout-main">
-            <div className="container">
+          <main style={styles.checkoutMain}>
+            <div style={styles.container}>
               {/* Checkout Header */}
-              <div className="checkout-header">
-                <h1 className="checkout-title">Checkout</h1>
-                <p className="checkout-description">
+              <div style={styles.header}>
+                <h1 style={styles.title}>Checkout</h1>
+                <p style={styles.description}>
                   Please enter your details to complete your order.
                 </p>
               </div>
 
               {/* Checkout Content */}
-              <div className="checkout-content">
+              <div className="flex-col md:flex-row" style={styles.content}>
                 {/* Left Side - Form */}
-                <div className="checkout-form-section">
+                <div style={styles.formSection}>
                   <form onSubmit={handleSubmit}>
-                    <div className="form-section">
-                      <h2 className="section-title">Shipping Information</h2>
+                    <div style={{ marginBottom: '34px' }}>
+                      <h2 style={styles.sectionTitle}>Shipping Information</h2>
 
-                      <div className="form-group">
-                        <label>Email</label>
+                      <div style={styles.formGroup}>
+                        <label style={styles.label}>Email</label>
                         <input
                           type="email"
                           name="shipping_email"
@@ -143,11 +291,12 @@ const CheckoutPage = () => {
                           value={formData.shipping_email}
                           onChange={handleInputChange}
                           required
+                          style={styles.input}
                         />
                       </div>
 
-                      <div className="form-group">
-                        <label>Full Name</label>
+                      <div style={styles.formGroup}>
+                        <label style={styles.label}>Full Name</label>
                         <input
                           type="text"
                           name="shipping_name"
@@ -155,92 +304,100 @@ const CheckoutPage = () => {
                           value={formData.shipping_name}
                           onChange={handleInputChange}
                           required
+                          style={styles.input}
                         />
                       </div>
 
-                      <div className="form-group">
-                        <label>Address</label>
+                      <div style={styles.formGroup}>
+                        <label style={styles.label}>Address</label>
                         <textarea
                           name="shipping_address"
                           placeholder="Address"
                           value={formData.shipping_address}
                           onChange={handleInputChange}
                           required
+                          style={{...styles.input, ...styles.textarea}}
                         />
                       </div>
 
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label>City</label>
+                      <div style={styles.formRow}>
+                        <div style={styles.formGroup}>
+                          <label style={styles.label}>City</label>
                           <input
                             type="text"
                             name="shipping_city"
                             value={formData.shipping_city}
                             onChange={handleInputChange}
                             required
+                            style={styles.input}
                           />
                         </div>
 
-                        <div className="form-group">
-                          <label>State</label>
+                        <div style={styles.formGroup}>
+                          <label style={styles.label}>State</label>
                           <input
                             type="text"
                             name="shipping_state"
                             value={formData.shipping_state}
                             onChange={handleInputChange}
                             required
+                            style={styles.input}
                           />
                         </div>
                       </div>
 
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label>Zip Code</label>
+                      <div style={styles.formRow}>
+                        <div style={styles.formGroup}>
+                          <label style={styles.label}>Zip Code</label>
                           <input
                             type="text"
                             name="shipping_zip"
                             value={formData.shipping_zip}
                             onChange={handleInputChange}
                             required
+                            style={styles.input}
                           />
                         </div>
 
-                        <div className="form-group">
-                          <label>Country</label>
+                        <div style={styles.formGroup}>
+                          <label style={styles.label}>Country</label>
                           <input
                             type="text"
                             name="shipping_country"
                             value={formData.shipping_country}
                             onChange={handleInputChange}
                             required
+                            style={styles.input}
                           />
                         </div>
                       </div>
 
-                      <div className="form-group">
-                        <label>Coupon Code (optional)</label>
+                      <div style={styles.formGroup}>
+                        <label style={styles.label}>Coupon Code (optional)</label>
                         <input
                           type="text"
                           name="coupon_code"
                           value={formData.coupon_code}
                           onChange={handleInputChange}
+                          style={styles.input}
                         />
                       </div>
 
-                      <div className="form-group">
-                        <label>Payment Method</label>
+                      <div style={styles.formGroup}>
+                        <label style={styles.label}>Payment Method</label>
                         <select
                           name="payment_method"
                           value={formData.payment_method}
                           onChange={handleInputChange}
                           required
+                          style={styles.input}
                         >
                           <option value="cash">Cash</option>
                           <option value="credit_card">Credit Card</option>
                         </select>
                       </div>
 
-                      <button type="submit" className="checkout-submit-btn">
+                      <button type="submit" style={styles.submitButton}>
                         Submit Order
                       </button>
                     </div>
@@ -248,12 +405,12 @@ const CheckoutPage = () => {
                 </div>
 
                 {/* Right Side - Summary */}
-                <div className="order-summary-section">
-                  <div className="order-summary">
-                    <h3 className="totals-title">Cart Totals</h3>
+                <div className=" " style={styles.summarySection}>
+                  <div style={styles.summary}>
+                    <h3 style={styles.totalsTitle}>Cart Totals</h3>
 
                     {cart?.map((item, idx) => (
-                      <div className="totals-row" key={idx}>
+                      <div style={styles.totalsRow} key={idx}>
                         <span>
                           {item.product.name.en} × {item.quantity}
                         </span>
@@ -261,7 +418,7 @@ const CheckoutPage = () => {
                       </div>
                     ))}
 
-                    <div className="totals-row total-row">
+                    <div style={{...styles.totalsRow, fontWeight: 600}}>
                       <span>Total</span>
                       <span>EGP {total}</span>
                     </div>

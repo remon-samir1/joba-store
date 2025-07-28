@@ -11,6 +11,7 @@ export function GeneralFormFields({setForm , form}) {
         </label>
         <div className="flex w-full items-center justify-between px-4 py-4 border border-stroke rounded bg-white-color relative">
       <select value={form.type} required className='h-full w-full outline-none p-2 bg-transparent' onChange={(e)=>setForm({...form , type : e.target.value})}>
+        <option selected disabled  value="">  Discount type</option>
         <option value="percentage">Percentage</option>
 
         <option value="fixed">Fixed</option>
