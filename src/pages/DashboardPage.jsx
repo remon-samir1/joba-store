@@ -569,7 +569,7 @@ const [categoriesData , setCategoriesData] = useState([])
                   >
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
-                        <img src={product.image} className="w-6 h-6 bg-orange-200 rounded"></img>
+                        <img src={product.images[0].path} className="w-6 h-6 bg-orange-200 rounded"></img>
                       </div>
                       <span className="text-sm">{product.name.en}</span>
                     </div>
@@ -658,7 +658,7 @@ const [categoriesData , setCategoriesData] = useState([])
                   <TableRow key={index}>
                     <TableCell className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                        <img src={product.image} className="w-8 h-8 bg-orange-200 rounded"></img>
+                        <img src={product.images[0].path} className="w-8 h-8 bg-orange-200 rounded"></img>
                       </div>
                       <span className="font-medium">{product.name.en}</span>
                     </TableCell>
