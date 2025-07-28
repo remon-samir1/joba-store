@@ -115,10 +115,10 @@ const CartPage = () => {
                     </button>
 
                     <div className="product-image">
-                      {/* <img
+                      <img
                         src={item.product.images[0]?.path}
                         alt={item.product.name.en}
-                      /> */}
+                      />
                     </div>
 
                     <div className="product-name">{item.product.name.en}</div>
@@ -203,7 +203,7 @@ const CartPage = () => {
               <div key={product.product.id} className="product-card">
                 <div className="product-image-container">
                   <img
-                    src={product.product.image}
+                    src={product.product.images[0].path}
                     alt={product.product.name.en}
                   />
                   <div className="sale-badge">SALE</div>
