@@ -1,4 +1,4 @@
- import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -8,7 +8,7 @@ import {
   Heart,
   ShoppingCart,
   Star,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import axios from "axios";
 import { Axios, baseURL } from "../../components/Helpers/Axios";
@@ -80,7 +80,7 @@ function Hero() {
   return (
     <section className="relative h-[400px] sm:h-[500px] lg:h-[664px] bg-gray-900 overflow-hidden">
       {/* Slides */}
-      <SeoHelmet/>
+      <SeoHelmet />
       {heroSlides.map((slide, index) => (
         <div
           key={slide.id}
@@ -230,7 +230,9 @@ function EmptyState({ message, icon: Icon = ShoppingCart }) {
       <div className="bg-gray-200 rounded-full p-4 mb-4">
         <Icon className="h-12 w-12 text-gray-500" />
       </div>
-      <h3 className="text-xl font-medium text-gray-700 mb-2">No data available</h3>
+      <h3 className="text-xl font-medium text-gray-700 mb-2">
+        No data available
+      </h3>
       <p className="text-gray-500 text-center max-w-md">{message}</p>
     </div>
   );
@@ -248,6 +250,7 @@ function Categories() {
         setLoading(true);
         const response = await Axios.get("/categories");
         setCategories(response.data.data.data.slice(-4));
+        console.log(response);
       } catch (err) {
         console.error("Error fetching categories:", err);
         setError("Failed to load categories. Please try again later.");
@@ -280,17 +283,15 @@ function Categories() {
 
         {/* Error State */}
         {error && !loading && (
-          <EmptyState 
-            message="We encountered an issue loading categories. Please try again later." 
+          <EmptyState
+            message="We encountered an issue loading categories. Please try again later."
             icon={Loader2}
           />
         )}
 
         {/* Empty State */}
         {!loading && !error && categories.length === 0 && (
-          <EmptyState 
-            message="No categories available at the moment. Check back soon!" 
-          />
+          <EmptyState message="No categories available at the moment. Check back soon!" />
         )}
 
         {/* Dynamic Categories Grid */}
@@ -303,8 +304,10 @@ function Categories() {
                 className={`relative overflow-hidden rounded-lg group cursor-pointer 
                   ${
                     index === 0
-                      ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full"
-                      : "h-48 sm:h-56 lg:h-full"
+                      ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full":
+                      index === 1 ? 'lg:col-span-2':
+
+                       "h-48 sm:h-56 lg:h-full"
                   }`}
               >
                 <img
@@ -325,10 +328,10 @@ function Categories() {
                   </h3>
                   {index === 0 && (
                     <>
-                      <p className="text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 lg:mb-8 max-w-md opacity-90">
+                      {/* <p className="text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 lg:mb-8 max-w-md opacity-90">
                         {category.description ||
                           "Lorem Ipsum is simply dummy text of the printing and typesetting industry."}
-                      </p>
+                      </p> */}
                       <button className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-full text-white hover:bg-primary/90 transition-colors">
                         <ChevronRight className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />
                       </button>
@@ -478,7 +481,7 @@ function NewProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -551,17 +554,15 @@ function NewProducts() {
 
         {/* Error State */}
         {error && !loading && (
-          <EmptyState 
-            message="We encountered an issue loading new products. Please try again later." 
+          <EmptyState
+            message="We encountered an issue loading new products. Please try again later."
             icon={Loader2}
           />
         )}
 
         {/* Empty State */}
         {!loading && !error && products.length === 0 && (
-          <EmptyState 
-            message="No new products available at the moment. Check back soon!" 
-          />
+          <EmptyState message="No new products available at the moment. Check back soon!" />
         )}
 
         {/* Products Scroll */}
@@ -603,7 +604,7 @@ function BestSeller() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     const fetchBestSellers = async () => {
       try {
@@ -666,24 +667,25 @@ function BestSeller() {
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="bg-gray-200 rounded-lg overflow-hidden animate-pulse h-80 sm:h-96 lg:h-[408px]"></div>
+              <div
+                key={index}
+                className="bg-gray-200 rounded-lg overflow-hidden animate-pulse h-80 sm:h-96 lg:h-[408px]"
+              ></div>
             ))}
           </div>
         )}
 
         {/* Error State */}
         {error && !loading && (
-          <EmptyState 
-            message="We encountered an issue loading best sellers. Please try again later." 
+          <EmptyState
+            message="We encountered an issue loading best sellers. Please try again later."
             icon={Loader2}
           />
         )}
 
         {/* Empty State */}
         {!loading && !error && products.length === 0 && (
-          <EmptyState 
-            message="No best sellers available at the moment. Check back soon!" 
-          />
+          <EmptyState message="No best sellers available at the moment. Check back soon!" />
         )}
 
         {/* Products Grid */}

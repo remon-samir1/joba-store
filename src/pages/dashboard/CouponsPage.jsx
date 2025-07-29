@@ -70,7 +70,6 @@ export default function CouponsPage() {
     });
   }, [page]);
 
-  // حساب العملاء المشتركين من جميع الكوبونات
   const allSubscribedCustomers = useMemo(() => {
     return coupons.flatMap((coupon) => {
       if (
@@ -197,7 +196,7 @@ export default function CouponsPage() {
     <div className="flex-1 overflow-auto bg-gray-50">
       <DashboardHeader title="Coupon Code" />
 
-      <div className="p-6 space-y-6">
+      <div className="md:p-6 p-2 space-y-6">
         {/* Header with Create Button */}
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800">Coupon</h2>
@@ -391,7 +390,7 @@ export default function CouponsPage() {
             )}
           </CardHeader>
 
-          <CardContent>
+          <CardContent className='w-[90vw] md:w-full'>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -538,8 +537,8 @@ export default function CouponsPage() {
         </Card>
 
         {/* Subscribed Customers */}
-        <Card className="border rounded-lg">
-          <CardHeader>
+        <Card className="border rounded-lg w-[93vw] md:w-full">
+          <CardHeader >
             <CardTitle className="text-gray-800">
               Subscribed customers
             </CardTitle>
