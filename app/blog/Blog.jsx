@@ -6,6 +6,7 @@ import { Axios } from "../../components/Helpers/Axios";
 import TransformDate from "../../components/Helpers/TransformDate";
 import StringSlice from "../../components/Helpers/StringSlice";
 import Loading from "../../components/Loading/Loading.jsx";
+import SeoHelmet from "../../src/components/SeoHelmet/SeoHelmet";
 const BlogPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,6 +25,9 @@ const BlogPage = () => {
 
   return (
     <div className="blog-page">
+        <SeoHelmet
+      title={'juba academy'}
+      />
       {/* Header */}
       {
         loading && <Loading/>

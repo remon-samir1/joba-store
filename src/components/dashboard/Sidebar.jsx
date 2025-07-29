@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import Cookies from "cookie-universal";
+
 import {
   Home,
   ShoppingCart,
@@ -31,7 +33,8 @@ const mainNavigation = [
   // { name: "Popup maker", href: "/dashboard/popup-maker", icon: Megaphone },
 
 ];
-
+const cookie = Cookies();
+const token = cookie.get("token");
 // Product section navigation
 const productNavigation = [
   { name: "Product List", href: "/dashboard/products", icon: Package },
@@ -44,6 +47,10 @@ const adminNavigation = [
   { name: "Setting", href: "/dashboard/settings", icon: Settings },
 ];
 
+const handleLogout = ()=>{
+  cookie.remove('toekn');
+  window.location.pathname='/'
+}
 export function Sidebar() {
 
   const location = useLocation();
@@ -66,6 +73,19 @@ export function Sidebar() {
     </Link>
   );
 
+  const [admin , setAdmin] = useState()
+  useEffect(()=>{
+const getData = async()=>{
+  try{
+Axios.get('admin/profile').then(data =>{
+  setAdmin(data.data.data)
+  console.log(data)})
+  }catch(err){
+console.log(err);
+  }
+}
+getData()
+  },[])
   return (
     <>
       {/* Mobile Menu Button */}
@@ -167,13 +187,13 @@ export function Sidebar() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-[#1D1919] truncate">
-                Dealport
+              {admin?.name}
               </p>
               <p className="text-sm text-[#656565] truncate">
-                Mark@thedesigner...
+              {admin?.email}
               </p>
             </div>
-            <LogOut className="h-5 w-5 text-[#656565]" />
+            <LogOut onClick={handleLogout} className="h-5 w-5 text-[#656565] cursor-pointer" />
           </div>
         </div>
 

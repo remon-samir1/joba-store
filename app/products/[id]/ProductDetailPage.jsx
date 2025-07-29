@@ -11,6 +11,7 @@ import { ReviewsSection } from "../../../components/product/ReviewsSection.jsx";
 import { RelatedProducts } from "../../..//components/product/RelatedProducts";
 import { Header } from "../../../src/components/Header.jsx";
 import Loading from "../../../components/Loading/Loading.jsx";
+import SeoHelmet from "../../../src/components/SeoHelmet/SeoHelmet.jsx";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -37,11 +38,15 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHelmet
+      title={product?.name.en}
+      description={product?.description?.en}
+      />
       <Header />
 
       <main className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-start justify-between  px-5 gap-3 md:flex-row flex-col md:!gap-24">
+          <div className="flex items-start justify-center  px-5  md:flex-row flex-col !gap-11">
             <ProductHero
               // reviews={product?.reviews}
               image={product?.image}

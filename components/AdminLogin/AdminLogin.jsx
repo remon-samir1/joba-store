@@ -33,7 +33,7 @@ const nav = useNavigate()
 
         console.log(token);
         toast.success('Login Succssefly')
-        nav('/dashboard')
+        window.location.pathname = '/dashboard'
       });
     } catch (err) {
       toast.error('Invalid email or password !')

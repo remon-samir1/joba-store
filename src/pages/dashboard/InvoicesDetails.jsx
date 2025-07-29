@@ -6,16 +6,19 @@ import { useRef } from "react";
 import './InvoicesDetails.css'
 import { Axios } from "../../../components/Helpers/Axios";
 import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
+import TransformDate from "../../../components/Helpers/TransformDate";
+import { Printer } from "lucide-react";
 const InvoicesDetails = () => {
   const scrollRef = useRef(null);
   //  get data
   const { id } = useParams();
   const [data, setData] = useState([]);
+
   useEffect(() => {
     scrollRef.current.scrollIntoView();
-    Axios.get(`/admin/invoices`).then((data) => {
-      setData(data.data.data.data.filter(res => res.id == id));
-      console.log(data.data.data.data);
+    Axios.get(`/admin/orders/${id}`).then((data) => {
+      setData(data.data.data)
+      console.log(data.data);
     });
   }, []);
 console.log(data);
@@ -36,13 +39,13 @@ console.log(data);
               <p>Paymentn Status:</p>
             </div>
             <div className="data">
-              {/* <p>{TransformDate(data?.created_at)}</p>
-              <p> {data?.buyer?.name}</p>
-              <p>{data?.buyer?.phone}</p>
-              <p>{data?.buyer?.email}</p>
-              <p>{data?.buyer?.address}</p>
+              <p>{TransformDate(data?.created_at)}</p>
+              <p> {data?.shipping_name}</p>
+              <p>{data?.user?.phone || 'Empty'}</p>
+              <p>{data?.user?.email || "Empty"}</p>
+              <p>{data?.shipping_address || 'Empty'}</p>
               <p>{data?.payment_method}</p>
-              <p>{data?.payment_status}</p> */}
+              <p>{data?.payment_status}</p>
             </div>
           </div>
           <div className="flex justify-center items-center">
@@ -50,7 +53,7 @@ console.log(data);
               Order Id:
             </p>
             <p className="text-base font-bold text-textColor whitespace-nowrap">
-              {data?.invoice_id}
+              {data?.id}
             </p>
           </div>
         </div>
@@ -62,38 +65,35 @@ console.log(data);
           <div className=" border-b border-b-borderColor w-full text-end px-5 py-1 ">
             <p className=" text-[#999999] text-[12px]  ">subtotal</p>
             <p className="text-base text-textColor mt-1 font-semibold">
-              {data?.subTotal} {data?.payable_currency}
+              {data?.total} 
             </p>
           </div>
-          <div className=" border-b border-b-borderColor w-full text-end px-5 py-1 ">
+          {/* <div className=" border-b border-b-borderColor w-full text-end px-5 py-1 ">
             <p className=" text-[#999999] text-[12px]  ">Getway charge</p>
             <p className="text-base text-textColor mt-1 font-semibold">
               {data?.gateway_charge} {data?.payable_currency}
             </p>
-          </div>
+          </div> */}
           <div className=" border-b border-b-borderColor w-full text-end px-5 py-1">
             <p className=" text-[#999999] text-[12px]  ">Discount</p>
             <p className="text-base text-textColor mt-1 font-semibold">
-              {data?.discount} {data?.payable_currency}
+              {data?.discount_amount} 
             </p>
           </div>
           <div className="w-full text-end px-5 py-1 ">
             <p className=" text-[#999999] text-[12px]  ">Total</p>
             <p className="text-base text-textColor mt-1 font-semibold">
-              {data?.paid_amount} {data?.payable_currency}
+              {data?.total} 
             </p>
           </div>
         </div>
       </div>
-      <div className="flex justify-end my-8">
+      <div className="flex justify-start bg-blue-800 w-max rounded-lg  m-8">
         <button
           onClick={() => window.print()}
           className="text-white bg-btnColor px-8 py-2 rounded border-btnColor flex justify-center items-center gap-2 hover:scale-105 duration-500"
         >
-          {/* <Icon
-            icon="material-symbols:print-outline"
-            style={{ color: "#fff" }}
-          /> */}
+  <Printer />
           <span>Print</span>
         </button>
       </div>

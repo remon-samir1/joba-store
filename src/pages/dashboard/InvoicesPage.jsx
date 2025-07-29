@@ -63,6 +63,8 @@ export default function InvoicesPage() {
       try {
         const response = await Axios.get("/admin/invoices");
         setInvoices(response.data.data.data);
+        console.log(response);
+
         const total = response.data.data.data.length;
         const paid = response.data.data.data.filter(
           (inv) => inv.status === "Paid",
@@ -70,8 +72,6 @@ export default function InvoicesPage() {
         const overdue = response.data.data.data.filter(
           (inv) => inv.status === "Overdue",
         ).length;
-
-        // حساب المبالغ المستحقة
         const outstanding = response.data.data.data
           .filter((inv) => inv.status === "Pending" || inv.status === "Overdue")
           .reduce(
@@ -98,7 +98,6 @@ export default function InvoicesPage() {
     fetchData();
   }, []);
 
-  // تصفية الفواتير بناءً على البحث والحالة
   const filteredInvoices = useMemo(() => {
     return invoices?.filter((invoice) => {
       const matchesStatus =
@@ -115,7 +114,6 @@ export default function InvoicesPage() {
     });
   }, [invoices, filters]);
   
-  // معالجة تغيير الفلتر
   const handleFilterChange = (type, value) => {
     setFilters((prev) => ({ ...prev, [type]: value }));
   };
@@ -129,7 +127,6 @@ export default function InvoicesPage() {
       <DashboardHeader title="Invoice Management" />
 
       <div className="p-6 space-y-6">
-        {/* بطاقات الإحصائيات */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {stats?.map((stat, index) => (
             <Card key={index}>

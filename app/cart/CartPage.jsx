@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import "./CartPage.css";
 import { Header } from "../../src/components/Header";
 import { Axios } from "../../components/Helpers/Axios";
@@ -8,58 +8,128 @@ import empty from "../../src/assets/joba-empty-cart.svg";
 import { Footer } from "../../components/Footer";
 import { Link } from "react-router-dom";
 import { CartCh } from "../../Context/CartContext";
+import gsap from "gsap";
+
 const CartPage = () => {
+  const cartcontext = useContext(CartCh);
+  const change = cartcontext.setCartChange;
+  const [discount, setDiscount] = useState("");
+  const [apply, setApply] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [cart, setCart] = useState([]);
+  const [discountValue, setDiscountValue] = useState(0);
+  const cartRef = useRef(null);
 
+  // GSAP animation for cart items
+  useEffect(() => {
+    if (cart.length > 0 && !isLoading) {
+      gsap.from(".cart-item", {
+        duration: 0.6,
+        opacity: 0,
+        y: 30,
+        stagger: 0.1,
+        ease: "back.out(1.7)",
+      });
+    }
+  }, [cart, isLoading]);
 
-  const cartcontext = useContext(CartCh)
-  const change = cartcontext.setCartChange
-  const [discount , setDiscount] = useState('')
-  const [apply , setApply] = useState(false)
-  const removeItem = (slug) => {
-    Axios.post(
-      `/cart/${slug}`, {_method : 'DELETE' }
-    ).then((data) => {
-      console.log(data);
-      toast.success(`Deleted Successfly !`);
-      change(prev => !prev)
-      setCart((prev) => cart.filter((item) => item.product.slug !== slug));
-    });
+  // Loading screen timeout
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 1000);
+  //   return () => clearTimeout(timer);
+  // }, []);
+
+  const removeItem = (slug, id, size) => {
+    toast.info("Removing item...", { autoClose: 1000 });
+
+    Axios.post(`/cart/${slug}`, {
+      _method: "DELETE",
+      product_id: id,
+      product_size_id: size,
+    })
+      .then((data) => {
+        toast.success("Item removed successfully!");
+        change((prev) => !prev);
+        setCart((prev) => cart.filter((item) => item.product.slug !== slug));
+      })
+      .catch(() => {
+        toast.error("Failed to remove item");
+      });
   };
 
-
-  const [cart, setCart] = useState([]);
-  const [discountValue , setDiscountValue] = useState('')
   const subtotal = cart?.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0,
   );
-  const total = subtotal; 
+  const total = subtotal - discountValue;
+
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
+
+    // Animate quantity change
+    gsap.to(`#quantity-${id}`, {
+      scale: 1.2,
+      duration: 0.2,
+      yoyo: true,
+      repeat: 1,
+    });
+
     setCart((prevCart) =>
       prevCart.map((item) =>
         item.product.id === id ? { ...item, quantity: newQuantity } : item,
       ),
     );
-
   };
+
+  const applyCoupon = () => {
+    if (!discount.trim()) {
+      toast.warn("Please enter a coupon code");
+      return;
+    }
+
+    setIsLoading(true);
+    setApply((prev) => !prev);
+    toast.info("Applying coupon...");
+  };
+
   useEffect(() => {
-    Axios.get(`/cart?coupon_code=${discount}`).then(
-      (data) => {
+    Axios.get(`/cart?coupon_code=${discount}`)
+      .then((data) => {
+        console.log(data.data);
         setCart(data.data.data.items);
-        setDiscountValue(data.data.data.discount)
-        console.log(data.data.data);
-      },
-    );
+        setDiscountValue(data.data.data.discount || 0);
+        setIsLoading(false);
+
+        if (discount) {
+          if (data.data.data.discount) {
+            toast.success("Coupon applied successfully!");
+          } else {
+            toast.warning("Invalid coupon code");
+          }
+        }
+      })
+      .catch(() => {
+        toast.error("Failed to load cart");
+        setIsLoading(false);
+      });
   }, [apply]);
+
   return (
     <div className="cart-page">
       <Notifcation />
-      {/* Header */}
+
+      {/* Loading Screen */}
+      {isLoading && (
+        <div className="loading-screen">
+          <div className="spinner"></div>
+          <p>Loading your cart...</p>
+        </div>
+      )}
+
       <Header />
 
-
-      {/* Cart Section */}
       <section className="cart-section">
         <div className="container">
           <h2 className="section-title">My Cart</h2>
@@ -72,10 +142,10 @@ const CartPage = () => {
               <span>Sub Total</span>
             </div>
 
-            <div className="cart-items">
-              {cart.length === 0 ? (
+            <div className="cart-items" ref={cartRef}>
+              {cart.length === 0 && !isLoading ? (
                 <div className="text-center">
-                  <div className="flex w-full justify-center  mx-auto h-96">
+                  <div className="flex w-full justify-center mx-auto h-96">
                     <img
                       src={empty}
                       alt="cart"
@@ -84,7 +154,6 @@ const CartPage = () => {
                     />
                   </div>
                   <h3 className="text-2xl font-medium text-[#1D1919]">
-                    {" "}
                     your cart is empty!
                   </h3>
                   <p className="text-[#656565] mt-4 max-w-80">
@@ -97,7 +166,13 @@ const CartPage = () => {
                   <div key={item.id} className="cart-item">
                     <button
                       className="remove-btn"
-                      onClick={() => removeItem(item.product.slug)}
+                      onClick={() =>
+                        removeItem(
+                          item.product.slug,
+                          item.product.id,
+                          item.size.id,
+                        )
+                      }
                     >
                       <svg
                         width="40"
@@ -132,7 +207,12 @@ const CartPage = () => {
                       >
                         -
                       </button>
-                      <span className="quantity">{item.quantity}</span>
+                      <span
+                        id={`quantity-${item.product.id}`}
+                        className="quantity"
+                      >
+                        {item.quantity}
+                      </span>
                       <button
                         className="quantity-btn"
                         onClick={() =>
@@ -158,12 +238,12 @@ const CartPage = () => {
               <input
                 type="text"
                 placeholder="Coupon code"
-                onChange={(e)=>setDiscount(e.target.value)}
-                // value={couponCode}
-                // onChange={(e) => setCouponCode(e.target.value)}
+                onChange={(e) => setDiscount(e.target.value)}
                 className="coupon-input"
               />
-              <button className="apply-btn" onChange={()=>setApply(prev=>!prev)}>Apply</button>
+              <button className="apply-btn" onClick={applyCoupon}>
+                Apply
+              </button>
             </div>
           </div>
 
@@ -172,15 +252,16 @@ const CartPage = () => {
             <h3 className="totals-title">Cart Totals</h3>
             <div className="totals-row">
               <span className="totals-label">Subtotal</span>
-              <span className="totals-value">EGP {total.toFixed(2)}</span>
+              <span className="totals-value">EGP {subtotal.toFixed(2)}</span>
             </div>
-            {
-              discount !== '' &&
+            {discount !== "" && (
               <div className="totals-row">
-              <span className="totals-label">Discount</span>
-              <span className="totals-value">EGP {discountValue}</span>
-            </div>
-            }
+                <span className="totals-label">Discount</span>
+                <span className="totals-value">
+                  - EGP {discountValue.toFixed(2)}
+                </span>
+              </div>
+            )}
             <div className="totals-row">
               <span className="totals-label">Shipping</span>
               <span className="totals-value">Free Shipping</span>
@@ -189,7 +270,9 @@ const CartPage = () => {
               <span className="totals-label">Total</span>
               <span className="totals-value">EGP {total.toFixed(2)}</span>
             </div>
-            <Link  to='/checkout' className="checkout-btn">Checkout</Link>
+            <Link to="/checkout" className="checkout-btn">
+              Checkout
+            </Link>
           </div>
         </div>
       </section>
@@ -223,13 +306,9 @@ const CartPage = () => {
                       <h3 className="product-title">
                         {product.product.name.en}
                       </h3>
-                      {/* <p className="product-category">{product.product.category.name}</p> */}
                       <div className="product-pricing">
                         <span className="current-price">
                           EGP {product.product.price}
-                        </span>
-                        <span className="original-price">
-                          {/* ${product.originalPrice} */}
                         </span>
                       </div>
                     </div>
@@ -241,8 +320,7 @@ const CartPage = () => {
         </div>
       </section>
 
-      {/* Footer */}
-    <Footer/>
+      <Footer />
     </div>
   );
 };

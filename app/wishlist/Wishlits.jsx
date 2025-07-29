@@ -59,7 +59,7 @@ const WishlistPage = () => {
                   >
                     <div className="card-image-container">
                       <img
-                        src={item.images}
+                        src={item.images[0]?.path}
                         alt={item.name.en}
                         className="card-image"
                       />

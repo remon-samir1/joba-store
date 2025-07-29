@@ -12,12 +12,7 @@ import {
 } from "@/components/ui/table";
 import Cookies from "cookie-universal";
 
-import {
-  TrendingUp,
-  TrendingDown,
-  MoreHorizontal,
-  Plus,
-} from "lucide-react";
+import { TrendingUp, TrendingDown, MoreHorizontal, Plus } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -34,227 +29,63 @@ import { Axios } from "../../components/Helpers/Axios";
 import { Link } from "react-router-dom";
 
 
-
-const weeklyData = {
-  customers: "52k",
-  totalProducts: "3.5k",
-  stockProducts: "2.5k",
-  outOfStock: "0.5k",
-  revenue: "250k",
-};
-
-const chartData = [
-  { name: "Sun", value: 10 },
-  { name: "Mon", value: 20 },
-  { name: "Tue", value: 15 },
-  { name: "Wed", value: 35 },
-  { name: "Thu", value: 25 },
-  { name: "Fri", value: 30 },
-  { name: "Sat", value: 20 },
-];
-
-const usersChartData = [
-  { time: "1", users: 15 },
-  { time: "2", users: 25 },
-  { time: "3", users: 20 },
-  { time: "4", users: 30 },
-  { time: "5", users: 35 },
-  { time: "6", users: 20 },
-  { time: "7", users: 25 },
-  { time: "8", users: 40 },
-];
-
-const salesByCountry = [
-  { country: "Egypt", flag: "🇪🇬", percentage: "30%", change: "+2.85%" },
-  { country: "Saudi Arabia", flag: "🇸🇦", percentage: "30%", change: "+9.65%" },
-  { country: "Lebanon", flag: "🇱🇧", percentage: "30%", change: "+7.84%" },
-];
-
-const topProducts = [
-  {
-    name: "Joint Pain",
-    image: "/placeholder.svg",
-    price: "EGP 35.40",
-    code: "Item: #YZ-452",
-  },
-  {
-    name: "Neck & Back",
-    image: "/placeholder.svg",
-    price: "EGP 35.40",
-    code: "Item: #YZ-452",
-  },
-  {
-    name: "Cough Relief",
-    image: "/placeholder.svg",
-    price: "EGP 35.40",
-    code: "Item: #YZ-452",
-  },
-  {
-    name: "Nasal Soothing",
-    image: "/placeholder.svg",
-    price: "EGP 35.40",
-    code: "Item: #YZ-452",
-  },
-];
-
-const invoices = [
-  {
-    id: "1",
-    customerId: "#6545",
-    date: "01 Oct 11:29 am",
-    status: "Paid",
-    amount: "EGP 84",
-  },
-  {
-    id: "2",
-    customerId: "#5412",
-    date: "01 Oct 11:29 am",
-    status: "Unpaid",
-    amount: "EGP 587",
-  },
-  {
-    id: "3",
-    customerId: "#8622",
-    date: "01 Oct 11:29 am",
-    status: "Paid",
-    amount: "EGP 156",
-  },
-  {
-    id: "4",
-    customerId: "#6462",
-    date: "01 Oct 11:29 am",
-    status: "Paid",
-    amount: "EGP 365",
-  },
-  {
-    id: "5",
-    customerId: "#6462",
-    date: "01 Oct 11:29 am",
-    status: "Paid",
-    amount: "EGP 365",
-  },
-];
-
-const bestSellingProducts = [
-  {
-    name: "Joint Pain",
-    orders: 266,
-    status: "Stock",
-    price: "EGP 999.00",
-    image: "/placeholder.svg",
-  },
-  {
-    name: "Joint Pain",
-    orders: 56,
-    status: "Stock out",
-    price: "EGP 999.00",
-    image: "/placeholder.svg",
-  },
-  {
-    name: "Joint Pain",
-    orders: 266,
-    status: "Stock",
-    price: "EGP 999.00",
-    image: "/placeholder.svg",
-  },
-  {
-    name: "Joint Pain",
-    orders: 506,
-    status: "Stock",
-    price: "EGP 999.00",
-    image: "/placeholder.svg",
-  },
-];
-
-const newProducts = [
-  {
-    name: "Medical Mixtures",
-    image: "/placeholder.svg",
-  },
-  {
-    name: "Therapeutic Oils",
-    image: "/placeholder.svg",
-  },
-  {
-    name: "Creams & Ointments",
-    image: "/placeholder.svg",
-  },
-];
-
-const products = [
-  {
-    name: "Smart Watch",
-    price: "EGP 39.99",
-    image: "/placeholder.svg",
-  },
-  {
-    name: "Leather Wallet",
-    price: "EGP 19.99",
-    image: "/placeholder.svg",
-  },
-  {
-    name: "Watch SMM",
-    price: "EGP 34.99",
-    image: "/placeholder.svg",
-  },
-];
-
 export default function Dashboard() {
   function formatDate(dateString) {
     const date = new Date(dateString);
-  
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' }); // Oct
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = date.toLocaleString("en-US", { month: "short" }); // Oct
     const hours = date.getHours();
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-  
-    const ampm = hours >= 12 ? 'pm' : 'am';
-  
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    const ampm = hours >= 12 ? "pm" : "am";
+
     const hour12 = hours % 12 || 12;
-  
+
     return `${day} ${month} ${hour12}:${minutes} ${ampm}`;
   }
-  
-  
-const [data , setData] = useState([])
-const [productsData , setProductsData] = useState([])
-const [categoriesData , setCategoriesData] = useState([])
-  useEffect(()=>{
-    Axios.get('/admin/dashboard').then(data => {
-      setData(data.data.data)
-      console.log(data)});
-    Axios.get('/products').then(data => {
-      setProductsData(data.data.data)
-      console.log(data)});
-    Axios.get('/categories').then(data => {
-      setCategoriesData(data.data.data.data)
-      console.log(data)});
-  },[])
+
+  const [data, setData] = useState([]);
+  const [productsData, setProductsData] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([]);
+  useEffect(() => {
+    Axios.get("/admin/dashboard").then((data) => {
+      setData(data.data.data);
+      console.log(data);
+    });
+    Axios.get("/products").then((data) => {
+      setProductsData(data.data.data);
+      console.log(data);
+    });
+    Axios.get("/categories").then((data) => {
+      setCategoriesData(data.data.data.data);
+      console.log(data);
+    });
+  }, []);
   const orderStats = [
     {
       title: "Total Orders",
-      value: data?.order_stats?.last_7_days    ,
+      value: data?.order_stats?.last_7_days,
       change: data?.order_stats?.change_percent,
-      trend: data?.order_stats?.change_percent < 0 ? 'up' : "down",
+      trend: data?.order_stats?.change_percent < 0 ? "up" : "down",
       period: "Last 7 days",
-      previousValue: "Last 7days"+  data?.order_stats?.last_7_days ,
+      previousValue: "Last 7days" + data?.order_stats?.last_7_days,
     },
     {
       title: "Total Orders",
-      value:  data?.order_stats?.previous_7_days ,
+      value: data?.order_stats?.previous_7_days,
       change: data?.order_stats?.change_percent,
-      trend: data?.order_stats?.change_percent < 0 ? 'up' : "down",
-      
+      trend: data?.order_stats?.change_percent < 0 ? "up" : "down",
+
       period: "Prevoius 7 days",
-      previousValue: "Previous 7 days" +data?.order_stats?.previous_7_days 
+      previousValue: "Previous 7 days" + data?.order_stats?.previous_7_days,
     },
     {
       title: "Pending & Canceled",
-      pending: data.order_stats?.pending    ,
-      canceled:  data.order_stats?.cancelled  ,
+      pending: data.order_stats?.pending,
+      canceled: data.order_stats?.cancelled,
       change: data?.order_stats?.change_percent,
-      trend: data?.order_stats?.change_percent < 0 ? 'up' : "down",
-  
+      trend: data?.order_stats?.change_percent < 0 ? "up" : "down",
     },
   ];
   return (
@@ -319,42 +150,42 @@ const [categoriesData , setCategoriesData] = useState([])
           <Card className="xl:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Report for this week</CardTitle>
-              <div className="flex space-x-4 text-sm">
+              {/* <div className="flex space-x-4 text-sm">
                 <span className="text-orange-500 cursor-pointer">
                   This week
                 </span>
                 <span className="text-gray-500 cursor-pointer">Last week</span>
                 <MoreHorizontal className="h-4 w-4 text-gray-400" />
-              </div>
+              </div> */}
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-4 sm:mb-6">
                 <div className="text-center">
                   <div className="text-xl font-bold">
-                    {weeklyData.customers}
+                    {data?.customer_stats?.total_customers}
                   </div>
                   <div className="text-xs text-gray-500">Customers</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xl font-bold">
-                    {weeklyData.totalProducts}
+                    {data?.customer_stats?.total_products}
                   </div>
                   <div className="text-xs text-gray-500">Total Products</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xl font-bold">
-                    {weeklyData.stockProducts}
+                    {data?.customer_stats?.in_stock}
                   </div>
                   <div className="text-xs text-gray-500">Stock Products</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xl font-bold">
-                    {weeklyData.outOfStock}
+                    {data?.customer_stats?.out_of_stock}
                   </div>
                   <div className="text-xs text-gray-500">Out of Stock</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold">{weeklyData.revenue}</div>
+                  <div className="text-xl font-bold">{data?.customer_stats?.revenue}</div>
                   <div className="text-xs text-gray-500">Revenue</div>
                 </div>
               </div>
@@ -363,7 +194,7 @@ const [categoriesData , setCategoriesData] = useState([])
               <div className="h-64">
                 <div className="w-full h-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData}>
+                    <LineChart data={data?.sales_over_time}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="name" axisLine={false} tickLine={false} />
                       <YAxis axisLine={false} tickLine={false} />
@@ -372,7 +203,7 @@ const [categoriesData , setCategoriesData] = useState([])
                           if (active && payload && payload.length) {
                             return (
                               <div className="bg-orange-500 text-white p-2 rounded shadow">
-                                <p>{`Thursday: ${payload[0].value}k`}</p>
+                                <p>{` ${payload[0].name}`}</p>
                               </div>
                             );
                           }
@@ -381,7 +212,7 @@ const [categoriesData , setCategoriesData] = useState([])
                       />
                       <Line
                         type="monotone"
-                        dataKey="value"
+                        dataKey="sales"
                         stroke="#F15A24"
                         strokeWidth={3}
                         dot={false}
@@ -398,18 +229,20 @@ const [categoriesData , setCategoriesData] = useState([])
           <div className="space-y-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Users in last 50 minutes</CardTitle>
+                <CardTitle>Users in last 30 minutes</CardTitle>
                 <MoreHorizontal className="h-4 w-4 text-gray-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">21.5K</div>
+                <div className="text-3xl font-bold">
+                  {data?.users_last_30_minutes}
+                </div>
                 <div className="text-sm text-gray-500 mb-4">
                   Users per minute
                 </div>
                 <div className="h-16">
                   <div className="w-full h-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={usersChartData}>
+                      <BarChart data={data?.users_per_minute}>
                         <Bar dataKey="users" fill="#F15A24" />
                       </BarChart>
                     </ResponsiveContainer>
@@ -430,9 +263,13 @@ const [categoriesData , setCategoriesData] = useState([])
                   >
                     <div className="flex items-center space-x-3">
                       <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center">
-                        <span className="text-sm">{country.country.slice(0 ,2).toUpperCase()}</span>
+                        <span className="text-sm">
+                          {country.country.slice(0, 2).toUpperCase()}
+                        </span>
                       </div>
-                      <span className="text-sm font-medium">{country.change_percent}</span>
+                      <span className="text-sm font-medium">
+                        {country.change_percent}
+                      </span>
                       <span className="text-sm text-gray-500">
                         {country.country}
                       </span>
@@ -442,12 +279,12 @@ const [categoriesData , setCategoriesData] = useState([])
                     </span>
                   </div>
                 ))}
-                <Button
+                {/* <Button
                   variant="outline"
                   className="w-full mt-4 text-orange-500 border-orange-500 hover:bg-orange-50"
                 >
                   View Insight
-                </Button>
+                </Button> */}
               </CardContent>
             </Card>
           </div>
@@ -504,7 +341,7 @@ const [categoriesData , setCategoriesData] = useState([])
                               : "bg-red-100 text-red-700 hover:bg-red-100"
                           }
                         >
-                          ● {invoice.status}
+                          {invoice.status}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm font-medium">
@@ -529,11 +366,16 @@ const [categoriesData , setCategoriesData] = useState([])
               {data?.top_products?.map((product, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <img src={product.image} className="w-8 h-8 bg-orange-200 rounded"></img>
+                    <img
+                      src={product.images[0]?.path}
+                      className="w-8 h-8 bg-orange-200 rounded"
+                    ></img>
                   </div>
                   <div className="flex-1">
                     <div className="text-sm font-medium">{product.name.en}</div>
-                    <div className="text-xs text-gray-500">{product.description.en}</div>
+                    <div className="text-xs text-gray-500">
+                      {product.description.en}
+                    </div>
                   </div>
                   <div className="text-sm font-medium text-orange-500">
                     {product.price}
@@ -554,7 +396,12 @@ const [categoriesData , setCategoriesData] = useState([])
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Add New Product</CardTitle>
-              <Link to='/dashboard/products/add' variant="ghost" size="sm" className="text-orange-500">
+              <Link
+                to="/dashboard/products/add"
+                variant="ghost"
+                size="sm"
+                className="text-orange-500"
+              >
                 <Plus className="h-4 w-4 mr-1" />
                 Add New
               </Link>
@@ -569,7 +416,10 @@ const [categoriesData , setCategoriesData] = useState([])
                   >
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
-                        <img src={product.images[0].path} className="w-6 h-6 bg-orange-200 rounded"></img>
+                        <img
+                          src={product.images[0].path}
+                          className="w-6 h-6 bg-orange-200 rounded"
+                        ></img>
                       </div>
                       <span className="text-sm">{product.name.en}</span>
                     </div>
@@ -577,7 +427,7 @@ const [categoriesData , setCategoriesData] = useState([])
                   </div>
                 ))}
                 <Link
-                to='/dashboard/products'
+                  to="/dashboard/products"
                   variant="ghost"
                   size="sm"
                   className="w-full mt-2 text-orange-500"
@@ -595,7 +445,10 @@ const [categoriesData , setCategoriesData] = useState([])
                   >
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
-                        <img src={product.image} className="w-6 h-6 bg-orange-200 rounded"></img>
+                        <img
+                          src={product.image}
+                          className="w-6 h-6 bg-orange-200 rounded"
+                        ></img>
                       </div>
                       <div>
                         <div className="text-sm">{product.name}</div>
@@ -605,7 +458,7 @@ const [categoriesData , setCategoriesData] = useState([])
                       </div>
                     </div>
                     <Link
-                    to='/dashboard/categories'
+                      to="/dashboard/categories"
                       size="sm"
                       className="bg-orange-500 hover:bg-orange-600 text-white h-6 px-2 text-xs"
                     >
@@ -614,8 +467,7 @@ const [categoriesData , setCategoriesData] = useState([])
                   </div>
                 ))}
                 <Link
-                    to='/dashboard/categories'
-
+                  to="/dashboard/categories"
                   variant="ghost"
                   size="sm"
                   className="w-full mt-2 text-orange-500"
@@ -658,7 +510,10 @@ const [categoriesData , setCategoriesData] = useState([])
                   <TableRow key={index}>
                     <TableCell className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                        <img src={product.images[0].path} className="w-8 h-8 bg-orange-200 rounded"></img>
+                        <img
+                          src={product.images[0].path}
+                          className="w-8 h-8 bg-orange-200 rounded"
+                        ></img>
                       </div>
                       <span className="font-medium">{product.name.en}</span>
                     </TableCell>
@@ -668,7 +523,9 @@ const [categoriesData , setCategoriesData] = useState([])
                     <TableCell>
                       <Badge
                         variant={
-                          product.status === "approved" ? "default" : "destructive"
+                          product.status === "approved"
+                            ? "default"
+                            : "destructive"
                         }
                         className={
                           product.status === "approved"

@@ -36,6 +36,7 @@ import UpdateProduct from "./pages/dashboard/UpdateProduct";
 
 import { Settings } from "./pages/dashboard/Settings";
 import InvoicesDetails from "./pages/dashboard/InvoicesDetails.jsx";
+import RequireAuth from "./components/RequireAuth.jsx";
 // import AddCoupon from "./pages/dashboard/AddCoupon";
 
 const queryClient = new QueryClient();
@@ -57,6 +58,9 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/categories/:id" element={<CategoriesPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
+          <Route  element={<  RequireAuth />} >
+    
+
           <Route
             path="/dashboard/*"
             element={
@@ -92,6 +96,7 @@ function App() {
           <Route path="/help" element={<HelpPage />} />
           <Route path="/support" element={<SupportPage />} />
           <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
         <Toaster />
         <ReactQueryDevtools initialIsOpen={false} />

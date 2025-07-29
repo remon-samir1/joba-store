@@ -15,6 +15,7 @@ import { Axios, baseURL } from "../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import Notifcation from "../../components/Notification";
 import Testimonials from "./Testmonials";
+import SeoHelmet from "../components/SeoHelmet/SeoHelmet.jsx";
 
 // Hero slides data
 const heroSlides = [
@@ -79,6 +80,7 @@ function Hero() {
   return (
     <section className="relative h-[400px] sm:h-[500px] lg:h-[664px] bg-gray-900 overflow-hidden">
       {/* Slides */}
+      <SeoHelmet/>
       {heroSlides.map((slide, index) => (
         <div
           key={slide.id}
