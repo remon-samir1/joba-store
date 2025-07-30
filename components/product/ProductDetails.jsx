@@ -242,25 +242,31 @@ export function ProductDetails({
         onClose={() => setShowModal(false)}
       />
 
-      {showDocModal && (
-        <div className="fixed inset-0 ml-16 flex-1 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg w-full max-w-4xl h-[100vh] relative shadow-lg">
-            <button
-              className="absolute top-2 left-[40%] text-gray-700 hover:text-red-600 text-2xl font-bold"
-              onClick={() => setShowDocModal(false)}
-            >
-              ×
-            </button>
-            <iframe
-              src={`https://docs.google.com/gview?url=${encodeURIComponent(
-                attachment_path,
-              )}&embedded=true`}
-              title="Document Viewer"
-              className="w-full h-[80vh] rounded-b-lg"
-            ></iframe>
-          </div>
-        </div>
-      )}
+{showDocModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div className="bg-white rounded-lg shadow-lg relative overflow-hidden"
+         style={{ width: "80%", height: "80%" }}>
+      {/* Close Button */}
+      <button
+        className="absolute top-2 right-3 text-gray-700 hover:text-red-600 text-2xl font-bold z-10"
+        onClick={() => setShowDocModal(false)}
+      >
+        ×
+      </button>
+
+      {/* Document Viewer */}
+      <iframe
+        src={`https://docs.google.com/gview?url=${encodeURIComponent(
+          attachment_path,
+        )}&embedded=true`}
+        title="Document Viewer"
+        className="w-full h-full"
+      ></iframe>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 }

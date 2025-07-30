@@ -175,7 +175,7 @@ export function Settings() {
         _method: "PUT",
       }).then((data) => {
         console.log(data);
-        toast.success()
+        toast.success('Updated Successfly')
       });
       setPasswords({
         currentPassword: "",

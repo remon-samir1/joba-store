@@ -37,6 +37,7 @@ import UpdateProduct from "./pages/dashboard/UpdateProduct";
 import { Settings } from "./pages/dashboard/Settings";
 import InvoicesDetails from "./pages/dashboard/InvoicesDetails.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
+import SingleBlog from "../app/blog/singleBlog";
 // import AddCoupon from "./pages/dashboard/AddCoupon";
 
 const queryClient = new QueryClient();
@@ -52,7 +53,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/blog/:id" element={<singleBlog />} />
+          <Route path="/blog/:id" element={<SingleBlog />} />
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/contact" element={<ContactPage />} />
