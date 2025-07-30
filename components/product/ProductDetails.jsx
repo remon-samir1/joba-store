@@ -35,6 +35,8 @@ export function ProductDetails({
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [showDocModal, setShowDocModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const [sizePrice, setSizePrice] = useState(sizes[0].price);
   const cartcontext = useContext(CartCh);
   const change = cartcontext.setCartChange;
@@ -94,7 +96,7 @@ export function ProductDetails({
   };
 
   return (
-    <div className="space-y-8  ">
+    <div className={`${!showDocModal && 'space-y-8'} `}  >
       <Notifcation />
 
       <div className="space-y-6">
@@ -243,16 +245,25 @@ export function ProductDetails({
       />
 
 {showDocModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-    <div className="bg-white rounded-lg shadow-lg relative overflow-hidden"
-         style={{ width: "80%", height: "80%" }}>
+  <div className="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div
+      className="bg-white rounded-lg shadow-lg relative overflow-hidden"
+      style={{ width: "80%", height: "80%" }}
+    >
       {/* Close Button */}
       <button
-        className="absolute top-2 right-3 text-gray-700 hover:text-red-600 text-2xl font-bold z-10"
+        className="absolute top-2 left-3 text-white hover:text-red-600 text-2xl font-bold z-10"
         onClick={() => setShowDocModal(false)}
       >
         ×
       </button>
+
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="absolute inset-0 bg-white bg-opacity-80 z-10 flex items-center justify-center">
+          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
 
       {/* Document Viewer */}
       <iframe
@@ -261,6 +272,7 @@ export function ProductDetails({
         )}&embedded=true`}
         title="Document Viewer"
         className="w-full h-full"
+        onLoad={() => setLoading(false)}
       ></iframe>
     </div>
   </div>
