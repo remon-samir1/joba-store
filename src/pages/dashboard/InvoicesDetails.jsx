@@ -8,16 +8,20 @@ import { Axios } from "../../../components/Helpers/Axios";
 import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
 import TransformDate from "../../../components/Helpers/TransformDate";
 import { Printer } from "lucide-react";
+import Notifcation from "../../../components/Notification";
+import { toast } from "react-toastify";
 const InvoicesDetails = () => {
   const scrollRef = useRef(null);
   //  get data
   const { id } = useParams();
   const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     scrollRef.current.scrollIntoView();
     Axios.get(`/admin/orders/${id}`).then((data) => {
       setData(data.data.data);
+      setIsLoading(false)
       console.log(data.data);
     });
   }, []);
@@ -30,13 +34,23 @@ const InvoicesDetails = () => {
 Axios.post(`/admin/orders/${id}` , {
   status:value,
   _method:'PUT'
-}).then(data => console.log(data))
+}).then(data =>{
+  
+  toast.success('updated Successfly')
+})
     }catch(err){
 
     }
   }
   return (
     <div ref={scrollRef} className="OrderDetails">
+      <Notifcation/>
+          {isLoading && (
+        <div className="loading-screen">
+          <div className="spinner"></div>
+          <p>Loading your Details...</p>
+        </div>
+      )}
       <DashboardHeader />
       <div className="invoices p-5">
         <h4>invoices</h4>
@@ -109,13 +123,16 @@ Axios.post(`/admin/orders/${id}` , {
           <span>Print</span>
         </button>
         <select 
-        onChange={(e)=>handleStatus(e.target.value)}
+        value={data?.status}
+        onChange={(e)=>{
+          setData({...data , status:e.target.value})
+          handleStatus(e.target.value)}}
           className="text-white bg-btnColor outline-none  bg-primary w-max rounded- px-8 py-2 rounded border-btnColor flex justify-center items-center gap-2 hover:scale-105 duration-500"
         
         >
           <option className="bg-white text-primary" value="">status</option>
           <option className="bg-white text-primary" value="pending">Pending</option>
-          <option className="bg-white text-primary" value="completed">Compeleted</option>
+          <option className="bg-white text-primary" value="delivered">Compeleted</option>
           <option className="bg-white text-primary" value="cancelled">Cancelled</option>
           <option className="bg-white text-primary" value="shipped">Shipped</option>
         </select>
