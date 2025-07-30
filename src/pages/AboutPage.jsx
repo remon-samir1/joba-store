@@ -66,53 +66,6 @@ export default function AboutPage() {
       </section>
 
       {/* Featured Content Section with Large Background and Overlay */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="relative min-h-[400px] lg:min-h-[538px]">
-            {/* Large Background Image */}
-            <div className="relative w-full h-80 lg:h-96 rounded-2xl overflow-hidden mb-8 lg:mb-0">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/eddfdc699d8281bb16d0aa99d53c775bc0bb8a30?width=2480"
-                alt="Featured Background"
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Orange Overlay Content */}
-            <div className="relative lg:absolute lg:right-0 lg:top-1/2 lg:-translate-y-1/2 w-full lg:w-1/2 max-w-[639px] bg-[#DD7753] rounded-2xl p-6 lg:p-10">
-              <div className="flex flex-col gap-6">
-                <h3 className="text-2xl lg:text-3xl font-medium text-white leading-[150%]">
-                  Lorem ipsum dolor sit amet consectetur. Tortor faucibus leo
-                  eget lorem.
-                </h3>
-                <p className="text-base lg:text-lg text-white leading-[160%]">
-                  Lorem ipsum dolor sit amet consectetur. Ornare sodales varius
-                  egestas malesuada placerat nunc consequat tincidunt id. At
-                  arcu facilisis et aliquam eu sed
-                </p>
-              </div>
-            </div>
-
-            {/* Bottom Right Images */}
-            <div className="flex flex-col sm:flex-row gap-4 lg:gap-8 mt-8 lg:mt-0 lg:absolute lg:right-0 lg:bottom-[-60px]">
-              <div className="w-full sm:w-48 lg:w-[308px] h-48 lg:h-[219px] rounded-xl border border-gray-200 bg-gray-300 overflow-hidden">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/0b6428fb792f07dc0ec81d9486be3cd60998a97f?width=614"
-                  alt="Product showcase"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="w-full sm:w-48 lg:w-[308px] h-48 lg:h-[219px] rounded-xl border border-gray-200 overflow-hidden">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/1c6519f21e5f9c4c874a8de82bb1b3542719423b?width=616"
-                  alt="Product showcase"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">

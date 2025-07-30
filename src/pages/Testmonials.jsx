@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Axios } from '../../components/Helpers/Axios';
+import StringSlice from '../../components/Helpers/StringSlice';
 
 function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -134,7 +135,7 @@ function Testimonials() {
                         isActive ? "text-gray-100" : "text-gray-600"
                       }`}
                     >
-                      {testimonial.content}
+                      {StringSlice(testimonial.content , 120)}
                     </p>
 
                     {/* الاسم */}
