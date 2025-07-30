@@ -20,6 +20,7 @@ import {
   Menu,
   X,
   Contact,
+  Paperclip,
 } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
 
@@ -32,6 +33,7 @@ const mainNavigation = [
   { name: "Categories", href: "/dashboard/categories", icon: Grid3X3 },
   { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
   { name: "Contacts", href: "/dashboard/contacts", icon: Contact },
+  { name: "Blogs", href: "/dashboard/blogs", icon: Paperclip },
   // { name: "Popup maker", href: "/dashboard/popup-maker", icon: Megaphone },
 
 ];

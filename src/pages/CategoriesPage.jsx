@@ -18,6 +18,7 @@ import { Axios } from "../../components/Helpers/Axios";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Header } from "../components/Header";
+import StringSlice from "../../components/Helpers/StringSlice";
 
 const tags = [
   "Natural blends",
@@ -284,7 +285,7 @@ export default function CategoriesPage() {
               </div>
             </div>
             <div className="mb-12">
-              <div className="flex items-center justify-between mb-4">
+              {/* <div className="flex items-center justify-between mb-4">
                 <span className="text-foreground font-medium">
                   Medical Mixtures
                 </span>
@@ -329,11 +330,11 @@ export default function CategoriesPage() {
                     </div>
                   ))}
                 </div>
-              )}
+              )} */}
             </div>
             <div className="mb-12">
               <h3 className="text-2xl font-semibold mb-6">Tags</h3>
-              <div className="flex flex-wrap gap-2">
+              {/* <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
                   <button
                     key={tag}
@@ -347,7 +348,7 @@ export default function CategoriesPage() {
                     {tag}
                   </button>
                 ))}
-              </div>
+              </div> */}
             </div>
             <div className="bg-primary rounded-lg p-8 text-white">
               <h3 className="text-4xl font-semibold mb-4">March Discount</h3>
@@ -414,7 +415,7 @@ export default function CategoriesPage() {
                             {product.name?.en}
                           </h3>
                           <p className="text-sm opacity-90 mb-4">
-                            {product.description?.en}
+                            {StringSlice(product.description?.en , 100)}
                           </p>
                           <div className="flex items-center justify-center gap-2 mb-4">
                             <span className="text-primary font-medium">
@@ -433,7 +434,7 @@ export default function CategoriesPage() {
                 ))
               )}
             </div>
-            <section>
+            {/* <section>
               <h2 className="text-4xl font-bold mb-12">Recommended for you</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {isLoadingRecommended
@@ -470,7 +471,7 @@ export default function CategoriesPage() {
                       </Link>
                     ))}
               </div>
-            </section>
+            </section> */}
           </main>
         </div>
       </div>

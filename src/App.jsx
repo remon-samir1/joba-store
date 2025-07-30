@@ -39,6 +39,9 @@ import InvoicesDetails from "./pages/dashboard/InvoicesDetails.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import SingleBlog from "../app/blog/singleBlog";
 import ContactsManagementPage from "./pages/dashboard/ContactsManagementPage";
+import BlogsManagement from "./pages/dashboard/BlogsManagement";
+import AddBlog from "./pages/dashboard/AddBlog";
+import UpdateBlogs from "./pages/dashboard/UpdateBlogs";
 // import AddCoupon from "./pages/dashboard/AddCoupon";
 
 const queryClient = new QueryClient();
@@ -80,6 +83,18 @@ function App() {
                   <Route
                     path="contacts"
                     element={<ContactsManagementPage />}
+                  />
+                  <Route
+                    path="blogs"
+                    element={<BlogsManagement />}
+                  />
+                  <Route
+                    path="blogs/edit/:id"
+                    element={<UpdateBlogs />}
+                  />
+                  <Route
+                    path="blogs/add"
+                    element={<AddBlog />}
                   />
                   <Route path="categories/add" element={<AddCategory />} />
                   <Route

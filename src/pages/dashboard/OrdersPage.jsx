@@ -323,7 +323,7 @@ export default function OrdersPage() {
                               : "bg-yellow-100 text-yellow-700"
                           }
                         >
-                          {order.payment_status}
+                          {'Cash'}
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium text-orange-600">

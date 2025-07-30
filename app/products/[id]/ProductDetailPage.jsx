@@ -44,14 +44,18 @@ export default function ProductDetailPage() {
       />
       <Header />
 
-      <main className="py-12 px-4 sm:px-6 lg:px-8">
+      <main className="py-12 px-4 sm:px-6 lg:px-8 ">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-start justify-center  px-5  md:flex-row flex-col !gap-11">
+          <div className="flex items-start justify-center gap-20  px-5  md:flex-row flex-col">
+            <div className="flex-1">
+
             <ProductHero
               // reviews={product?.reviews}
               image={product?.image}
               additionalImages={product?.images}
-            />
+              />
+              </div>
+<div className="flex-1">
 
             <ProductDetails
               inStock={product?.stock}
@@ -69,6 +73,7 @@ export default function ProductDetailPage() {
               category={product?.category.name}
               tags={product?.tags || []}
             />
+              </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 mt-11 gap-12 mb-16">

@@ -97,55 +97,56 @@ export function ProductDetails({
     setShowDocModal(true);
   };
   const ratings = productData.reviews
-  .map(obj => obj.rating)
-  .filter(r => typeof r === "number");
+    .map((obj) => obj.rating)
+    .filter((r) => typeof r === "number");
 
-const averageRating = ratings.length > 0 ? 
-  (ratings.reduce((sum, r) => sum + r, 0) / ratings.length).toFixed(1) : 
-  0;
+  const averageRating =
+    ratings.length > 0
+      ? (ratings.reduce((sum, r) => sum + r, 0) / ratings.length).toFixed(1)
+      : 0;
 
   return (
-    <div className={`${!showDocModal && 'space-y-8'} `}  >
+    <div className={`${!showDocModal && " "}w-full `}>
       <Notifcation />
 
       <div className="space-y-6">
         <div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">{name}</h1>
           <div className="text-3xl font-semibold text-primary mb-6">
-            {+price + +sizePrice}
+            $ {+price + +sizePrice}
           </div>
 
           <div className="flex items-center gap-2 mb-6">
             <div className="flex items-center">
-            <div className="flex items-center gap-2 mb-6">
-  <div className="flex items-center">
-    {[1, 2, 3, 4, 5].map((star) => (
-      <svg
-        key={star}
-        className={`h-4 w-4 ${
-          star <= Math.round(averageRating)
-            ? "text-yellow-400 fill-current"
-            : "text-gray-300 fill-current"
-        }`}
-        viewBox="0 0 20 20"
-      >
-        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-      </svg>
-    ))}
-  </div>
-  <span className="text-sm text-gray-600">
-    {averageRating} ({productData.reviews.length} Review{productData.reviews.length !== 1 ? "s" : ""})
-  </span>
-</div>
+              <div className="flex items-center gap-2 mb-6">
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <svg
+                      key={star}
+                      className={`h-4 w-4 ${
+                        star <= Math.round(averageRating)
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-300 fill-current"
+                      }`}
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                    </svg>
+                  ))}
+                </div>
+                <span className="text-sm text-gray-600">
+                  {averageRating} ({productData.reviews.length} Review
+                  {productData.reviews.length !== 1 ? "s" : ""})
+                </span>
+              </div>
             </div>
-      
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-2">
               <Info className="h-6 w-6 text-primary" />
               <span className="text-gray-900">
-                {inStock ?  inStock +" in stock" : "Out of stock"}
+                {inStock ? inStock + " in stock" : "Out of stock"}
               </span>
             </div>
           </div>
@@ -161,14 +162,16 @@ const averageRating = ratings.length > 0 ?
         </div>
       </div>
 
-      <div>
+      <div className="w-92 overflow-hidden">
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">
           Description
         </h2>
-        <p className="text-gray-600 leading-relaxed">{description}</p>
+        <p className="text-gray-600 leading-relaxed whitespace-pre">
+          {description}
+        </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6 mt-6">
         <div className="flex gap-11">
           <span className="font-semibold text-gray-900 min-w-fit">
             Category
@@ -176,7 +179,7 @@ const averageRating = ratings.length > 0 ?
           <span className="text-gray-600">: {category}</span>
         </div>
 
-        <div className="flex gap-11">
+        <div className="flex gap-11 ">
           <span className="font-semibold text-gray-900 min-w-fit">Tags</span>
           <span className="text-gray-600">: {tags?.join(", ") || "N/A"}</span>
         </div>
@@ -204,7 +207,7 @@ const averageRating = ratings.length > 0 ?
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 sm:gap-4">
+      <div className="flex flex-wrap gap-2 sm:gap-4 my-8">
         {sizes.map((size) => (
           <Button
             key={size.id}
@@ -258,41 +261,39 @@ const averageRating = ratings.length > 0 ?
         onClose={() => setShowModal(false)}
       />
 
-{showDocModal && (
-  <div className="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50 p-4">
-    <div
-      className="bg-white rounded-lg shadow-lg relative overflow-hidden"
-      style={{ width: "80%", height: "80%" }}
-    >
-      {/* Close Button */}
-      <button
-        className="absolute top-2 left-3 text-white hover:text-red-600 text-2xl font-bold z-10"
-        onClick={() => setShowDocModal(false)}
-      >
-        ×
-      </button>
+      {showDocModal && (
+        <div className="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div
+            className="bg-white rounded-lg shadow-lg relative overflow-hidden"
+            style={{ width: "80%", height: "80%" }}
+          >
+            {/* Close Button */}
+            <button
+              className="absolute top-2 left-3 text-white hover:text-red-600 text-2xl font-bold z-10"
+              onClick={() => setShowDocModal(false)}
+            >
+              ×
+            </button>
 
-      {/* Loading Spinner */}
-      {loading && (
-        <div className="absolute inset-0 bg-white bg-opacity-80 z-10 flex items-center justify-center">
-          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            {/* Loading Spinner */}
+            {loading && (
+              <div className="absolute inset-0 bg-white bg-opacity-80 z-10 flex items-center justify-center">
+                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+
+            {/* Document Viewer */}
+            <iframe
+              src={`https://docs.google.com/gview?url=${encodeURIComponent(
+                attachment_path,
+              )}&embedded=true`}
+              title="Document Viewer"
+              className="w-full h-full"
+              onLoad={() => setLoading(false)}
+            ></iframe>
+          </div>
         </div>
       )}
-
-      {/* Document Viewer */}
-      <iframe
-        src={`https://docs.google.com/gview?url=${encodeURIComponent(
-          attachment_path,
-        )}&embedded=true`}
-        title="Document Viewer"
-        className="w-full h-full"
-        onLoad={() => setLoading(false)}
-      ></iframe>
-    </div>
-  </div>
-)}
-
-
     </div>
   );
 }

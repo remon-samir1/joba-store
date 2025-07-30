@@ -779,7 +779,7 @@ export default function AddProductPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {categories?.map((data) => (
-                        <SelectItem key={data.id} value={data.id}>
+                        <SelectItem placeholder={String(data.name)} key={data.id} value={data.id}>
                           {data.name}
                         </SelectItem>
                       ))}

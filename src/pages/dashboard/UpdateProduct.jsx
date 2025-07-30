@@ -99,7 +99,7 @@ export default function UpdateProduct() {
           discountedPrice: product.discount_price || "",
           salesPrice: product.sales_price || "",
           taxIncluded: product.tax_included ? "yes" : "no",
-          expirationStart: product.expiration_start || "",
+          expirationStart: product.created_at || "",
           expirationEnd: product.expiration_end || "",
           stockQuantity: product.stock || "",
           stockStatus: product.is_out_of_stock ? "out-of-stock" : "in-stock",
@@ -486,7 +486,7 @@ export default function UpdateProduct() {
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <Label className="text-gray-700">Expiration *</Label>
                   <div className="grid grid-cols-2 gap-4 mt-1">
                     <div className="relative">
@@ -508,7 +508,7 @@ export default function UpdateProduct() {
                       />
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Variation weight and pricing */}
                 <div className="space-y-4">

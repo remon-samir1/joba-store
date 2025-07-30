@@ -447,19 +447,19 @@ const CheckoutPage = () => {
                         <span>{item.product.price * item.quantity} EGP</span>
                       </div>
                     ))}
-
-                    <div className="totals-row" style={{...styles.totalsRow, fontWeight: 600}}>
-                      <span className="totals-label">Total</span>
-                      <span>EGP {total}</span>
-                    </div>
-                    {discount !== "" && (
+      {discount !== "" && (
               <div className="totals-row">
                 <span className="totals-label">Discount</span>
                 <span className="totals-value">
-                  - EGP {discountValue.toFixed(2)}
+                  $ {discountValue.toFixed(2)}
                 </span>
               </div>
             )}
+                    <div className="totals-row" style={{...styles.totalsRow, fontWeight: 600}}>
+                      <span className="totals-label">Total</span>
+                      <span>$ {total - discountValue}</span>
+                    </div>
+              
                   </div>
               <div className="coupon-section">
             <div className="coupon-container">

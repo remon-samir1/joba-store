@@ -31,7 +31,7 @@ export function ProductHero({
   };
 
   return (
-    <div className="flex-1 mr-28 px-[10vw] !w-[250px] gap-8 lg:gap-12 mb-8">
+    <div className="w-full shrink-0 mp-28 px-[10vw] gap-8 lg:gap-12 mb-8">
       {/* Product Image */}
       <div className="relative flex justify-center flex-col items-center">
         <div className="aspect-square !w-[200px] bg-white  border-gray-200 rounded-lg overflow-hidden">
