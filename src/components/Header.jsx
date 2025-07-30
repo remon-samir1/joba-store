@@ -143,7 +143,7 @@ export function Header() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/categories?q=${encodeURIComponent(searchQuery.trim())}`);
       setShowSuggestions(false);
       setIsMobileSearchOpen(false);
     }

@@ -34,12 +34,22 @@ const checkedItemsData = {
 };
 
 export default function CategoriesPage() {
+  
+  const location = useLocation();   
+  
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get("q");
+    if (q) {
+      setSearchQuery(q);
+    }
+  }, [location.search]);
   const [openCategory, setOpenCategory] = useState(null);
 
   const toggleCategory = (categoryName) => {
     setOpenCategory((prev) => (prev === categoryName ? null : categoryName));
   };
-  const location = useLocation();
+  // const location = useLocation();
   const slugFromUrl = decodeURIComponent(location.pathname.split("/").pop());
 
   const [categories, setCategories] = useState([]);
