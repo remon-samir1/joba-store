@@ -82,9 +82,9 @@ export default function Dashboard() {
     },
     {
       title: "Pending & Canceled",
-      pending: data.order_stats?.pending,
-      canceled: data.order_stats?.cancelled,
-      change: data?.order_stats?.change_percent,
+      pending: data.order_stats?.pending || 0,
+      canceled: data.order_stats?.cancelled || 0,
+      change: data?.order_stats?.change_percent || 0,
       trend: data?.order_stats?.change_percent < 0 ? "up" : "down",
     },
   ];
@@ -382,13 +382,13 @@ export default function Dashboard() {
                   </div>
                 </div>
               ))}
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 className="w-full text-orange-500"
               >
                 Details
-              </Button>
+              </Button> */}
             </CardContent>
           </Card>
 
@@ -396,15 +396,15 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Add New Product</CardTitle>
-              <Link
+              {/* <Link
                 to="/dashboard/products/add"
                 variant="ghost"
                 size="sm"
-                className="text-orange-500"
+                className="text-orange-500 flex items-center gap-1"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Add New
-              </Link>
+              </Link> */}
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -460,7 +460,7 @@ export default function Dashboard() {
                     <Link
                       to="/dashboard/categories"
                       size="sm"
-                      className="bg-orange-500 hover:bg-orange-600 text-white h-6 px-2 text-xs"
+                      className="bg-orange-500 hover:bg-orange-600 text-white py-1 rounded px-2 text-xs"
                     >
                       Add
                     </Link>
@@ -483,9 +483,9 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Best selling product</CardTitle>
-            <Button variant="ghost" size="sm" className="text-orange-500">
+            {/* <Button variant="ghost" size="sm" className="text-orange-500">
               Details
-            </Button>
+            </Button> */}
           </CardHeader>
           <CardContent>
             <Table>

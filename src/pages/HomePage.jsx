@@ -583,7 +583,7 @@ function NewProducts() {
                       name={product.name.en}
                       price={product.price}
                       originalPrice={product.price}
-                      image={product.image}
+                      image={product.images[0]?.path}
                       title={product.title}
                       category={product.category?.name || "Uncategorized"}
                       variant="overlay"
@@ -701,7 +701,7 @@ function BestSeller() {
                   name={product.name.en}
                   price={product.price}
                   originalPrice={product.price}
-                  image={product.image}
+                  images={product.images}
                   title={product.title}
                   category={product.category?.name || "Uncategorized"}
                   variant="overlay"

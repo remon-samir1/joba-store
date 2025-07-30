@@ -454,26 +454,8 @@ export default function CouponsPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-20 h-2 bg-gray-200 rounded-full">
-                            <div
-                              className={`h-full rounded-full ${
-                                coupon.used / coupon.max_uses > 0.7
-                                  ? "bg-green-500"
-                                  : "bg-orange-500"
-                              }`}
-                              style={{
-                                width: `${Math.min(
-                                  100,
-                                  (coupon.used / coupon.max_uses) * 100,
-                                )}%`,
-                              }}
-                            />
-                          </div>
-                          <span className="text-sm text-gray-600">
-                            {coupon.used}/{coupon.max_uses || "∞"}
-                          </span>
-                        </div>
+                      {coupon?.usage}
+                    
                       </TableCell>
                       <TableCell className="text-sm text-gray-600">
                         {TransformDate(coupon.expires_at)}
