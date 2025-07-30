@@ -163,13 +163,36 @@ const CheckoutPage = () => {
       /* Responsive styles would be implemented using window width checks */
     }
   };
-
+  const [discount, setDiscount] = useState("");
+  const [apply, setApply] = useState(false);
   useEffect(() => {
-    Axios.get("/cart").then((data) => {
+    Axios.get(`/cart?coupon_code=${discount}`).then((data) => {
       setCart(data.data.data.items);
-    });
-  }, []);
+      setDiscountValue(data.data.data.discount || 0);
 
+      console.log(data);
+      setIsLoading(false)
+      if (discount) {
+        if (data.data.data.discount) {
+          toast.success("Coupon applied successfully!");
+        } else {
+          toast.warning("Invalid coupon code");
+        }
+      }
+    });
+  }, [apply]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const applyCoupon = () => {
+    if (!discount.trim()) {
+      toast.warn("Please enter a coupon code");
+      return;
+    }
+
+    setIsLoading(true);
+    setApply((prev) => !prev);
+    toast.info("Applying coupon...");
+  };
   const total = cart?.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0,
@@ -179,6 +202,8 @@ const CheckoutPage = () => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
   }, []);
 
+
+  const [discountValue, setDiscountValue] = useState(0);
   const [formData, setFormData] = useState({
     shipping_email: "",
     shipping_name: "",
@@ -236,7 +261,12 @@ const CheckoutPage = () => {
 
   return (
     <div ref={scrollRef}  style={styles.page}>
-      {loading && <Loading />}
+    {isLoading && (
+        <div className="loading-screen">
+          <div className="spinner"></div>
+          <p>Loading your Coupon...</p>
+        </div>
+      )}
       {done ? (
         <div>
           <Header/>
@@ -372,7 +402,7 @@ const CheckoutPage = () => {
                         </div>
                       </div>
 
-                      <div style={styles.formGroup}>
+                      {/* <div style={styles.formGroup}>
                         <label style={styles.label}>Coupon Code (optional)</label>
                         <input
                           type="text"
@@ -381,7 +411,7 @@ const CheckoutPage = () => {
                           onChange={handleInputChange}
                           style={styles.input}
                         />
-                      </div>
+                      </div> */}
 
                       <div style={styles.formGroup}>
                         <label style={styles.label}>Payment Method</label>
@@ -393,7 +423,7 @@ const CheckoutPage = () => {
                           style={styles.input}
                         >
                           <option value="cash">Cash</option>
-                          <option value="credit_card">Credit Card</option>
+                          {/* <option value="credit_card">Credit Card</option> */}
                         </select>
                       </div>
 
@@ -418,11 +448,32 @@ const CheckoutPage = () => {
                       </div>
                     ))}
 
-                    <div style={{...styles.totalsRow, fontWeight: 600}}>
-                      <span>Total</span>
+                    <div className="totals-row" style={{...styles.totalsRow, fontWeight: 600}}>
+                      <span className="totals-label">Total</span>
                       <span>EGP {total}</span>
                     </div>
+                    {discount !== "" && (
+              <div className="totals-row">
+                <span className="totals-label">Discount</span>
+                <span className="totals-value">
+                  - EGP {discountValue.toFixed(2)}
+                </span>
+              </div>
+            )}
                   </div>
+              <div className="coupon-section">
+            <div className="coupon-container">
+              <input
+                type="text"
+                placeholder="Coupon code"
+                onChange={(e) => setDiscount(e.target.value)}
+                className="coupon-input"
+              />
+              <button className="apply-btn" onClick={applyCoupon}>
+                Apply
+              </button>
+            </div>
+          </div>
                 </div>
               </div>
             </div>

@@ -23,6 +23,7 @@ export function ProductDetails({
   rating,
   reviews,
   setSelectedSize,
+  productData,
   attachment_path,
   selectedSize,
   category,
@@ -37,6 +38,7 @@ export function ProductDetails({
   const [showDocModal, setShowDocModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  console.log(productData.reviews);
   const [sizePrice, setSizePrice] = useState(sizes[0].price);
   const cartcontext = useContext(CartCh);
   const change = cartcontext.setCartChange;
@@ -94,6 +96,13 @@ export function ProductDetails({
     }
     setShowDocModal(true);
   };
+  const ratings = productData.reviews
+  .map(obj => obj.rating)
+  .filter(r => typeof r === "number");
+
+const averageRating = ratings.length > 0 ? 
+  (ratings.reduce((sum, r) => sum + r, 0) / ratings.length).toFixed(1) : 
+  0;
 
   return (
     <div className={`${!showDocModal && 'space-y-8'} `}  >
@@ -108,30 +117,35 @@ export function ProductDetails({
 
           <div className="flex items-center gap-2 mb-6">
             <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className={`h-4 w-4 ${
-                    i < Math.floor(rating)
-                      ? "text-yellow-400 fill-current"
-                      : "text-gray-300 fill-current"
-                  }`}
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                </svg>
-              ))}
+            <div className="flex items-center gap-2 mb-6">
+  <div className="flex items-center">
+    {[1, 2, 3, 4, 5].map((star) => (
+      <svg
+        key={star}
+        className={`h-4 w-4 ${
+          star <= Math.round(averageRating)
+            ? "text-yellow-400 fill-current"
+            : "text-gray-300 fill-current"
+        }`}
+        viewBox="0 0 20 20"
+      >
+        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+      </svg>
+    ))}
+  </div>
+  <span className="text-sm text-gray-600">
+    {averageRating} ({productData.reviews.length} Review{productData.reviews.length !== 1 ? "s" : ""})
+  </span>
+</div>
             </div>
-            <span className="text-sm text-gray-600">
-              {rating} ({reviews} comment{reviews !== 1 ? "s" : ""})
-            </span>
+      
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-2">
               <Info className="h-6 w-6 text-primary" />
               <span className="text-gray-900">
-                {inStock ? "In stock" : "Out of stock"}
+                {inStock ?  inStock +" in stock" : "Out of stock"}
               </span>
             </div>
           </div>

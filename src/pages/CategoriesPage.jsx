@@ -378,7 +378,7 @@ export default function CategoriesPage() {
               ) : (
                 displayedProducts.map((product) => (
                   <Link
-                    to={`/products/${product.id}`}
+                    to={`/products/${product.slug}`}
                     key={product.id}
                     className="relative group"
                   >
@@ -447,7 +447,7 @@ export default function CategoriesPage() {
                       ))
                   : recommendedProducts.map((product) => (
                       <Link
-                        to={`/products/${product.id}`}
+                        to={`/products/${product.slug}`}
                         key={product.id}
                         className="relative group"
                       >

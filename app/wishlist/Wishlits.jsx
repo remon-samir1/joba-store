@@ -53,7 +53,7 @@ const WishlistPage = () => {
               <div className="wishlist-grid">
                 {wishlist?.map((item) => (
                   <Link
-                    to={`/products/${item.id}`}
+                    to={`/products/${item.slug}`}
                     key={item.id}
                     className="wishlist-card"
                   >

@@ -23,7 +23,7 @@ export default function ProductDetailPage() {
     axios
       .get("https://goba-ecommerce.sunmedagency.com/api/products")
       .then((res) => {
-        const data = res.data.data.filter((p) => p.id == id)[0];
+        const data = res.data.data.filter((p) => p.slug == id)[0];
         console.log(data);
         if (data) {
           setProduct(data);
@@ -39,8 +39,8 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-background">
       <SeoHelmet
-      title={product?.name.en}
-      description={product?.description?.en}
+        title={product?.name.en}
+        description={product?.description?.en}
       />
       <Header />
 
@@ -56,11 +56,10 @@ export default function ProductDetailPage() {
             <ProductDetails
               inStock={product?.stock}
               name={product?.name?.en}
+              productData={product}
               price={product?.price}
               rating={product?.rating}
-              attachment_path={product?.attachment_path
-              }
-
+              attachment_path={product?.attachment_path}
               selectedSize={selectedSize}
               setSelectedSize={setSelectedSize}
               slug={product?.slug}
@@ -79,9 +78,7 @@ export default function ProductDetailPage() {
               <OrderForm sizeId={selectedSize} productId={id} />
               } */}
             </div>
-            <div>
-              {/* <CartTotals productId={id} sizeId={product} /> */}
-            </div>
+            <div>{/* <CartTotals productId={id} sizeId={product} /> */}</div>
           </div>
 
           <div className="mb-16">

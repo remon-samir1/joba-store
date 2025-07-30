@@ -12,11 +12,11 @@ import gsap from "gsap";
 
 const CartPage = () => {
   const cartcontext = useContext(CartCh);
-  const change = cartcontext.setCartChange;
-  const [discount, setDiscount] = useState("");
   const [apply, setApply] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [cart, setCart] = useState([]);
+  const [discount, setDiscount] = useState("");
+  const change = cartcontext.setCartChange;
   const [discountValue, setDiscountValue] = useState(0);
   const cartRef = useRef(null);
 
@@ -233,19 +233,7 @@ const CartPage = () => {
           </div>
 
           {/* Coupon Section */}
-          <div className="coupon-section">
-            <div className="coupon-container">
-              <input
-                type="text"
-                placeholder="Coupon code"
-                onChange={(e) => setDiscount(e.target.value)}
-                className="coupon-input"
-              />
-              <button className="apply-btn" onClick={applyCoupon}>
-                Apply
-              </button>
-            </div>
-          </div>
+        
 
           {/* Cart Totals */}
           <div className="cart-totals">
@@ -283,7 +271,7 @@ const CartPage = () => {
           <h2 className="section-title">Related Items</h2>
           <div className="products-grid">
             {cart?.map((product) => (
-              <div key={product.product.id} className="product-card">
+              <Link to={`/products/${product.product?.slug}`} key={product.product.id} className="product-card">
                 <div className="product-image-container">
                   <img
                     src={product.product.images[0].path}
@@ -314,7 +302,7 @@ const CartPage = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
