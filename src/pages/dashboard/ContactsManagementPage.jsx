@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
@@ -22,21 +22,23 @@ import {
   Trash2,
   Filter,
   X,
+  Download,
 } from "lucide-react";
-import { Axios, baseURL } from "../../../components/Helpers/Axios";
+import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import Notifcation from "../../../components/Notification";
+import * as XLSX from 'xlsx';
 
 const ITEMS_PER_PAGE = 8;
 
 export default function ContactsManagementPage() {
   const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState([]);
-  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [filteredContacts, setFilteredContacts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState(new Set());
+  const [selectedContacts, setSelectedContacts] = useState(new Set());
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
   const [showFilters, setShowFilters] = useState(false);
@@ -54,10 +56,10 @@ export default function ContactsManagementPage() {
 
         <div className="text-center">
           <h2 className="text-2xl font-bold text-orange-700 mb-2">
-            Loading Contats
+            Loading Contacts
           </h2>
           <p className="text-orange-600 max-w-md mb-6">
-            Fetching your Contats data, please wait...
+            Fetching your contacts data, please wait...
           </p>
 
           <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
@@ -68,115 +70,130 @@ export default function ContactsManagementPage() {
     </div>
   );
 
-  const fetchCategories = useCallback(async () => {
+  const exportToExcel = () => {
+    if (filteredContacts.length === 0) {
+      toast.warning("No data to export");
+      return;
+    }
+
+    const data = filteredContacts.map(contact => ({
+      "Contact Name": contact.name,
+      "Email": contact.email,
+      "Subject": contact.subject,
+      "Message": contact.message || "",
+      "Created Date": new Date(contact.created_at).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Contacts");
+    XLSX.writeFile(wb, "contacts_export.xlsx");
+  };
+
+  const fetchContacts = useCallback(async () => {
     setLoading(true);
     try {
       const res = await Axios.get("/admin/contacts");
-      console.log(res);
       const data = Array.isArray(res.data?.data) ? res.data.data : [];
-      setCategories(data);
-      setFilteredCategories(data);
+      setContacts(data);
+      setFilteredContacts(data);
     } catch (err) {
-      console.error("Failed to fetch categories", err);
-      toast.error("Failed to load categories. Please try again later.");
-      setCategories([]);
-      setFilteredCategories([]);
+      console.error("Failed to fetch contacts", err);
+      toast.error("Failed to load contacts. Please try again later.");
+      setContacts([]);
+      setFilteredContacts([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+    fetchContacts();
+  }, [fetchContacts]);
 
   useEffect(() => {
-    let filtered = [...categories];
+    let filtered = [...contacts];
 
-    // Apply search filter
     if (searchQuery) {
       filtered = filtered.filter(
-        (c) =>
-          c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          c.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+        (contact) =>
+          contact.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          contact.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          contact.subject?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Apply sorting
     filtered.sort((a, b) => {
       if (a[sortField] < b[sortField]) return sortDirection === "asc" ? -1 : 1;
       if (a[sortField] > b[sortField]) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
 
-    setFilteredCategories(filtered);
+    setFilteredContacts(filtered);
     setCurrentPage(1);
-  }, [searchQuery, categories, sortField, sortDirection]);
+  }, [searchQuery, contacts, sortField, sortDirection]);
 
-  const totalPages = Math.ceil(filteredCategories.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredContacts.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentCategories = filteredCategories.slice(
+  const currentItems = filteredContacts.slice(
     startIndex,
-    startIndex + ITEMS_PER_PAGE,
+    startIndex + ITEMS_PER_PAGE
   );
 
   const handleSelectAll = (checked) => {
     setSelectAll(checked);
-    setSelectedCategories(
-      checked ? new Set(currentCategories.map((c) => c.slug)) : new Set(),
+    setSelectedContacts(
+      checked ? new Set(currentItems.map((c) => c.id)) : new Set()
     );
   };
 
-  const handleSelectCategory = (id, checked) => {
-    const newSelected = new Set(selectedCategories);
+  const handleSelectContact = (id, checked) => {
+    const newSelected = new Set(selectedContacts);
     checked ? newSelected.add(id) : newSelected.delete(id);
-    setSelectedCategories(newSelected);
+    setSelectedContacts(newSelected);
   };
 
-  const handleDeleteCategory = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this category?"))
+  const handleDeleteContact = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this contact?"))
       return;
 
     setDeleteLoading(id);
     try {
-      await Axios.delete(`admin/categories/${id}`);
-      toast.success("Category deleted successfully");
-
-      // Update state by removing the deleted category
-      const updated = categories.filter((c) => c.id !== id);
-      setCategories(updated);
+      await Axios.delete(`admin/contacts/${id}`);
+      toast.success("Contact deleted successfully");
+      const updated = contacts.filter((c) => c.id !== id);
+      setContacts(updated);
     } catch (err) {
       console.error("Failed to delete", err);
-      toast.error("Failed to delete category. Please try again.");
+      toast.error("Failed to delete contact. Please try again.");
     } finally {
       setDeleteLoading(null);
     }
   };
 
   const handleBulkDelete = async () => {
-    if (selectedCategories.size === 0) {
-      toast.warning("Please select at least one category to delete");
+    if (selectedContacts.size === 0) {
+      toast.warning("Please select at least one contact to delete");
       return;
     }
 
-    const slugs = Array.from(selectedCategories);
+    const ids = Array.from(selectedContacts);
     try {
-      for (let slug of slugs) {
-        await Axios.delete(`admin/categories/${slug}`).then((data) =>
-          console.log(data),
-        );
+      for (let id of ids) {
+        await Axios.delete(`admin/contacts/${id}`);
       }
-      toast.success(`${slugs.length} categories deleted successfully`);
-
-      // Update state by removing all deleted categories
-      const updated = categories.filter((c) => !slugs.includes(c.slug));
-      setCategories(updated);
-
-      setSelectedCategories(new Set());
+      toast.success(`${ids.length} contacts deleted successfully`);
+      const updated = contacts.filter((c) => !ids.includes(c.id));
+      setContacts(updated);
+      setSelectedContacts(new Set());
       setSelectAll(false);
     } catch (err) {
       console.error("Bulk delete failed", err);
-      toast.error("Failed to delete categories. Please try again.");
+      toast.error("Failed to delete contacts. Please try again.");
     }
   };
 
@@ -198,13 +215,13 @@ export default function ContactsManagementPage() {
     <div className="flex-1 overflow-auto bg-gray-50">
       <Notifcation />
       {loading && <OrangeLoader />}
-      <DashboardHeader title="Conatcts Management" />
+      <DashboardHeader title="Contacts Management" />
 
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Manage Conatcs</h2>
-            <p className="text-gray-600 mt-1">See your Contacts Messages</p>
+            <h2 className="text-2xl font-bold text-gray-900">Manage Contacts</h2>
+            <p className="text-gray-600 mt-1">View and manage contact messages</p>
           </div>
         </div>
 
@@ -212,15 +229,21 @@ export default function ContactsManagementPage() {
           <CardContent className="p-0">
             <div className="p-6 border-b border-gray-200 bg-white">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div className="relative w-full md:w-80">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Search Contacts..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-gray-50 border-gray-200 rounded-lg"
-                  />
+                <div className="flex items-center gap-4 w-full">
+                  <div className="relative w-full md:w-80">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Search contacts..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 bg-gray-50 border-gray-200 rounded-lg"
+                    />
+                  </div>
+                  
+                  <Button variant="outline" onClick={exportToExcel}>
+                  <Download className="h-4 w-4 mr-2" /> Export
+                </Button>
                 </div>
               </div>
             </div>
@@ -228,11 +251,7 @@ export default function ContactsManagementPage() {
             <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3">
               <div className="grid grid-cols-12 gap-4 items-center">
                 <div className="col-span-3 flex items-center space-x-3">
-                  {/* <Checkbox
-                    checked={selectAll}
-                    onCheckedChange={handleSelectAll}
-                    className="border-white data-[state=checked]:bg-white data-[state=checked]:text-orange-500"
-                  /> */}
+              
                   <span className="text-sm font-medium text-white">
                     Contact name
                   </span>
@@ -257,66 +276,50 @@ export default function ContactsManagementPage() {
             </div>
 
             <div className="divide-y divide-gray-200 bg-white">
-              {currentCategories.length === 0 ? (
+              {currentItems.length === 0 ? (
                 <div className="text-center py-16">
                   <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
                     <X className="h-8 w-8 text-gray-400" />
                   </div>
                   <h3 className="mt-4 text-lg font-medium text-gray-900">
-                    No categories found
+                    No contacts found
                   </h3>
                   <p className="mt-1 text-gray-500 max-w-md mx-auto">
                     {searchQuery
-                      ? "No categories match your search. Try different keywords."
-                      : "You haven't created any categories yet. Get started by adding your first category."}
+                      ? "No contacts match your search. Try different keywords."
+                      : "No contacts available."}
                   </p>
-                  <Link
-                    to="/dashboard/categories/add"
-                    className="mt-4 inline-block"
-                  >
-                    <Button className="bg-orange-500 hover:bg-orange-600">
-                      <Plus className="h-4 w-4 mr-2" /> Add Category
-                    </Button>
-                  </Link>
                 </div>
               ) : (
-                currentCategories.map((category) => (
+                currentItems.map((contact) => (
                   <div
-                    key={category.id}
+                    key={contact.id}
                     className="px-6 py-4 hover:bg-gray-50 transition-colors"
                   >
                     <div className="grid grid-cols-12 gap-4 items-center">
                       <div className="col-span-3 flex items-center space-x-3">
-                        {/* <Checkbox
-                          checked={selectedCategories.has(category.slug)}
-                          onCheckedChange={(checked) =>
-                            handleSelectCategory(category.slug, checked)
-                          }
-                        /> */}
+                    
                         <div className="flex items-center">
-                          {/* <div className="rounded-xl w-10 h-10 flex items-center justify-center mr-3">
-                        <img src={`${category.image}`} alt=""  className="w-full h-full object-cover"/>
-                          </div> */}
                           <span className="text-sm font-medium text-gray-900">
-                            {category.name}
+                            {contact.name}
                           </span>
                         </div>
                       </div>
 
                       <div className="col-span-3">
                         <span className="text-sm text-gray-600 line-clamp-2">
-                          {category.email || "No email"}
+                          {contact.email || "No email"}
                         </span>
                       </div>
                       <div className="col-span-3">
                         <span className="text-sm text-gray-600 line-clamp-2">
-                          {category.subject || "No subject"}
+                          {contact.subject || "No subject"}
                         </span>
                       </div>
 
                       <div className="col-span-3">
                         <span className="text-sm text-gray-600">
-                          {new Date(category.created_at).toLocaleDateString(
+                          {new Date(contact.created_at).toLocaleDateString(
                             "en-GB",
                             {
                               day: "2-digit",
@@ -338,9 +341,9 @@ export default function ContactsManagementPage() {
                   Showing {startIndex + 1} to{" "}
                   {Math.min(
                     startIndex + ITEMS_PER_PAGE,
-                    filteredCategories.length,
+                    filteredContacts.length,
                   )}{" "}
-                  of {filteredCategories.length} Contacts
+                  of {filteredContacts.length} contacts
                 </div>
 
                 <div className="flex items-center space-x-2">

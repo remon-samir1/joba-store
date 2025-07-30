@@ -3,7 +3,7 @@ import { Search, Bell, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const mainNavigation = [
   { name: "Dashboard", href: "/dashboard" },
@@ -31,7 +31,19 @@ export function DashboardHeader({ title }) {
   const [isResultsVisible, setIsResultsVisible] = useState(false);
   const navigate = useNavigate();
   const searchRef = useRef(null);
-
+  const [admin , setAdmin] = useState()
+  useEffect(()=>{
+const getData = async()=>{
+  try{
+Axios.get('admin/profile').then(data =>{
+  setAdmin(data.data.data)
+  console.log(data)})
+  }catch(err){
+console.log(err);
+  }
+}
+getData()
+  },[])
   const getAllDashboardPages = () => {
     return [
       ...mainNavigation,
@@ -111,18 +123,18 @@ export function DashboardHeader({ title }) {
             <Search className="h-5 w-5" />
           </Button>
 
-          <Button variant="ghost" size="icon">
+          {/* <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
             <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full"></span>
-          </Button>
+          </Button> */}
 
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="icon" className="hidden sm:flex">
               <User className="h-5 w-5" />
             </Button>
-            <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+            <Link to='/dashboard/settings' className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
               <span className="text-sm font-medium text-gray-700">U</span>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

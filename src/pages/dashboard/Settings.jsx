@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import Notifcation from "../../../components/Notification";
+import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
 
 const EditIcon = () => (
   <svg
@@ -67,11 +68,34 @@ const EyeOnIcon = () => (
 
 export function Settings() {
   const [adminApiData, setAdminApiData] = useState();
+  const [profileData, setProfileData] = useState({
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    email: "",
+    dateOfBirth: "",
+    location: "",
+    biography: "",
+  });
+  const [passwords, setPasswords] = useState({
+    currentPassword: "",
+    newPassword: "",
+    reEnterPassword: "",
+  });
+  const [isEditing, setIsEditing] = useState(true);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showReEnterPassword, setShowReEnterPassword] = useState(false);
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
+
   useEffect(() => {
     const getAdminData = async () => {
       try {
         Axios.get("admin/profile").then((data) => {
           setAdminApiData(data.data.data);
+          console.log(data);
           const response = data.data.data;
           const nameParse = response.name.trim().split(" ");
           setProfileData({
@@ -83,38 +107,15 @@ export function Settings() {
             location: response?.location || "",
             biography: response?.bio || "",
           });
-          console.log(data);
+          if (response.avatar) {
+            setProfileImagePreview(response.avatar);
+          }
         });
       } catch (err) {}
     };
     getAdminData();
   }, []);
-  const [profileData, setProfileData] = useState({
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    email: "",
-    dateOfBirth: "",
-    location: "",
-    biography: "",
-  });
 
-  // State for password change form
-  const [passwords, setPasswords] = useState({
-    currentPassword: "",
-    newPassword: "",
-    reEnterPassword: "",
-  });
-
-  // State for UI controls
-  const [isEditing, setIsEditing] = useState(true);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showReEnterPassword, setShowReEnterPassword] = useState(false);
-  const [profileImage, setProfileImage] = useState(null);
-  const fileInputRef = useRef(null);
-
-  // Handler for profile data changes
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prevState) => ({
@@ -123,7 +124,6 @@ export function Settings() {
     }));
   };
 
-  // Handler for password changes
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswords((prevState) => ({
@@ -132,36 +132,49 @@ export function Settings() {
     }));
   };
 
-  // Handler for image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileImage(URL.createObjectURL(file));
+      setProfileImageFile(file);
+      setProfileImagePreview(URL.createObjectURL(file));
     }
   };
 
-  // Handler for saving profile
+  const handleDeleteImage = () => {
+    setProfileImagePreview(null);
+    setProfileImageFile(null);
+  };
+
   const handleSaveProfile = () => {
     const formData = new FormData();
-    formData.append("name", profileData.firstName + profileData.lastName);
+    formData.append("name", `${profileData.firstName} ${profileData.lastName}`);
     formData.append("email", profileData.email);
     formData.append("phone", profileData.phoneNumber);
     formData.append("location", profileData.location);
     formData.append("birthday", profileData.dateOfBirth);
-    formData.append("bio", profileData.bio);
-    formData.append("avatar", profileImage);
+    formData.append("bio", profileData.biography);
+    
+    if (profileImageFile) {
+      formData.append("avatar", profileImageFile);
+    }
+    
     formData.append("_method", 'PUT');
-    console.log(profileImage);
+
     try {
-      Axios.post("admin/profile", formData).then((data) => {
+      Axios.post("admin/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }).then((data) => {
         console.log(data);
+        toast.success("Profile updated successfully!");
       });
     } catch (err) {
       console.log(err);
+      toast.error('Failed to update profile!');
     }
   };
 
-  // Handler for saving password
   const handleSavePassword = (e) => {
     e.preventDefault();
     if (passwords.newPassword !== passwords.reEnterPassword) {
@@ -177,9 +190,9 @@ export function Settings() {
       }).then((data) => {
         console.log(data);
         if (data.status === 200) {
-          toast.success("Updated Successfly");
-        }else if(data.status === 422){
-          toast.warn("some thing wrong !");
+          toast.success("Updated Successfully");
+        } else if(data.status === 422) {
+          toast.warn("Something went wrong!");
         }
       });
       setPasswords({
@@ -189,17 +202,18 @@ export function Settings() {
       });
     } catch (err) {
       console.log(err);
-      toast.error('Some Thing Wrong !');
+      toast.error('Something went wrong!');
     }
   };
 
   return (
+    <>
+    <DashboardHeader title='Settings'/>
     <div className="min-h-screen bg-gray-50 p-6">
       <Notifcation />
+      
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-black text-2xl font-semibold mb-8">
-          About section
-        </h1>
+        {/* <h1 className="text-black text-2xl font-semibold mb-8">Ab</h1> */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column */}
           <div className="lg:col-span-4 space-y-6">
@@ -211,15 +225,15 @@ export function Settings() {
 
               <div className="flex flex-col items-center text-center">
                 <div className="w-24 h-24 rounded-full mb-4 bg-gray-200 flex items-center justify-center overflow-hidden">
-                  {profileImage ? (
+                  {profileImagePreview ? (
                     <img
-                      src={profileImage}
+                    src={profileImagePreview}
                       alt="Profile"
                       className="w-full h-full object-cover"
-                    />
+                      />
                   ) : (
                     <div className="w-12 h-12 bg-gray-400 rounded-full"></div>
-                  )}
+                    )}
                 </div>
                 <h3 className="text-black text-lg font-semibold mb-2">
                   {profileData.firstName} {profileData.lastName}
@@ -282,7 +296,7 @@ export function Settings() {
                       type="button"
                       className="absolute right-3 top-1/2 transform -translate-y-1/2"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                    >
+                      >
                       {showNewPassword ? <EyeOnIcon /> : <EyeOffIcon />}
                     </button>
                   </div>
@@ -334,8 +348,8 @@ export function Settings() {
                 </h2>
                 {isEditing ? (
                   <button
-                    onClick={handleSaveProfile}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600"
+                  onClick={handleSaveProfile}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600"
                   >
                     Save
                   </button>
@@ -343,7 +357,7 @@ export function Settings() {
                   <button
                     onClick={() => setIsEditing(true)}
                     className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-md text-gray-600 text-sm hover:bg-gray-50"
-                  >
+                    >
                     <EditIcon />
                     Edit
                   </button>
@@ -353,15 +367,15 @@ export function Settings() {
               {/* Profile Image Upload */}
               <div className="flex items-center gap-6 mb-8">
                 <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                  {profileImage ? (
+                  {profileImagePreview ? (
                     <img
-                      src={profileImage}
+                    src={profileImagePreview}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="w-8 h-8 bg-gray-400 rounded-full"></div>
-                  )}
+                    )}
                 </div>
                 <div className="flex gap-3">
                   <input
@@ -378,7 +392,7 @@ export function Settings() {
                     Upload New
                   </button>
                   <button
-                    onClick={() => setProfileImage(null)}
+                    onClick={handleDeleteImage}
                     className="border border-gray-300 text-black px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-50"
                   >
                     Delete
@@ -400,7 +414,7 @@ export function Settings() {
                       onChange={handleProfileChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm disabled:bg-gray-200 disabled:text-gray-500"
-                    />
+                      />
                   </div>
                   <div>
                     <label className="block text-black text-sm font-medium mb-3">
@@ -450,14 +464,14 @@ export function Settings() {
                       Date of Birth
                     </label>
                     <input
-                      type="text"
+                      type="date"
                       name="dateOfBirth"
                       value={profileData.dateOfBirth}
                       onChange={handleProfileChange}
                       disabled={!isEditing}
                       placeholder="dd-mm-yyyy"
                       className="w-full px-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm disabled:bg-gray-200 disabled:text-gray-500"
-                    />
+                      />
                   </div>
                   <div>
                     <label className="block text-black text-sm font-medium mb-3">
@@ -470,7 +484,7 @@ export function Settings() {
                       onChange={handleProfileChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm disabled:bg-gray-200 disabled:text-gray-500"
-                    />
+                      />
                   </div>
                 </div>
                 <div>
@@ -485,7 +499,7 @@ export function Settings() {
                     disabled={!isEditing}
                     placeholder="Enter a biography about you"
                     className="w-full px-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm resize-none disabled:bg-gray-200 disabled:text-gray-500"
-                  />
+                    />
                 </div>
               </div>
             </div>
@@ -493,5 +507,6 @@ export function Settings() {
         </div>
       </div>
     </div>
+                    </>
   );
 }
