@@ -9,11 +9,16 @@ import {
   Twitter,
   Instagram,
 } from "lucide-react";
+import { Axios } from "../../components/Helpers/Axios";
+import Notifcation from "../../components/Notification";
+import { toast } from "react-toastify";
 
 export default function ContactPage() {
+  const [loading , setLoadnig] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    subject: "",
     message: "",
   });
 
@@ -27,16 +32,26 @@ export default function ContactPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Handle form submission here
-    alert("Thank you for your message! We'll get back to you soon.");
-    setFormData({ name: "", email: "", message: "" });
+    setLoadnig(true)
+    try {
+      Axios.post("contact", formData).then((data) => {
+        console.log(data);
+        setLoadnig(false)
+        toast.success('Your message has been sent successfully.')
+        setFormData({ name: "", email: "", message: "" });
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error('Some Thing Wrong !')
+      setLoadnig(false)
+
+    }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
+<Notifcation/>
       {/* Hero Section */}
       <section className="relative h-96 bg-primary">
         <div className="absolute inset-0">
@@ -197,6 +212,24 @@ export default function ContactPage() {
                     placeholder="Enter your email address"
                   />
                 </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+              Subject
+                  </label>
+                  <input
+                    type="text"
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    placeholder="Enter your Subject"
+                  />
+                </div>
 
                 {/* Message Field */}
                 <div>
@@ -221,9 +254,9 @@ export default function ContactPage() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+                  className={`w-full bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors ${loading && 'cursor-wait'}`}
                 >
-                  Send Message
+              {loading? 'Loading...' : 'Send Message'}
                 </button>
               </form>
             </div>

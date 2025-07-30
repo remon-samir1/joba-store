@@ -19,6 +19,7 @@ import {
   LogOut,
   Menu,
   X,
+  Contact,
 } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
 
@@ -30,6 +31,7 @@ const mainNavigation = [
   { name: "Coupon Code", href: "/dashboard/coupons", icon: Ticket },
   { name: "Categories", href: "/dashboard/categories", icon: Grid3X3 },
   { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
+  { name: "Contacts", href: "/dashboard/contacts", icon: Contact },
   // { name: "Popup maker", href: "/dashboard/popup-maker", icon: Megaphone },
 
 ];

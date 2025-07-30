@@ -150,7 +150,7 @@ export function Settings() {
     formData.append("birthday", profileData.dateOfBirth);
     formData.append("bio", profileData.bio);
     formData.append("avatar", profileImage);
-    // formData.append("_method", 'PUT');
+    formData.append("_method", 'PUT');
     console.log(profileImage);
     try {
       Axios.post("admin/profile", formData).then((data) => {
@@ -169,13 +169,18 @@ export function Settings() {
       return;
     }
     try {
-      Axios.patch("admin/profile/password", {
+      Axios.post("admin/profile/password", {
         current_password: passwords.currentPassword,
         password: passwords.newPassword,
+        password_confirmation: passwords.reEnterPassword,
         _method: "PUT",
       }).then((data) => {
         console.log(data);
-        toast.success('Updated Successfly')
+        if (data.status === 200) {
+          toast.success("Updated Successfly");
+        }else if(data.status === 422){
+          toast.warn("some thing wrong !");
+        }
       });
       setPasswords({
         currentPassword: "",
@@ -184,6 +189,7 @@ export function Settings() {
       });
     } catch (err) {
       console.log(err);
+      toast.error('Some Thing Wrong !');
     }
   };
 
@@ -239,6 +245,7 @@ export function Settings() {
                     <input
                       type={showCurrentPassword ? "text" : "password"}
                       name="currentPassword"
+                      min="8"
                       value={passwords.currentPassword}
                       onChange={handlePasswordChange}
                       placeholder="Enter current password"
@@ -267,6 +274,7 @@ export function Settings() {
                       name="newPassword"
                       value={passwords.newPassword}
                       onChange={handlePasswordChange}
+                      min="8"
                       placeholder="Enter new password"
                       className="w-full px-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm"
                     />
@@ -292,6 +300,7 @@ export function Settings() {
                       value={passwords.reEnterPassword}
                       onChange={handlePasswordChange}
                       placeholder="Re-enter new password"
+                      min="8"
                       className="w-full px-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm"
                     />
                     <button

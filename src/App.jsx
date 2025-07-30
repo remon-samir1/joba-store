@@ -38,6 +38,7 @@ import { Settings } from "./pages/dashboard/Settings";
 import InvoicesDetails from "./pages/dashboard/InvoicesDetails.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import SingleBlog from "../app/blog/singleBlog";
+import ContactsManagementPage from "./pages/dashboard/ContactsManagementPage";
 // import AddCoupon from "./pages/dashboard/AddCoupon";
 
 const queryClient = new QueryClient();
@@ -75,6 +76,10 @@ function App() {
                   <Route
                     path="categories"
                     element={<CategoriesManagementPage />}
+                  />
+                  <Route
+                    path="contacts"
+                    element={<ContactsManagementPage />}
                   />
                   <Route path="categories/add" element={<AddCategory />} />
                   <Route
