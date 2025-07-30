@@ -44,7 +44,7 @@ console.log(data);
               <p>{data?.user?.phone || 'Empty'}</p>
               <p>{data?.user?.email || "Empty"}</p>
               <p>{data?.shipping_address || 'Empty'}</p>
-              <p>{data?.payment_method}</p>
+              <p>On Delivery</p>
               <p>{data?.payment_status}</p>
             </div>
           </div>

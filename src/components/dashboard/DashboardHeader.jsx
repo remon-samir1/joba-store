@@ -129,12 +129,12 @@ getData()
           </Button> */}
 
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon" className="hidden sm:flex">
+            <Link to='/dashboard/settings' variant="ghost" size="icon" className="hidden sm:flex">
               <User className="h-5 w-5" />
-            </Button>
-            <Link to='/dashboard/settings' className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-              <span className="text-sm font-medium text-gray-700">U</span>
             </Link>
+            {/* <Link to='/dashboard/settings' className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+              <span className="text-sm font-medium text-gray-700">U</span>
+            </Link> */}
           </div>
         </div>
       </div>

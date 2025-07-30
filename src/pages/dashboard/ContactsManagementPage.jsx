@@ -250,13 +250,13 @@ export default function ContactsManagementPage() {
 
             <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3">
               <div className="grid grid-cols-12 gap-4 items-center">
-                <div className="col-span-3 flex items-center space-x-3">
+                <div className="col-span-2 flex items-center space-x-3">
               
                   <span className="text-sm font-medium text-white">
                     Contact name
                   </span>
                 </div>
-                <div className="col-span-3">
+                <div className="col-span-2">
                   <span className="text-sm font-medium text-white">Email</span>
                 </div>
                 <div className="col-span-3">
@@ -265,6 +265,11 @@ export default function ContactsManagementPage() {
                   </span>
                 </div>
                 <div className="col-span-3">
+                  <span className="text-sm font-medium text-white">
+                    Message
+                  </span>
+                </div>
+                <div className="col-span-2">
                   <button
                     className="text-sm font-medium text-white flex items-center"
                     onClick={() => toggleSort("created_at")}
@@ -297,7 +302,7 @@ export default function ContactsManagementPage() {
                     className="px-6 py-4 hover:bg-gray-50 transition-colors"
                   >
                     <div className="grid grid-cols-12 gap-4 items-center">
-                      <div className="col-span-3 flex items-center space-x-3">
+                      <div className="col-span-2 flex items-center space-x-3">
                     
                         <div className="flex items-center">
                           <span className="text-sm font-medium text-gray-900">
@@ -306,19 +311,24 @@ export default function ContactsManagementPage() {
                         </div>
                       </div>
 
-                      <div className="col-span-3">
+                      <div className="col-span-2">
                         <span className="text-sm text-gray-600 line-clamp-2">
                           {contact.email || "No email"}
                         </span>
                       </div>
                       <div className="col-span-3">
-                        <span className="text-sm text-gray-600 line-clamp-2">
+                        <span className="text-sm truncate text-gray-600 line-clamp-2">
                           {contact.subject || "No subject"}
                         </span>
                       </div>
-
                       <div className="col-span-3">
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm truncate text-gray-600 line-clamp-2">
+                          {contact.message || "No subject"}
+                        </span>
+                      </div>
+
+                      <div className="col-span-2 ">
+                        <span className="text-sm  text-gray-600">
                           {new Date(contact.created_at).toLocaleDateString(
                             "en-GB",
                             {
