@@ -29,12 +29,12 @@ const nav = useNavigate()
       }).then((res)=>{
 
         const token = res.data.data.access_token;
-        cookie.set("token", token);
+        cookie.set("token", token , {path: '/'});
 
         console.log(token);
         toast.success('Login Succssefly')
-        window.location.pathname = '/dashboard'
-        // nav('/dashboard')
+        window.location.pathname = '/'
+        // nav('/')
       });
     } catch (err) {
       toast.error('Invalid email or password !')

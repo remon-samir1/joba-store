@@ -428,7 +428,7 @@ export function Header() {
                 Contact us
               </Link>
               <Link
-                to="/admin"
+                to="/dashboard"
                 className={`px-3 xl:px-4 py-2 rounded font-semibold transition-colors text-sm xl:text-base ${
                   location.pathname.startsWith("/dashboard")
                     ? "text-gray-900 bg-white"
