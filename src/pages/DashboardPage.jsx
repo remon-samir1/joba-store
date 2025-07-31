@@ -359,9 +359,9 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Top Products</CardTitle>
-              <Button variant="ghost" size="sm" className="text-orange-500">
+              {/* <Link to='products' variant="ghost" size="sm" className="text-orange-500">
                 All products
-              </Button>
+              </Link> */}
             </CardHeader>
             <CardContent className="space-y-4">
               {data?.top_products?.map((product, index) => (
