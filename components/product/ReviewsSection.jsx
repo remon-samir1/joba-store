@@ -76,11 +76,11 @@ export function ReviewsSection({ slug }) {
       setLoading(false);
 
       toast.success("Review submitted successfully!");
-      setNewReview({ name: "", rating: "", comment: "" });
+      // setNewReview({ name: "", rating: "", comment: ""  , email:''});
     } catch (error) {
       setLoading(false);
       console.error(error);
-      toast.error("Something went wrong while submitting the review.");
+      toast.error(error.response.data.message || "Something went wrong while submitting the review.");
     }
   };
 
@@ -100,7 +100,7 @@ export function ReviewsSection({ slug }) {
     ));
   };
 
-  const activeReviews = reviews?.filter( data => data.status !== 'pending')
+  const activeReviews = reviews?.filter( data => data.status === 'approved')
   return (
     <div className="space-y-8  mt-8">
       <Notifcation />
@@ -109,7 +109,7 @@ export function ReviewsSection({ slug }) {
 
       {/* Reviews List */}
       <div className="space-y-8">
-        {reviews?.map((review) => (
+        {activeReviews?.map((review) => (
           <div key={review.id} className="flex gap-6">
             <img src={user} className="w-16 h-16 bg-gray-200 rounded-full flex-shrink-0"></img>
 
