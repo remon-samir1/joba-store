@@ -60,16 +60,15 @@ export default function ReviewsPage() {
   const [ratingFilter, setRatingFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
+  const [statusUpdating, setStatusUpdating] = useState(null);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const response = await Axios.get("/admin/reviews");
-        console.log(response);
         setReviews(response.data.data.data);
         setLoading(false);
       } catch (error) {
-        console.error("Failed to fetch reviews:", error);
         setLoading(false);
       }
     };
@@ -102,13 +101,37 @@ export default function ReviewsPage() {
       await Axios.delete(`admin/reviews/${id}`).then((data) => {
         setReviews(reviews.filter((data) => data.id != id));
         toast.success('Deleted Successfly')
-        console.log(data);
         setSpinner(false);
       });
     } catch (err) {
       setSpinner(false);
     }
   };
+
+  const handleStatusChange = async (id, newStatus) => {
+    setStatusUpdating(id);
+    try {
+      setReviews(prev => 
+        prev.map(review => 
+          review.id === id ? { ...review, status: newStatus } : review
+        )
+      );
+      
+      await Axios.post(`admin/reviews/${id}`, { status: newStatus  , _method : 'PUT'}).then(data => console.log(data));
+      toast.success('Status updated successfully');
+    } catch (error) {
+      console.log(error);
+      setReviews(prev => 
+        prev.map(review => 
+          review.id === id ? { ...review, status: review.status } : review
+        )
+      );
+      toast.error('Failed to update status');
+    } finally {
+      setStatusUpdating(null);
+    }
+  };
+
   const reviewStats = [
     {
       title: "Total Reviews",
@@ -162,7 +185,6 @@ export default function ReviewsPage() {
     },
   ];
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredReviews.length / perPage);
   const paginatedReviews = filteredReviews.slice(
     (currentPage - 1) * perPage,
@@ -206,7 +228,6 @@ export default function ReviewsPage() {
       <DashboardHeader title="Product Reviews" />
 <Notifcation/>
       <div className="md:p-6 space-y-6">
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {reviewStats?.map((stat, index) => (
             <Card key={index}>
@@ -232,7 +253,6 @@ export default function ReviewsPage() {
           ))}
         </div>
 
-        {/* Reviews Table */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-center md:justify-between flex-wrap md:gap-0 gap-3">
@@ -296,7 +316,7 @@ export default function ReviewsPage() {
                   <TableHead>Rating</TableHead>
                   <TableHead>Review</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead className="w-40">Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -329,17 +349,28 @@ export default function ReviewsPage() {
                         {new Date(review.created_at).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          className={
-                            review.status === "published"
-                              ? "bg-green-100 text-green-700"
-                              : review.status === "pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-red-100 text-red-700"
-                          }
-                        >
-                          {review.status}
-                        </Badge>
+                        {statusUpdating === review.id ? (
+                          <Loader className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Select 
+                            value={review.status}
+                            onValueChange={(value) => handleStatusChange(review.id, value)}
+                            disabled={statusUpdating !== null}
+                          >
+                            <SelectTrigger className={`w-32 ${
+                              review.status === "approved" ? "bg-green-100 text-green-700" :
+                              review.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+                              "bg-red-100 text-red-700"
+                            }`}>
+                              <SelectValue placeholder="Status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="approved">Approved</SelectItem>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="rejected">Rejected</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-1">
@@ -374,7 +405,6 @@ export default function ReviewsPage() {
               </TableBody>
             </Table>
 
-            {/* Pagination */}
             {filteredReviews.length > perPage && (
               <div className="flex items-center justify-between mt-6">
                 <p className="text-sm text-gray-700">

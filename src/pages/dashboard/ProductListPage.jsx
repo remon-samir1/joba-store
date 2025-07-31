@@ -30,11 +30,9 @@ import { toast } from "react-toastify";
 
 const ITEMS_PER_PAGE = 8;
 
-// شاشة التحميل البرتقالية
 const OrangeLoader = () => (
   <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
     <div className="flex flex-col items-center">
-      {/* شعار ثلاثي الأبعاد برتقالي */}
       <div className="relative w-32 h-32 mb-8">
         <div className="absolute inset-0 rounded-full bg-orange-500 opacity-20 animate-ping-slow"></div>
         <div className="absolute inset-4 rounded-full border-8 border-orange-400 border-t-transparent animate-spin-slow"></div>
@@ -42,14 +40,12 @@ const OrangeLoader = () => (
         <div className="absolute inset-12 rounded-full border-8 border-orange-200 border-l-transparent animate-ping"></div>
       </div>
       
-      {/* النص والرسالة */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-orange-700 mb-2">Loading Products</h2>
         <p className="text-orange-600 max-w-md mb-6">
           Fetching your product data, please wait...
         </p>
         
-        {/* شريط التقدم البرتقالي */}
         <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
           <div 
             className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"
@@ -67,7 +63,7 @@ export default function ProductListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState(new Set());
-  const [loading, setLoading] = useState(true); // حالة التحميل
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -75,7 +71,6 @@ export default function ProductListPage() {
       .then((res) => {
         const data = res.data?.data || [];
         setProducts(data);
-        console.log(res);
         setFilteredProducts(data);
       })
       .catch(error => console.error(error))
@@ -87,7 +82,7 @@ export default function ProductListPage() {
       p.name?.en?.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredProducts(filtered);
-    setCurrentPage(1); // Reset to first page on new search
+    setCurrentPage(1);
   }, [searchQuery, products]);
 
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
@@ -162,7 +157,7 @@ export default function ProductListPage() {
       {loading && <OrangeLoader />}
       
       <DashboardHeader title="Product List" />
-      <div className="p-6 space-y-6">
+      <div className="md:p-6 p-2 space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">Product List</h2>
           <Link to="/dashboard/products/add">
@@ -173,7 +168,7 @@ export default function ProductListPage() {
           </Link>
         </div>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-lg md:w-full  w-[93vw] overflow-x-auto">
           <CardContent className="p-0">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
@@ -196,82 +191,83 @@ export default function ProductListPage() {
               </div>
             </div>
 
-            {/* Table Header */}
-            <div className="bg-orange-100 px-6 py-4">
-              <div className="grid grid-cols-12 gap-4 items-center">
-                <div className="col-span-4 flex items-center space-x-3">
-                  <Checkbox checked={selectAll} onCheckedChange={handleSelectAll} />
-                  <span className="text-sm font-medium text-gray-900">Product name</span>
+            <div className="overflow-x-auto">
+              <div className="min-w-[800px]">
+                <div className="bg-orange-100 px-6 py-4">
+                  <div className="grid grid-cols-12 gap-4 items-center">
+                    <div className="col-span-4 flex items-center space-x-3">
+                      <Checkbox checked={selectAll} onCheckedChange={handleSelectAll} />
+                      <span className="text-sm font-medium text-gray-900">Product name</span>
+                    </div>
+                    <div className="col-span-2">Category</div>
+                    <div className="col-span-1">Stock</div>
+                    <div className="col-span-1">Price</div>
+                    <div className="col-span-2">Status</div>
+                    <div className="col-span-2">Action</div>
+                  </div>
                 </div>
-                <div className="col-span-2">Category</div>
-                <div className="col-span-1">Stock</div>
-                <div className="col-span-1">Price</div>
-                <div className="col-span-2">Status</div>
-                <div className="col-span-2">Action</div>
+
+                <div className="divide-y divide-gray-200">
+                  {currentProducts.length === 0 ? (
+                    <div className="text-center py-10 text-gray-500">No products found</div>
+                  ) : (
+                    currentProducts.map((product) => (
+                      <div key={product.id} className="px-6 py-4 hover:bg-gray-50">
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                          <div className="col-span-4 flex items-center space-x-3">
+                            <Checkbox
+                              checked={selectedProducts.has(product.id)}
+                              onCheckedChange={(checked) => handleSelectProduct(product.id, checked)}
+                            />
+                            <div className="w-10 h-10 bg-gray-100 rounded">
+                              <img src={product.images[0].path} className="w-full h-full object-cover rounded" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-900">{product.name?.en}</span>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="text-sm text-gray-600">{product.category?.name}</span>
+                          </div>
+                          <div className="col-span-1">
+                            <span className={`text-sm ${getStockStatusColor(product.stock)}`}>
+                              {product.stock}
+                            </span>
+                          </div>
+                          <div className="col-span-1">
+                            <span className="text-sm text-gray-600">{product.price} EGP</span>
+                          </div>
+                          <div className="col-span-2">{getStatusBadge(product.status)}</div>
+                          <div className="col-span-2">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem asChild>
+                                  <Link to={`/dashboard/products/edit/${product.slug}`}>
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit
+                                  </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-red-600"
+                                  onClick={() => handleDeleteProduct(product.slug)}
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Table Body */}
-            <div className="divide-y divide-gray-200">
-              {currentProducts.length === 0 ? (
-                <div className="text-center py-10 text-gray-500">No products found</div>
-              ) : (
-                currentProducts.map((product) => (
-                  <div key={product.id} className="px-6 py-4 hover:bg-gray-50">
-                    <div className="grid grid-cols-12 gap-4 items-center">
-                      <div className="col-span-4 flex items-center space-x-3">
-                        <Checkbox
-                          checked={selectedProducts.has(product.id)}
-                          onCheckedChange={(checked) => handleSelectProduct(product.id, checked)}
-                        />
-                        <div className="w-10 h-10 bg-gray-100 rounded">
-                          <img src={product.images[0].path} className="w-full h-full object-cover rounded" />
-                        </div>
-                        <span className="text-sm font-medium text-gray-900">{product.name?.en}</span>
-                      </div>
-                      <div className="col-span-2">
-                        <span className="text-sm text-gray-600">{product.category?.name}</span>
-                      </div>
-                      <div className="col-span-1">
-                        <span className={`text-sm ${getStockStatusColor(product.stock)}`}>
-                          {product.stock}
-                        </span>
-                      </div>
-                      <div className="col-span-1">
-                        <span className="text-sm text-gray-600">{product.price} EGP</span>
-                      </div>
-                      <div className="col-span-2">{getStatusBadge(product.status)}</div>
-                      <div className="col-span-2">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link to={`/dashboard/products/edit/${product.slug}`}>
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-red-600"
-                              onClick={() => handleDeleteProduct(product.slug)}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Pagination */}
             <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
               <Button
                 variant="outline"
@@ -297,7 +293,6 @@ export default function ProductListPage() {
         </Card>
       </div>
       
-      {/* إضافة أنماط CSS للرسوم المتحركة */}
       <style jsx>{`
         @keyframes spin-slow {
           from { transform: rotate(0deg); }
