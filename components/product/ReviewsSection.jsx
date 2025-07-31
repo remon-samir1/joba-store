@@ -100,11 +100,12 @@ export function ReviewsSection({ slug }) {
     ));
   };
 
+  const activeReviews = reviews?.filter( data => data.status !== 'pending')
   return (
     <div className="space-y-8  mt-8">
       <Notifcation />
       {loading && <Loading />}
-      <h2 className="text-4xl font-medium text-gray-900">Reviews (2)</h2>
+      <h2 className="text-4xl font-medium text-gray-900">Reviews ({activeReviews?.length})</h2>
 
       {/* Reviews List */}
       <div className="space-y-8">

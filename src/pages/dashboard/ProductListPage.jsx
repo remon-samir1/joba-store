@@ -75,6 +75,7 @@ export default function ProductListPage() {
       .then((res) => {
         const data = res.data?.data || [];
         setProducts(data);
+        console.log(res);
         setFilteredProducts(data);
       })
       .catch(error => console.error(error))

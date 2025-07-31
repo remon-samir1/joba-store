@@ -73,3 +73,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media (max-width: 640px) {
+  html{
+    font-size: 14px;
+  }
+}

@@ -69,11 +69,11 @@ const WishlistPage = () => {
                           {/* <p className="product-category">{item.category.name}</p> */}
                           <div className="product-pricing">
                             <span className="current-price">
-                              EGP{item.discount_price}
+                            ${item.discount_price & item.sizes[0]?.price ? +item.discount_price + +item.sizes[0]?.price : +item.price + +item.sizes[0]?.price}
                             </span>
                             {item.price && (
                               <span className="original-price">
-                                EGP {item.price}
+                              {item.discount_price & item.sizes[0]?.price ?  `$ ${+item.price + +item.sizes[0]?.price}`: '' }
                               </span>
                             )}
                           </div>

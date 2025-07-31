@@ -51,7 +51,7 @@ export default function AddProductPage() {
     productPrice: "",
     discountedPrice: "",
     salesPrice: "",
-    taxIncluded: "yes",
+    // taxIncluded: "yes",
     expirationStart: "",
     expirationEnd: "",
     stockQuantity: "",
@@ -62,7 +62,7 @@ export default function AddProductPage() {
     productCategory: "",
     productTag: "",
   });
-
+console.log(productData);
   const [variations, setVariations] = useState([{ weight: "", price: "" }]);
   const [attachment, setAttachment] = useState(null);
   const [productImages, setProductImages] = useState([]);
@@ -215,7 +215,8 @@ export default function AddProductPage() {
     formData.append("name", productData.productName);
     formData.append("description", productData.productDescription);
     formData.append("price", productData.productPrice);
-    formData.append("payment_method", "visa");
+    formData.append("discount_price", +productData.discountedPrice);
+    formData.append("payment_method", "cash");
     formData.append("stock", productData.stockQuantity);
     formData.append("category_id", productData.productCategory);
     formData.append("is_featured", productData.isBestSeller ? 1 : 0);
@@ -378,7 +379,7 @@ export default function AddProductPage() {
                     </div>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <Label className="text-gray-700">Tax Included *</Label>
                     <div className="flex items-center space-x-4 mt-2">
                       <div className="flex items-center space-x-2">
@@ -405,7 +406,7 @@ export default function AddProductPage() {
                         <Label htmlFor="tax-no" className="text-gray-700">No</Label>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div>

@@ -54,6 +54,8 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/help" element={<HelpPage />} />
+
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/blog" element={<BlogPage />} />
@@ -112,12 +114,11 @@ function App() {
                 </Routes>
               </DashboardLayout>
             }
-          />
+            />
+            </Route>
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/help" element={<HelpPage />} />
           <Route path="/support" element={<SupportPage />} />
           <Route path="*" element={<NotFound />} />
-          </Route>
         </Routes>
         <Toaster />
         <ReactQueryDevtools initialIsOpen={false} />

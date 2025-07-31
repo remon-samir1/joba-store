@@ -157,8 +157,8 @@ const CartPage = () => {
                     your cart is empty!
                   </h3>
                   <p className="text-[#656565] mt-4 max-w-80">
-                    Lorem ipsum dolor sit amet consectetur. Suspendisse proin
-                    sagittis risus sed.
+                    {/* Lorem ipsum dolor sit amet consectetur. Suspendisse proin
+                    sagittis risus sed. */}
                   </p>
                 </div>
               ) : (
@@ -236,17 +236,17 @@ const CartPage = () => {
         
 
           {/* Cart Totals */}
-          <div className="cart-totals">
+          <div className="cart-totals md:p-6 ">
             <h3 className="totals-title">Cart Totals</h3>
             <div className="totals-row">
-              <span className="totals-label">Subtotal</span>
-              <span className="totals-value">EGP {subtotal.toFixed(2)}</span>
+              <span className="totals-label ">Subtotal</span>
+              <span className="totals-value">$ {subtotal.toFixed(2)}</span>
             </div>
             {discount !== "" && (
               <div className="totals-row">
                 <span className="totals-label">Discount</span>
                 <span className="totals-value">
-                  - EGP {discountValue.toFixed(2)}
+                  - $ {discountValue.toFixed(2)}
                 </span>
               </div>
             )}
@@ -256,7 +256,7 @@ const CartPage = () => {
             </div>
             <div className="totals-row total-row">
               <span className="totals-label">Total</span>
-              <span className="totals-value">EGP {total.toFixed(2)}</span>
+              <span className="totals-value">$ {total.toFixed(2)}</span>
             </div>
             <Link to="/checkout" className="checkout-btn">
               Checkout

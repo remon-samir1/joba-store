@@ -23,7 +23,7 @@ import {
   Filter,
   X,
 } from "lucide-react";
-import { Axios, baseURL } from "../../../components/Helpers/Axios";
+import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import Notifcation from "../../../components/Notification";
 
@@ -92,7 +92,6 @@ export default function CategoriesManagementPage() {
   useEffect(() => {
     let filtered = [...categories];
     
-    // Apply search filter
     if (searchQuery) {
       filtered = filtered.filter(c => 
         c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -100,7 +99,6 @@ export default function CategoriesManagementPage() {
       );
     }
     
-    // Apply sorting
     filtered.sort((a, b) => {
       if (a[sortField] < b[sortField]) return sortDirection === "asc" ? -1 : 1;
       if (a[sortField] > b[sortField]) return sortDirection === "asc" ? 1 : -1;
@@ -130,13 +128,10 @@ export default function CategoriesManagementPage() {
 
   const handleDeleteCategory = async (id) => {
     if (!window.confirm("Are you sure you want to delete this category?")) return;
-    
     setDeleteLoading(id);
     try {
       await Axios.delete(`admin/categories/${id}`);
       toast.success("Category deleted successfully");
-      
-      // Update state by removing the deleted category
       const updated = categories.filter(c => c.id !== id);
       setCategories(updated);
     } catch (err) {
@@ -152,19 +147,14 @@ export default function CategoriesManagementPage() {
       toast.warning("Please select at least one category to delete");
       return;
     }
-    
-    
     const slugs = Array.from(selectedCategories);
     try {
       for (let slug of slugs) {
         await Axios.delete(`admin/categories/${slug}`).then(data => console.log(data));
       }
       toast.success(`${slugs.length} categories deleted successfully`);
-      
-      // Update state by removing all deleted categories
       const updated = categories.filter(c => !slugs.includes(c.slug));
       setCategories(updated);
-        
       setSelectedCategories(new Set());
       setSelectAll(false);
     } catch (err) {
@@ -188,13 +178,13 @@ export default function CategoriesManagementPage() {
   };
 
   return (
-    <div className="flex-1 overflow-auto bg-gray-50">
+    <div className="flex-1 flex flex-col bg-gray-50 h-full">
       <Notifcation />
       {loading && <OrangeLoader />}
       <DashboardHeader title="Category Management" />
       
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="flex-1 flex flex-col p-6 space-y-6 min-h-0">
+        <div className="flex items-center justify-between flex-shrink-0">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Manage Categories</h2>
             <p className="text-gray-600 mt-1">Create, edit, and organize your product categories</p>
@@ -206,9 +196,9 @@ export default function CategoriesManagementPage() {
           </Link>
         </div>
 
-        <Card className="shadow-lg border border-gray-200 rounded-xl overflow-hidden">
-          <CardContent className="p-0">
-            <div className="p-6 border-b border-gray-200 bg-white">
+        <Card className="shadow-lg border border-gray-200 rounded-xl flex-1 flex flex-col min-h-0">
+          <CardContent className="p-0 flex flex-col flex-1">
+            <div className="p-6 border-b border-gray-200 bg-white flex-shrink-0">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="relative w-full md:w-80">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -275,135 +265,116 @@ export default function CategoriesManagementPage() {
                 </div>
               )}
             </div>
+            
+            <div className="flex-1 overflow-auto">
+              <div className="min-w-[800px]">
+                <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 sticky top-0 z-10">
+                  <div className="grid grid-cols-12 gap-4 items-center">
+                    <div className="col-span-4 flex items-center space-x-3">
+                      <Checkbox
+                        checked={selectAll}
+                        onCheckedChange={handleSelectAll}
+                        className="border-white data-[state=checked]:bg-white data-[state=checked]:text-orange-500"
+                      />
+                      <span className="text-sm font-medium text-white">Category name</span>
+                    </div>
+                    <div className="col-span-4">
+                      <span className="text-sm font-medium text-white">Slug</span>
+                    </div>
+                    <div className="col-span-3">
+                      <button 
+                        className="text-sm font-medium text-white flex items-center"
+                        onClick={() => toggleSort("created_at")}
+                      >
+                        Created Date {sortIndicator("created_at")}
+                      </button>
+                    </div>
+                    <div className="col-span-1">
+                      <span className="text-sm font-medium text-white">Action</span>
+                    </div>
+                  </div>
+                </div>
 
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3">
-              <div className="grid grid-cols-12 gap-4 items-center">
-                <div className="col-span-3 flex items-center space-x-3">
-                  <Checkbox
-                    checked={selectAll}
-                    onCheckedChange={handleSelectAll}
-                    className="border-white data-[state=checked]:bg-white data-[state=checked]:text-orange-500"
-                  />
-                  <span className="text-sm font-medium text-white">
-                    Category name
-                  </span>
-                </div>
-                <div className="col-span-3">
-                  <span className="text-sm font-medium text-white">Slug</span>
-                </div>
-                <div className="col-span-3">
-                  <button 
-                    className="text-sm font-medium text-white flex items-center"
-                    onClick={() => toggleSort("created_at")}
-                  >
-                    Created Date {sortIndicator("created_at")}
-                  </button>
-                </div>
-                <div className="col-span-3">
-                  <span className="text-sm font-medium text-white">Action</span>
+                <div className="divide-y divide-gray-200 bg-white">
+                  {currentCategories.length === 0 ? (
+                    <div className="text-center py-16 col-span-12">
+                      <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                        <X className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <h3 className="mt-4 text-lg font-medium text-gray-900">No categories found</h3>
+                    </div>
+                  ) : (
+                    currentCategories.map((category) => (
+                      <div key={category.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
+                        <div className="grid grid-cols-12 gap-4 items-center">
+                          <div className="col-span-4 flex items-center space-x-3">
+                            <Checkbox
+                              checked={selectedCategories.has(category.slug)}
+                              onCheckedChange={(checked) => handleSelectCategory(category.slug, checked)}
+                            />
+                            <div className="flex items-center">
+                              <div className="rounded-xl w-10 h-10 flex items-center justify-center mr-3 flex-shrink-0">
+                                <img src={`${category.image}`} alt="" className="w-full h-full object-cover"/>
+                              </div>
+                              <span className="text-sm font-medium text-gray-900">{category.name}</span>
+                            </div>
+                          </div>
+                          <div className="col-span-4">
+                            <span className="text-sm text-gray-600 line-clamp-2">{category.slug || "No slug"}</span>
+                          </div>
+                          <div className="col-span-3">
+                            <span className="text-sm text-gray-600">
+                              {new Date(category.created_at).toLocaleDateString("en-GB", {
+                                day: "2-digit", month: "short", year: "numeric",
+                              })}
+                            </span>
+                          </div>
+                          <div className="col-span-1 flex justify-start">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="hover:bg-gray-200">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="min-w-[150px]">
+                                <DropdownMenuItem asChild>
+                                  <Link
+                                    to={`/dashboard/categories/edit/${category.slug}`}
+                                    className="flex items-center px-3 py-2 hover:bg-gray-100"
+                                  >
+                                    <Edit className="h-4 w-4 mr-2 text-gray-600" /> 
+                                    <span>Edit</span>
+                                  </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-red-600 px-3 py-2 hover:bg-red-50 cursor-pointer"
+                                  onClick={() => handleDeleteCategory(category.id)}
+                                  disabled={deleteLoading === category.id}
+                                >
+                                  {deleteLoading === category.id ? (
+                                    <div className="flex items-center">
+                                      <div className="w-4 h-4 border-t-2 border-r-2 border-red-600 rounded-full animate-spin mr-2"></div>
+                                      Deleting
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <Trash2 className="h-4 w-4 mr-2" /> Delete
+                                    </>
+                                  )}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="divide-y divide-gray-200 bg-white">
-              {currentCategories.length === 0 ? (
-                <div className="text-center py-16">
-                  <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                    <X className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">No categories found</h3>
-                  <p className="mt-1 text-gray-500 max-w-md mx-auto">
-                    {searchQuery 
-                      ? "No categories match your search. Try different keywords." 
-                      : "You haven't created any categories yet. Get started by adding your first category."}
-                  </p>
-                  <Link to="/dashboard/categories/add" className="mt-4 inline-block">
-                    <Button className="bg-orange-500 hover:bg-orange-600">
-                      <Plus className="h-4 w-4 mr-2" /> Add Category
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                currentCategories.map((category) => (
-                  <div key={category.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
-                    <div className="grid grid-cols-12 gap-4 items-center">
-                      <div className="col-span-3 flex items-center space-x-3">
-                        <Checkbox
-                          checked={selectedCategories.has(category.slug)}
-                          onCheckedChange={(checked) =>
-                            handleSelectCategory(category.slug, checked)
-                          }
-                        />
-                        <div className="flex items-center">
-                          <div className="rounded-xl w-10 h-10 flex items-center justify-center mr-3">
-                        <img src={`${category.image}`} alt=""  className="w-full h-full object-cover"/>
-                          </div>
-                          <span className="text-sm font-medium text-gray-900">
-                            {category.name}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="col-span-3">
-                        <span className="text-sm text-gray-600 line-clamp-2">
-                          {category.slug || "No slug"}
-                        </span>
-                      </div>
-
-                      <div className="col-span-3">
-                        <span className="text-sm text-gray-600">
-                          {new Date(category.created_at).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-
-                      <div className="col-span-3 flex justify-start">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="hover:bg-gray-200">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="min-w-[150px]">
-                            <DropdownMenuItem asChild>
-                              <Link
-                                to={`/dashboard/categories/edit/${category.slug}`}
-                                className="flex items-center px-3 py-2 hover:bg-gray-100"
-                              >
-                                <Edit className="h-4 w-4 mr-2 text-gray-600" /> 
-                                <span>Edit</span>
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-red-600 px-3 py-2 hover:bg-red-50 cursor-pointer"
-                              onClick={() => handleDeleteCategory(category.id)}
-                              disabled={deleteLoading === category.id}
-                            >
-                              {deleteLoading === category.id ? (
-                                <div className="flex items-center">
-                                  <div className="w-4 h-4 border-t-2 border-r-2 border-red-600 rounded-full animate-spin mr-2"></div>
-                                  Deleting
-                                </div>
-                              ) : (
-                                <>
-                                  <Trash2 className="h-4 w-4 mr-2" /> Delete
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
             {totalPages > 1 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white">
+              <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white flex-shrink-0">
                 <div className="text-sm text-gray-600">
                   Showing {startIndex + 1} to {Math.min(startIndex + ITEMS_PER_PAGE, filteredCategories.length)} of {filteredCategories.length} categories
                 </div>
@@ -478,7 +449,6 @@ export default function CategoriesManagementPage() {
         </Card>
       </div>
 
-      {/* إضافة أنماط CSS للرسوم المتحركة */}
       <style jsx>{`
         @keyframes spin-slow {
           from { transform: rotate(0deg); }

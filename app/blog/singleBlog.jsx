@@ -167,7 +167,7 @@ const SingleBlog = () => {
         <div className="mt-12 bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-6 md:p-8 flex items-start">
             <div className="flex-shrink-0 mr-4">
-              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
+              <img src={blog.user?.avatar} className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">

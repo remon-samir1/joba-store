@@ -13,155 +13,156 @@ const CheckoutPage = () => {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
-  
+
   // Define all styles as JavaScript objects
   const styles = {
     page: {
-      width: '100%',
-      minHeight: '100vh',
-      backgroundColor: '#f8f8f8'
+      width: "100%",
+      minHeight: "100vh",
+      backgroundColor: "#f8f8f8",
     },
     container: {
-      maxWidth: '1336px',
-      margin: '0 auto',
-      padding: '20px 7vw'
+      maxWidth: "1336px",
+      margin: "0 auto",
+      padding: "20px 7vw",
     },
     header: {
-      maxWidth: '1173px',
-      margin: '0 auto 80px',
-      padding: '0 20px'
+      maxWidth: "1173px",
+      margin: "0 auto 80px",
+      padding: "0 20px",
     },
     title: {
-      color: '#333',
-      fontSize: '40px',
+      color: "#333",
+      fontSize: "40px",
       fontWeight: 600,
-      marginBottom: '24px'
+      marginBottom: "24px",
     },
     description: {
-      color: '#666',
-      fontSize: '20px',
+      color: "#666",
+      fontSize: "20px",
       fontWeight: 400,
       lineHeight: 1.6,
-      maxWidth: '1132px'
+      maxWidth: "1132px",
     },
     content: {
-      display: 'flex',
+      display: "flex",
       // flexWrap:'wrap',
-      justifyContent:'space-between',
-      gap: '32px',
-      alignItems: 'flex-start'
+      justifyContent: "space-between",
+      gap: "32px",
+      alignItems: "flex-start",
     },
     formSection: {
       flex: 1,
-      maxWidth: '599px'
+      maxWidth: "599px",
     },
     summarySection: {
-      width: '400px',
-      flexShrink: 0
+      // width: "400px",
+      flexShrink: 0,
     },
     sectionTitle: {
-      color: '#333',
-      fontSize: '18px',
+      color: "#333",
+      fontSize: "18px",
       fontWeight: 600,
-      marginBottom: '33px'
+      marginBottom: "33px",
     },
     formGroup: {
-      marginBottom: '21px'
+      marginBottom: "21px",
     },
     label: {
-      display: 'block',
-      color: '#333',
-      fontSize: '16px',
+      display: "block",
+      color: "#333",
+      fontSize: "16px",
       fontWeight: 600,
-      marginBottom: '12px'
+      marginBottom: "12px",
     },
     input: {
-      width: '100%',
-      padding: '10px 19px',
-      border: '1.156px solid #F15A24',
-      borderRadius: '4.625px',
-      backgroundColor: '#fff',
-      fontSize: '16px',
+      width: "100%",
+      padding: "10px 19px",
+      border: "1.156px solid #F15A24",
+      borderRadius: "4.625px",
+      backgroundColor: "#fff",
+      fontSize: "16px",
       fontWeight: 400,
-      color: '#333',
-      outline: 'none'
+      color: "#333",
+      outline: "none",
     },
     textarea: {
-      height: '115px',
-      resize: 'vertical'
+      height: "115px",
+      resize: "vertical",
     },
     formRow: {
-      display: 'flex',
-      gap: '16px'
+      display: "flex",
+      gap: "16px",
     },
     submitButton: {
-      width: '100%',
-      padding: '15px 20px',
-      backgroundColor: '#F15A24',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '6.696px',
-      fontSize: '16px',
+      width: "100%",
+      padding: "15px 20px",
+      backgroundColor: "#F15A24",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6.696px",
+      fontSize: "16px",
       fontWeight: 700,
-      cursor: 'pointer'
+      cursor: "pointer",
     },
     summary: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '42px'
+      display: "flex",
+      flexDirection: "column",
+      gap: "42px",
     },
     totalsTitle: {
-      color: '#333',
-      fontSize: '20px',
+      color: "#333",
+      fontSize: "20px",
       fontWeight: 600,
-      padding: '20px',
-      margin: 0
+      padding: "20px",
+      margin: 0,
     },
     totalsRow: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '27px 40px',
-      borderBottom: '0.837px solid #e0e0e0'
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "27px 40px",
+      borderBottom: "0.837px solid #e0e0e0",
     },
     totalRow: {
-      fontWeight: 600
+      fontWeight: 600,
     },
     doneContainer: {
-      width: '90%',
-      maxWidth: '42rem',
-      margin: '3rem auto 4rem',
-      padding: '2rem',
-      backgroundColor: '#fff',
-      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-      borderRadius: '0.75rem',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      textAlign: 'center',
-      gap: '1.5rem'
+      width: "90%",
+      maxWidth: "42rem",
+      margin: "3rem auto 4rem",
+      padding: "2rem",
+      backgroundColor: "#fff",
+      boxShadow:
+        "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      borderRadius: "0.75rem",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      textAlign: "center",
+      gap: "1.5rem",
     },
     imageContainer: {
-      width: '7rem',
-      height: '7rem'
+      width: "7rem",
+      height: "7rem",
     },
     image: {
-      width: '100%',
-      height: '100%',
-      objectFit: 'contain'
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
     },
     doneButton: {
-      display: 'inline-block',
-      color: '#fff',
-      backgroundColor: '#F15A24',
-      padding: '0.5rem 2rem',
-      borderRadius: '9999px',
-      textDecoration: 'none'
+      display: "inline-block",
+      color: "#fff",
+      backgroundColor: "#F15A24",
+      padding: "0.5rem 2rem",
+      borderRadius: "9999px",
+      textDecoration: "none",
     },
     responsive: {
       /* Responsive styles would be implemented using window width checks */
-    }
+    },
   };
   const [discount, setDiscount] = useState("");
   const [apply, setApply] = useState(false);
@@ -171,7 +172,7 @@ const CheckoutPage = () => {
       setDiscountValue(data.data.data.discount || 0);
 
       console.log(data);
-      setIsLoading(false)
+      setIsLoading(false);
       if (discount) {
         if (data.data.data.discount) {
           toast.success("Coupon applied successfully!");
@@ -201,7 +202,6 @@ const CheckoutPage = () => {
   useEffect(() => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
   }, []);
-
 
   const [discountValue, setDiscountValue] = useState(0);
   const [formData, setFormData] = useState({
@@ -244,15 +244,15 @@ const CheckoutPage = () => {
       shipping_email: formData.shipping_email,
       coupon_code: formData.coupon_code || null,
     };
-    
+
     try {
       const response = await Axios.post("/orders", payload);
       toast.success("Order placed successfully!");
       setLoading(false);
-      setDone(true)
+      setDone(true);
     } catch (error) {
-      if(items.length === 0){
-        toast.warn('Please Add Items To Cart First')
+      if (items.length === 0) {
+        toast.warn("Please Add Items To Cart First");
       }
       toast.error("Order failed. Please check your inputs.");
       setLoading(false);
@@ -260,8 +260,8 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div ref={scrollRef}  style={styles.page}>
-    {isLoading && (
+    <div ref={scrollRef} style={styles.page}>
+      {isLoading && (
         <div className="loading-screen">
           <div className="spinner"></div>
           <p>Loading your Coupon...</p>
@@ -269,25 +269,26 @@ const CheckoutPage = () => {
       )}
       {done ? (
         <div>
-          <Header/>
+          <Header />
           <div style={styles.doneContainer}>
             <div style={styles.imageContainer}>
               <img src={image} alt="Order Done" style={styles.image} />
             </div>
-            
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#333' }}>
+
+            <h3 style={{ fontSize: "1.5rem", fontWeight: 600, color: "#333" }}>
               Thanks for your order!
             </h3>
-            
-            <p style={{ color: '#666', lineHeight: 1.6 }}>
-              A proforma invoice has been issued and sent to your email. Our team will be in touch shortly to confirm the payment.
+
+            <p style={{ color: "#666", lineHeight: 1.6 }}>
+              A proforma invoice has been issued and sent to your email. Our
+              team will be in touch shortly to confirm the payment.
             </p>
-            
+
             <Link to="/" style={styles.doneButton}>
               Continue shopping
             </Link>
           </div>
-          <Footer/>
+          <Footer />
         </div>
       ) : (
         <div style={styles.page}>
@@ -309,7 +310,7 @@ const CheckoutPage = () => {
                 {/* Left Side - Form */}
                 <div style={styles.formSection}>
                   <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '34px' }}>
+                    <div style={{ marginBottom: "34px" }}>
                       <h2 style={styles.sectionTitle}>Shipping Information</h2>
 
                       <div style={styles.formGroup}>
@@ -346,7 +347,7 @@ const CheckoutPage = () => {
                           value={formData.shipping_address}
                           onChange={handleInputChange}
                           required
-                          style={{...styles.input, ...styles.textarea}}
+                          style={{ ...styles.input, ...styles.textarea }}
                         />
                       </div>
 
@@ -435,7 +436,7 @@ const CheckoutPage = () => {
                 </div>
 
                 {/* Right Side - Summary */}
-                <div className=" " style={styles.summarySection}>
+                <div className=" w-[100%] mx-auto md:w-[400px]" style={styles.summarySection}>
                   <div style={styles.summary}>
                     <h3 style={styles.totalsTitle}>Cart Totals</h3>
 
@@ -447,33 +448,35 @@ const CheckoutPage = () => {
                         <span>{item.product.price * item.quantity} EGP</span>
                       </div>
                     ))}
-      {discount !== "" && (
-              <div className="totals-row">
-                <span className="totals-label">Discount</span>
-                <span className="totals-value">
-                  $ {discountValue.toFixed(2)}
-                </span>
-              </div>
-            )}
-                    <div className="totals-row" style={{...styles.totalsRow, fontWeight: 600}}>
+                    {discount !== "" && (
+                      <div className="totals-row">
+                        <span className="totals-label">Discount</span>
+                        <span className="totals-value">
+                          $ {discountValue.toFixed(2)}
+                        </span>
+                      </div>
+                    )}
+                    <div
+                      className="totals-row"
+                      style={{ ...styles.totalsRow, fontWeight: 600 }}
+                    >
                       <span className="totals-label">Total</span>
                       <span>$ {total - discountValue}</span>
                     </div>
-              
                   </div>
-              <div className="coupon-section">
-            <div className="coupon-container">
-              <input
-                type="text"
-                placeholder="Coupon code"
-                onChange={(e) => setDiscount(e.target.value)}
-                className="coupon-input"
-              />
-              <button className="apply-btn" onClick={applyCoupon}>
-                Apply
-              </button>
-            </div>
-          </div>
+                  <div className="coupon-section">
+                    <div className="coupon-container">
+                      <input
+                        type="text"
+                        placeholder="Coupon code"
+                        onChange={(e) => setDiscount(e.target.value)}
+                        className="coupon-input"
+                      />
+                      <button className="apply-btn" onClick={applyCoupon}>
+                        Apply
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

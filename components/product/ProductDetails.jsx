@@ -53,7 +53,7 @@ export function ProductDetails({
   const handleAddToCart = async () => {
     const data = {
       product_size_id: selectedSize,
-      // _method:'POST',
+      quantity :quantity,
       total_price: price * quantity,
     };
     const formdData = new FormData();

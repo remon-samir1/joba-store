@@ -277,10 +277,10 @@ export default function UpdateProduct() {
     formData.append("price", productData.productPrice);
     formData.append("discount_price", productData.discountedPrice);
     formData.append("sales_price", productData.salesPrice);
-    formData.append(
-      "tax_included",
-      productData.taxIncluded === "yes" ? "1" : "0",
-    );
+    // formData.append(
+    //   "tax_included",
+    //   productData.taxIncluded === "yes" ? "1" : "0",
+    // );
     formData.append("expiration_start", productData.expirationStart);
     formData.append("expiration_end", productData.expirationEnd);
     formData.append("stock", productData.stockQuantity);
@@ -453,7 +453,7 @@ export default function UpdateProduct() {
                     </div>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <Label className="text-gray-700">Tax Included *</Label>
                     <div className="flex items-center space-x-4 mt-2">
                       <div className="flex items-center space-x-2">
@@ -483,7 +483,7 @@ export default function UpdateProduct() {
                         </Label>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* <div>

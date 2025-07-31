@@ -358,6 +358,8 @@ function ProductCard({
   product_size_id,
   is_favorite,
   handleAddToCart,
+  discount_price,
+  sizes,
   slug,
   price,
   originalPrice,
@@ -406,11 +408,11 @@ function ProductCard({
             </p>
             <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
               <span className="text-primary font-medium text-sm sm:text-base">
-                ${price}
+                ${discount_price ? +discount_price + +sizes : +price + +sizes}
               </span>
-              {originalPrice && (
+              {originalPrice  && (
                 <span className="text-white/70 line-through text-sm sm:text-base">
-                  ${originalPrice}
+                  {discount_price ?  `$ ${+price + +sizes}`: '' }
                 </span>
               )}
             </div>
@@ -465,7 +467,7 @@ function ProductCard({
               </button>
               <div className="text-right">
                 <span className="text-base sm:text-lg font-medium">
-                  EGP {price}
+                  $ {price}
                 </span>
               </div>
             </div>
@@ -488,6 +490,7 @@ function NewProducts() {
         setLoading(true);
         const response = await Axios.get("/products");
         setProducts(response.data.data);
+        console.log(response);
       } catch (err) {
         console.error("Error fetching products:", err);
         setError("Failed to load new products. Please try again later.");
@@ -573,8 +576,10 @@ function NewProducts() {
                 <div key={index} className="w-64 sm:w-72 flex-shrink-0">
                   <Link to={`/products/${product?.slug}`}>
                     <ProductCard
+                    discount_price={product?.discount_price}
                       setIsWishlisted={setIsWishlisted}
                       isWishlisted={isWishlisted}
+                      sizes={product?.sizes[0]?.price}
                       handleAddToWishlist={handleAddToWishlist}
                       slug={product.slug}
                       id={product.id}
@@ -694,12 +699,14 @@ function BestSeller() {
             {products?.map((product, index) => (
               <Link key={index} to={`/products/${product?.slug}`}>
                 <ProductCard
+                discount_price={product?.discount_price}
                   handleAddToWishlist={handleAddToWishlist}
                   slug={product.slug}
                   id={product.id}
                   is_favorite={product.is_favorite}
                   name={product.name.en}
                   price={product.price}
+                  sizes={product?.sizes[0]?.price}
                   originalPrice={product.price}
                   images={product.images}
                   title={product.title}

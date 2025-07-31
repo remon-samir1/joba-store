@@ -27,6 +27,7 @@ import {
 import { useEffect, useState } from "react";
 import { Axios } from "../../components/Helpers/Axios";
 import { Link } from "react-router-dom";
+import StringSlice from "../../components/Helpers/StringSlice";
 
 
 export default function Dashboard() {
@@ -374,7 +375,7 @@ export default function Dashboard() {
                   <div className="flex-1">
                     <div className="text-sm font-medium">{product.name.en}</div>
                     <div className="text-xs text-gray-500">
-                      {product.description.en}
+                      {StringSlice(product.description.en , 25)}
                     </div>
                   </div>
                   <div className="text-sm font-medium text-orange-500">
@@ -533,7 +534,7 @@ export default function Dashboard() {
                             : "bg-red-100 text-red-700 hover:bg-red-100"
                         }
                       >
-                        ● {product.status}
+                        {product.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-orange-500 font-medium">

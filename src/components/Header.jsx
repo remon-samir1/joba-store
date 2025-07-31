@@ -150,7 +150,7 @@ export function Header() {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    navigate(`/products/${suggestion.id}`);
+    navigate(`/products/${suggestion.slug}`);
     setShowSuggestions(false);
     setIsMobileSearchOpen(false);
   };
@@ -324,7 +324,7 @@ export function Header() {
                   className="ml-2 text-primary font-medium"
                   onClick={handleSearch}
                 >
-                  بحث
+                  Search
                 </button>
               )}
             </form>
