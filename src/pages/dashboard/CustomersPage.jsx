@@ -218,7 +218,7 @@ export default function CustomersPage() {
     <div className="flex-1 overflow-auto">
       <DashboardHeader title="Customers" />
 
-      <div className="p-6 space-y-6">
+      <div className="md:p-6 p-2 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {customerStats.map((stat, index) => (
@@ -253,7 +253,7 @@ export default function CustomersPage() {
         </div>
 
         {/* Customers Table with Search & Filters */}
-        <Card>
+        <Card className="overflow-auto w-[92vw] md:w-full">
           <CardHeader>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <CardTitle>Customer List</CardTitle>

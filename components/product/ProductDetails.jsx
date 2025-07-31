@@ -207,7 +207,7 @@ export function ProductDetails({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 sm:gap-4 my-8">
+      <div className="flex flex-wrap gap-2 sm:gap-4 mt-8">
         {sizes.map((size) => (
           <Button
             key={size.id}
@@ -216,7 +216,7 @@ export function ProductDetails({
               setSizePrice(size.price);
               setSelectedSize(size.id);
             }}
-            className={`border-gray-900 text-gray-900 hover:bg-gray-50 px-4 py-2 ${
+            className={`border-gray-900 text-gray-900 hover:bg-primary/50 px-4 py-2 ${
               selectedSize === size.id
                 ? "bg-primary text-white hover:shadow-md"
                 : ""
@@ -227,10 +227,10 @@ export function ProductDetails({
         ))}
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+      <div className="flex flex-wrap  sm:flex-row gap-3 mt-8 sm:gap-4">
         <Button
           onClick={handleAddToCart}
-          className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2 px-6 py-3 flex-1 sm:w-full"
+          className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2 px-6 py-3 flex-1 sm:w-[90vw]"
         >
           <span>Add to Cart</span>
           <ShoppingCart className="h-5 w-5" />

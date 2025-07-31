@@ -332,7 +332,7 @@ function Categories() {
                         {category.description ||
                           "Lorem Ipsum is simply dummy text of the printing and typesetting industry."}
                       </p> */}
-                      <button className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-full text-white hover:bg-primary/90 transition-colors">
+                      <button className="hidden md:inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-full text-white hover:bg-primary/90 transition-colors">
                         <ChevronRight className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />
                       </button>
                     </>

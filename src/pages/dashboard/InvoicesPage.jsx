@@ -126,7 +126,7 @@ export default function InvoicesPage() {
     <div className="flex-1 overflow-auto">
       <DashboardHeader title="Invoice Management" />
 
-      <div className="p-6 space-y-6">
+      <div className="md:p-6 p-2 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {stats?.map((stat, index) => (
             <Card key={index}>
@@ -146,12 +146,11 @@ export default function InvoicesPage() {
           ))}
         </div>
 
-        {/* جدول الفواتير */}
-        <Card>
+        <Card className="overflow-auto w-[92vw] md:w-full">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Recent Invoices</CardTitle>
-              <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap gap-4 md:gap-0  items-center justify-between">
+              <CardTitle className='whitespace-nowrap'>Recent Invoices</CardTitle>
+              <div className="flex flex-wrap gap-4 md:gap-0 items-center space-x-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -254,7 +253,7 @@ export default function InvoicesPage() {
             </Table>
 
             {/* الترقيم الصفحي */}
-            <div className="flex items-center justify-between mt-6">
+            <div className="flex items-center justify-between mt-6" >
               <p className="text-sm text-gray-700">
                 Showing <span className="font-medium">1</span> to{" "}
                 <span className="font-medium">{invoices.length}</span>{" "}

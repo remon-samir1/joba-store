@@ -1,5 +1,4 @@
-
-import { Search, Bell, User } from "lucide-react";
+import { Search, Bell, User, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
@@ -29,78 +28,125 @@ export function DashboardHeader({ title }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isResultsVisible, setIsResultsVisible] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const navigate = useNavigate();
-  const searchRef = useRef(null);
-  const [admin , setAdmin] = useState()
-  useEffect(()=>{
-const getData = async()=>{
-  try{
-Axios.get('admin/profile').then(data =>{
-  setAdmin(data.data.data)
-  console.log(data)})
-  }catch(err){
-console.log(err);
-  }
-}
-getData()
-  },[])
+  const desktopSearchRef = useRef(null);
+  const mobileSearchRef = useRef(null);
+  const [admin, setAdmin] = useState();
+  
+  useEffect(() => {
+    const getData = async() => {
+      try {
+        Axios.get('admin/profile').then(data => {
+          setAdmin(data.data.data);
+          console.log(data);
+        });
+      } catch(err) {
+        console.log(err);
+      }
+    };
+    getData();
+  }, []);
+
   const getAllDashboardPages = () => {
-    return [
-      ...mainNavigation,
-      ...productNavigation,
-      ...adminNavigation
-    ];
+    return [...mainNavigation, ...productNavigation, ...adminNavigation];
   };
 
-  useEffect(() => {
-    if (searchQuery.trim() === "") {
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    
+    if (query.trim() === "") {
       setSearchResults([]);
+      setIsResultsVisible(false);
       return;
     }
 
     const filtered = getAllDashboardPages().filter(page =>
-      page.name.toLowerCase().includes(searchQuery.toLowerCase())
+      page.name.toLowerCase().includes(query.toLowerCase())
     );
 
     setSearchResults(filtered);
     setIsResultsVisible(filtered.length > 0);
-  }, [searchQuery]);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
+      const isOutsideDesktop = desktopSearchRef.current && 
+                              !desktopSearchRef.current.contains(event.target);
+      const isOutsideMobile = mobileSearchRef.current && 
+                             !mobileSearchRef.current.contains(event.target);
+      
+      if (isOutsideDesktop && isOutsideMobile) {
         setIsResultsVisible(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleResultClick = (href) => {
     navigate(href);
     setSearchQuery("");
     setIsResultsVisible(false);
+    setIsMobileSearchOpen(false);
   };
 
   return (
     <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
+      {isMobileSearchOpen && (
+        <div className="flex items-center lg:hidden mb-3">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setIsMobileSearchOpen(false)}
+            className="mr-2"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+          <div className="relative flex-grow" ref={mobileSearchRef}>
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search data, users, or reports"
+              className="pl-10 w-full"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              onFocus={() => searchQuery && setIsResultsVisible(true)}
+              autoFocus
+            />
+
+            {isResultsVisible && searchResults.length > 0 && (
+              <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-y-auto">
+                {searchResults.map((result) => (
+                  <div
+                    key={result.href}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleResultClick(result.href)}
+                  >
+                    <span className="text-sm">{result.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 truncate mr-4">
           {title}
         </h1>
 
         <div className="flex items-center space-x-2 sm:space-x-4">
-          <div className="relative hidden lg:block" ref={searchRef}>
+          <div className="relative hidden lg:block" ref={desktopSearchRef}>
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               type="text"
               placeholder="Search data, users, or reports"
               className="pl-10 w-64 xl:w-80"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearch(e.target.value)}
               onFocus={() => searchQuery && setIsResultsVisible(true)}
             />
 
@@ -119,22 +165,19 @@ getData()
             )}
           </div>
 
-          <Button variant="ghost" size="icon" className="lg:hidden">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="lg:hidden"
+            onClick={() => setIsMobileSearchOpen(true)}
+          >
             <Search className="h-5 w-5" />
           </Button>
-
-          {/* <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full"></span>
-          </Button> */}
 
           <div className="flex items-center space-x-2">
             <Link to='/dashboard/settings' variant="ghost" size="icon" className="hidden sm:flex">
               <User className="h-5 w-5" />
             </Link>
-            {/* <Link to='/dashboard/settings' className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-              <span className="text-sm font-medium text-gray-700">U</span>
-            </Link> */}
           </div>
         </div>
       </div>
