@@ -1274,6 +1274,7 @@ function ProductCard({
                 </span>
               )}
             </div>
+            
             <div className="w-8 sm:w-10 h-0.5 bg-white mx-auto"></div>
           </div>
           <button className="w-full bg-primary text-white py-2.5 sm:py-3 rounded flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-all duration-300 text-sm sm:text-base hover:scale-105 transform">

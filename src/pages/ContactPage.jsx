@@ -38,7 +38,7 @@ export default function ContactPage() {
         console.log(data);
         setLoadnig(false)
         toast.success('Your message has been sent successfully.')
-        setFormData({ name: "", email: "", message: "" });
+        setFormData({ name: "", email: "", message: "" , subject:'' });
       });
     } catch (err) {
       console.log(err);
@@ -52,6 +52,12 @@ export default function ContactPage() {
     <div className="min-h-screen bg-background">
       <Header />
 <Notifcation/>
+{loading && (
+        <div className="loading-screen">
+          <div className="spinner"></div>
+          <p>Sending your Message...</p>
+        </div>
+      )}
       {/* Hero Section */}
       <section className="relative h-96 bg-primary">
         <div className="absolute inset-0">

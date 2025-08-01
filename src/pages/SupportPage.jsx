@@ -17,6 +17,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import Notifcation from "../../components/Notification";
+import { toast } from "react-toastify";
+import { Axios } from "../../components/Helpers/Axios";
 
 const supportStats = [
   {
@@ -120,17 +123,36 @@ export default function SupportPage() {
       [e.target.name]: e.target.value
     });
   };
+const [loading , setLoading] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Support request submitted:", formData);
+    setLoading(true)
+    try {
+      Axios.post("contact", formData).then((data) => {
+        console.log(data);
+        setLoading(false)
+        toast.success('Your message has been sent successfully.')
+        setFormData({ name: "", email: "", message: ""  , subject:''});
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error('Some Thing Wrong !')
+      setLoading(false)
+
+    }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+<Notifcation/>
+{loading && (
+        <div className="loading-screen">
+          <div className="spinner"></div>
+          <p>Sending your Message...</p>
+        </div>
+      )}
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/10 to-primary/5 py-16 lg:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
