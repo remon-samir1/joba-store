@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Footer } from "@/components/Footer";
 import Notification from "../../components/Notification";
@@ -181,8 +181,12 @@ export default function CategoriesPage() {
     startIndex + productsPerPage,
   );
 
+  const scrollRef = useRef();
+  useEffect(()=>{
+    scrollRef.current.scrollIntoView()
+  },[])
   return (
-    <div className="min-h-screen bg-background">
+    <div ref={scrollRef} className="min-h-screen bg-background">
       <Notification />
       <Header />
       {/* <section className="relative h-64 sm:h-80 lg:h-96 bg-white overflow-hidden">

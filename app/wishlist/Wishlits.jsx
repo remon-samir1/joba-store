@@ -38,7 +38,12 @@ const WishlistPage = () => {
 
   return (
     <div className="wishlist-page">
-  
+      {loading && (
+        <div className="loading-screen">
+          <div className="spinner"></div>
+          <p>Loading your Wishlist...</p>
+        </div>
+      )}
       <Notifcation />
       {/* Header */}
       <Header />
