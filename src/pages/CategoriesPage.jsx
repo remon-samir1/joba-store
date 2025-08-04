@@ -78,16 +78,15 @@ export default function CategoriesPage() {
     Axios.get("/categories")
       .then((res) => {
         const apiCategories = res.data.data.data;
-        const categoryNames = apiCategories.map((cat) => cat.name);
+        const categoryNames = apiCategories.map((cat) => cat.slug);
         setCategories(apiCategories);
         setCategoryTabs(["All", ...categoryNames]);
         setSidebarCategories(apiCategories);
         if (slugFromUrl) {
           const matchedCategory = categoryNames.find(
-            (cat) =>
-              cat.toLowerCase().replace(/\s+/g, "-") ===
-              slugFromUrl.toLowerCase()
+            (cat) => cat.toLowerCase() === slugFromUrl.toLowerCase()
           );
+          
           setActiveCategory(matchedCategory || "All");
         } else {
           setActiveCategory("All");
@@ -95,13 +94,13 @@ export default function CategoriesPage() {
       })
       .finally(() => setIsLoadingCategories(false));
   }, [slugFromUrl]);
-
+console.log(activeCategory);
   useEffect(() => {
     setIsLoadingProducts(true);
     let url = `/products`;
-    // if (activeCategory && activeCategory !== "All") {
-    //   url += `&category=${encodeURIComponent(activeCategory)}`;
-    // }
+    if (activeCategory && activeCategory !== "All") {
+      url += `&category_id=${encodeURIComponent(activeCategory)}`;
+    }
     if (searchQuery.trim()) {
       url += `?q=${encodeURIComponent(searchQuery.trim())}`;
     }
@@ -178,7 +177,7 @@ export default function CategoriesPage() {
                     <div
                       className="flex items-center justify-between cursor-pointer"
                       onClick={() => {
-                        setActiveCategory(category.name);
+                        setActiveCategory(category.id);
                         setCurrentPage(1);
                         toggleCategory(category.name);
                       }}

@@ -280,7 +280,7 @@ const CartPage = () => {
                     src={product.product.images[0].path}
                     alt={product.product.name.en}
                   />
-                  <div className="sale-badge">SALE</div>
+                  {/* <div className="sale-badge">SALE</div>
                   <button className="heart-btn">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                       <path
@@ -291,7 +291,7 @@ const CartPage = () => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                  </button>
+                  </button> */}
                   <div className="product-overlay">
                     <div className="product-info">
                       <h3 className="product-title">

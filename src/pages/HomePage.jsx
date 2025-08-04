@@ -1121,7 +1121,7 @@ function Categories() {
           <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 gap-4 auto-rows-fr lg:h-[800px]">
             {categories?.map((category, index) => (
               <Link
-                to={`/categories/${category.slug || category.id}`}
+                to={`/categories/${category.slug}`}
                 key={category.id}
                 className={`relative overflow-hidden rounded-lg group cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-xl
                   ${

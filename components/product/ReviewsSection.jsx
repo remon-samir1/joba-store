@@ -18,32 +18,6 @@ import { toast } from "react-toastify";
 import Notifcation from "../Notification";
 import Loading from "../Loading/Loading";
 
-const mockReviews = [
-  {
-    id: "1",
-    name: "Alex Iwobi",
-    date: "2 March 2021 at 06:30 pm",
-    rating: 5,
-    comment:
-      "Thank you for the article that was made, it really provides insight and knowledge that I didn't know before.",
-  },
-  {
-    id: "2",
-    name: "Alex Iwobi",
-    date: "2 March 2021 at 06:30 pm",
-    rating: 5,
-    comment:
-      "Thank you for the article that was made, it really provides insight and knowledge that I didn't know before.",
-  },
-  {
-    id: "3",
-    name: "Alex Iwobi",
-    date: "2 March 2021 at 06:30 pm",
-    rating: 5,
-    comment:
-      "Thank you for the article that was made, it really provides insight and knowledge that I didn't know before.",
-  },
-];
 
 export function ReviewsSection({ slug }) {
   const [reviews, setReviews] = useState([]);
@@ -181,9 +155,10 @@ export function ReviewsSection({ slug }) {
 
         <Button
           type="submit"
-          className="bg-primary hover:bg-primary/90 text-white"
+          disabled={loading}
+          className={`bg-primary hover:bg-primary/90 text-white ${loading && 'cursor-wait'}`}
         >
-          Share
+{loading ? 'Loading...' : "Share"}
         </Button>
       </form>
     </div>
