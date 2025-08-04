@@ -21,10 +21,9 @@ import {
 import { Axios } from "../../components/Helpers/Axios";
 import CartContext, { CartCh } from "../../Context/CartContext";
 
-// Keyboard layout mapping
 const arabicToEnglishMap = {
-  ض: "ف",
-  ص: "س",
+  ض: "d",
+  ص: "s",
   ث: "th",
   ق: "k",
   ف: "f",
@@ -66,7 +65,6 @@ const englishToArabicMap = Object.fromEntries(
   ]),
 );
 
-// Helper function for keyboard layout conversion
 function convertByKeyboardMap(str, map) {
   return str
     .split("")
@@ -79,71 +77,71 @@ export function Header() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("EN");
-  const [cartItemCount, setCartItemCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const searchContainerRef = useRef(null);
 
-  const [products, setProducts] = useState([]);
+  const getSearchVariations = (query) => {
+    const variations = new Set([query]);
+    variations.add(convertByKeyboardMap(query, arabicToEnglishMap));
+    variations.add(convertByKeyboardMap(query, englishToArabicMap));
+    return Array.from(variations).filter(Boolean).join(' ');
+  };
 
-  useEffect(() => {
-    Axios.get("/products").then((data) => {
-      setProducts(data.data.data);
-    });
-  }, []);
-
-  // Filter suggestions based on search query
-  useEffect(() => {
-    if (searchQuery.trim() === "") {
+  const fetchSuggestions = async () => {
+    if (!searchQuery.trim()) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
     }
+    setIsLoadingSuggestions(true);
+    try {
+      const searchVariations =searchQuery;
+      const response = await Axios.get('/products', {
+        params: { q: searchVariations.trim() }
+      });
+      setSuggestions(response.data.data.slice(0, 5));
+    } catch (error) {
+      console.error("Search error:", error);
+      setSuggestions([]);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
 
-    const q = searchQuery.toLowerCase();
-    const qToEnglish = convertByKeyboardMap(q, arabicToEnglishMap);
-    const qToArabic = convertByKeyboardMap(q, englishToArabicMap);
+  useEffect(() => {
+    const timer = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-    const filtered = products.filter((product) => {
-      const nameEn = (product?.name?.en || "").toLowerCase();
-      const nameAr = (product?.name?.ar || "").toLowerCase();
-
-      return (
-        nameEn.includes(q) ||
-        nameAr.includes(q) ||
-        nameEn.includes(qToEnglish) ||
-        nameAr.includes(qToEnglish) ||
-        nameEn.includes(qToArabic) ||
-        nameAr.includes(qToArabic)
-      );
-    });
-
-    setSuggestions(filtered.slice(0, 5));
-    setShowSuggestions(filtered.length > 0);
-  }, [searchQuery, products]);
-
-  // Handle outside clicks to close suggestions
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         searchContainerRef.current &&
         !searchContainerRef.current.contains(event.target)
       ) {
-        setShowSuggestions(false);
+        // Only hide suggestions if search is empty
+        if (searchQuery.trim() === '') {
+          setShowSuggestions(false);
+        }
       }
     };
+    
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [searchQuery]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/categories?q=${encodeURIComponent(searchQuery.trim())}`);
+    const query = searchQuery.trim();
+    if (query) {
+      const searchVariations = getSearchVariations(query);
+      navigate(`/categories?q=${encodeURIComponent(searchVariations)}`);
       setShowSuggestions(false);
       setIsMobileSearchOpen(false);
     }
@@ -155,6 +153,7 @@ export function Header() {
     setIsMobileSearchOpen(false);
   };
 
+  console.log(suggestions);
   const languages = [
     { code: "EN", name: "English", flag: "🇺🇸" },
     { code: "ES", name: "Español", flag: "🇪🇸" },
@@ -175,27 +174,22 @@ export function Header() {
 
   return (
     <header className="w-full">
-      {/* Top bar with white background */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24">
-            {/* Logo */}
             <div className="flex-shrink-0">
               <Link to="/">
                 <div className="w-32 h-20 md:w-36 md:h-24">
-
-                <img
-                  src={juba}
-                  alt="Goba Store Logo"
-                  className="w-full h-full object-cover"
+                  <img
+                    src={juba}
+                    alt="Goba Store Logo"
+                    className="w-full h-full object-cover"
                   />
-                  </div>
+                </div>
               </Link>
             </div>
 
-            {/* Desktop Search and Language */}
             <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-              {/* Search Bar with Suggestions */}
               <form
                 onSubmit={handleSearch}
                 className="relative"
@@ -208,7 +202,7 @@ export function Header() {
                     placeholder="Search our Products.."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() => searchQuery && setShowSuggestions(true)}
+                    onFocus={() => setShowSuggestions(true)}
                     className="bg-transparent border-none outline-none text-sm text-gray-600 flex-1"
                   />
                   {searchQuery && (
@@ -221,35 +215,43 @@ export function Header() {
                   )}
                 </div>
 
-                {/* Suggestions Dropdown */}
-                {showSuggestions && suggestions.length > 0 && (
+                {(showSuggestions || searchQuery !== '') && (
                   <div className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 z-50">
-                    {suggestions.map((suggestion, index) => (
-                      <div
-                        key={index}
-                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex flex-col gap-1"
-                        onClick={() => handleSuggestionClick(suggestion)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                          <span className="text-gray-700">
-                            {suggestion.name.en}
-                          </span>
-                        </div>
-                        {suggestion.name.ar && (
-                          <div className="flex items-center gap-3 text-right mr-7">
-                            <span className="text-gray-500 text-sm">
-                              {suggestion.name.ar}
+                    {isLoadingSuggestions ? (
+                      <div className="px-4 py-3 flex justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                      </div>
+                    ) : suggestions.length > 0 ? (
+                      suggestions.map((suggestion, index) => (
+                        <div
+                          key={index}
+                          className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex flex-col gap-1"
+                          onClick={() => handleSuggestionClick(suggestion)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                            <span className="text-gray-700">
+                              {suggestion.name.en}
                             </span>
                           </div>
-                        )}
+                          {suggestion.name.ar && (
+                            <div className="flex items-center gap-3 text-right mr-7">
+                              <span className="text-gray-500 text-sm">
+                                {suggestion.name.ar}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    ) : suggestions.length === 0 &&   (
+                      <div className="px-4 py-3 text-gray-500">
+                        No results found
                       </div>
-                    ))}
+                    )}
                   </div>
                 )}
               </form>
 
-              {/* Language Selector */}
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center gap-1 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
                   <span className="text-base xl:text-lg font-medium text-gray-900">
@@ -278,7 +280,6 @@ export function Header() {
               </DropdownMenu>
             </div>
 
-            {/* Mobile Search Icon */}
             <div className="lg:hidden flex items-center">
               <button
                 className="p-2 text-gray-400 hover:text-gray-600"
@@ -291,7 +292,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Search Bar */}
       {isMobileSearchOpen && (
         <div className="lg:hidden bg-white border-b py-3 px-4">
           <div className="relative" ref={searchContainerRef}>
@@ -313,7 +313,7 @@ export function Header() {
                   placeholder="Search our Products.."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => searchQuery && setShowSuggestions(true)}
+                  onFocus={() => setShowSuggestions(true)}
                   className="bg-transparent border-none outline-none text-base text-gray-700 flex-1"
                   autoFocus
                 />
@@ -329,41 +329,48 @@ export function Header() {
               )}
             </form>
 
-            {/* Mobile Suggestions */}
-            {showSuggestions && suggestions.length > 0 && (
+            {showSuggestions && (
               <div className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 z-50">
-                {suggestions.map((suggestion, index) => (
-                  <div
-                    key={index}
-                    className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex flex-col gap-1 border-b border-gray-100 last:border-0"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-gray-700">
-                        {suggestion.name.en}
-                      </span>
-                    </div>
-                    {suggestion.name.ar && (
-                      <div className="flex items-center gap-3 text-right mr-7">
-                        <span className="text-gray-500 text-sm">
-                          {suggestion.name.ar}
+                {isLoadingSuggestions ? (
+                  <div className="px-4 py-3 flex justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                  </div>
+                ) : suggestions.length > 0 ? (
+                  suggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex flex-col gap-1 border-b border-gray-100 last:border-0"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <span className="text-gray-700">
+                          {suggestion.name.en}
                         </span>
                       </div>
-                    )}
+                      {suggestion.name.ar && (
+                        <div className="flex items-center gap-3 text-right mr-7">
+                          <span className="text-gray-500 text-sm">
+                            {suggestion.name.ar}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-3 text-gray-500">
+                    No results found
                   </div>
-                ))}
+                )}
               </div>
             )}
           </div>
         </div>
       )}
 
-      {/* Navigation bar with orange background */}
       <div className="bg-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden text-white hover:text-gray-200 transition-colors"
@@ -375,7 +382,6 @@ export function Header() {
               )}
             </button>
 
-            {/* Navigation Links */}
             <nav className="hidden lg:flex items-center gap-4 xl:gap-8">
               <Link
                 to="/"
@@ -439,9 +445,7 @@ export function Header() {
               </Link>
             </nav>
 
-            {/* Right side actions */}
             <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
-              {/* Help and Support - Hidden on small screens */}
               <div className="hidden md:flex items-center">
                 <Link
                   to="/help"
@@ -462,7 +466,6 @@ export function Header() {
                 </Link>
               </div>
 
-              {/* Icons */}
               <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
                 <Link to="/wishlist" className="relative">
                   <Heart className="h-6 sm:h-7 lg:h-8 w-6 sm:w-7 lg:w-8 text-white hover:text-gray-200 transition-colors" />
@@ -470,7 +473,6 @@ export function Header() {
 
                 <Link to="/cart" className="relative">
                   <ShoppingCart className="h-6 sm:h-7 lg:h-8 w-6 sm:w-7 lg:w-8 text-white hover:text-gray-200 transition-colors" />
-                  {/* Cart badge */}
                   {cart > 0 && (
                     <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-gray-900 text-white rounded-full w-5 sm:w-6 h-5 sm:h-6 flex items-center justify-center text-xs font-medium">
                       {cart > 99 ? "99+" : cart}
@@ -483,7 +485,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
           className="lg:hidden fixed inset-0 z-50 bg-black/50"
@@ -496,7 +497,6 @@ export function Header() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <div className="w-36 h-20 shrink-0 ">
-
                 <img src={juba} className="w-full h-full object-cover " />
                 </div>
                 <button
@@ -507,7 +507,6 @@ export function Header() {
                 </button>
               </div>
 
-              {/* Mobile Navigation */}
               <nav className="space-y-4">
                 <Link
                   to="/"
@@ -599,16 +598,7 @@ export function Header() {
                 </Link>
               </nav>
 
-              {/* Mobile User Actions */}
               <div className="mt-8 pt-8 border-t space-y-4">
-                {/* <Link
-                  to="/profile"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:text-primary hover:bg-gray-50 rounded transition-colors"
-                >
-                  <User className="h-5 w-5" />
-                  <span>M</span>
-                </Link> */}
                 <Link
                   to="/wishlist"
                   onClick={() => setIsMobileMenuOpen(false)}

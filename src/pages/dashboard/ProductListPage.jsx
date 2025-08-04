@@ -15,20 +15,18 @@ import {
 } from "../..//components/ui/dropdown-menu";
 import {
   Search,
-  Filter,
-  ArrowUpDown,
-  MoreHorizontal,
   Plus,
   Edit,
-  Copy,
   Trash2,
   ArrowLeft,
   ArrowRight,
+  MoreHorizontal,
 } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
+import Notifcation from "../../../components/Notification";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
 const OrangeLoader = () => (
   <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
@@ -39,17 +37,11 @@ const OrangeLoader = () => (
         <div className="absolute inset-8 rounded-full border-8 border-orange-300 border-b-transparent animate-spin-reverse"></div>
         <div className="absolute inset-12 rounded-full border-8 border-orange-200 border-l-transparent animate-ping"></div>
       </div>
-      
       <div className="text-center">
         <h2 className="text-2xl font-bold text-orange-700 mb-2">Loading Products</h2>
-        <p className="text-orange-600 max-w-md mb-6">
-          Fetching your product data, please wait...
-        </p>
-        
+        <p className="text-orange-600 max-w-md mb-6">Fetching your product data, please wait...</p>
         <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"
-          ></div>
+          <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"></div>
         </div>
       </div>
     </div>
@@ -63,39 +55,36 @@ export default function ProductListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState(new Set());
+  const [total, setTotal] = useState();
   const [loading, setLoading] = useState(true);
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    Axios.get("/products")
+    Axios.get(`/products?page=${currentPage}`)
       .then((res) => {
         const data = res.data?.data || [];
         setProducts(data);
+        setTotal(res.data.total);
         setFilteredProducts(data);
       })
       .catch(error => console.error(error))
       .finally(() => setLoading(false));
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     const filtered = products.filter((p) =>
       p.name?.en?.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredProducts(filtered);
-    setCurrentPage(1);
   }, [searchQuery, products]);
 
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentProducts = filteredProducts.slice(
-    startIndex,
-    startIndex + ITEMS_PER_PAGE
-  );
+  const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
   const handleSelectAll = (checked) => {
     setSelectAll(checked);
     if (checked) {
-      setSelectedProducts(new Set(currentProducts.map((p) => p.id)));
+      setSelectedProducts(new Set(products.map((p) => p.slug)));
     } else {
       setSelectedProducts(new Set());
     }
@@ -109,26 +98,28 @@ export default function ProductListPage() {
 
   const handleDeleteProduct = async (id) => {
     try {
-      await Axios.delete(`admin/products/${id}`,{_method:'DELETE'});
-      const updated = products.filter((p) => p.slug !== id);
-      toast.success('Deleted Successfly')
-      setProducts(updated);
+      await Axios.delete(`admin/products/${id}`, { _method: 'DELETE' });
+      setProducts((prev) => prev.filter((p) => p.slug !== id && p.id !== id));
+      return true;
     } catch (err) {
-      console.error("Failed to delete", err);
+      return false;
     }
   };
 
   const handleBulkDelete = async () => {
-    if (selectedProducts.size === 0) {
-      alert("No products selected");
-      return;
-    }
+    if (selectedProducts.size === 0) return;
+    setBulkLoading(true);
     const ids = Array.from(selectedProducts);
-    for (let id of ids) {
-      await handleDeleteProduct(id);
+    try {
+      await Promise.all(ids.map(id => handleDeleteProduct(id)));
+      toast.success("Selected products deleted successfully");
+    } catch {
+      toast.error("Some deletions failed");
+    } finally {
+      setSelectedProducts(new Set());
+      setSelectAll(false);
+      setBulkLoading(false);
     }
-    setSelectedProducts(new Set());
-    setSelectAll(false);
   };
 
   const getStockStatusColor = (stock) => {
@@ -140,22 +131,18 @@ export default function ProductListPage() {
   const getStatusBadge = (status) => {
     if (status === "approved") {
       return (
-        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
-          Published
-        </Badge>
+        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">Published</Badge>
       );
     }
     return (
-      <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-gray-200">
-        Draft
-      </Badge>
+      <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-gray-200">Draft</Badge>
     );
   };
 
   return (
     <div className="flex-1 overflow-auto">
-      {loading && <OrangeLoader />}
-      
+      {(loading || bulkLoading) && <OrangeLoader />}
+      <Notifcation/>
       <DashboardHeader title="Product List" />
       <div className="md:p-6 p-2 space-y-6">
         <div className="flex items-center justify-between">
@@ -168,7 +155,7 @@ export default function ProductListPage() {
           </Link>
         </div>
 
-        <Card className="shadow-lg md:w-full  w-[93vw] overflow-x-auto">
+        <Card className="shadow-lg md:w-full w-[93vw] overflow-x-auto">
           <CardContent className="p-0">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
@@ -208,16 +195,16 @@ export default function ProductListPage() {
                 </div>
 
                 <div className="divide-y divide-gray-200">
-                  {currentProducts.length === 0 ? (
+                  {products.length === 0 ? (
                     <div className="text-center py-10 text-gray-500">No products found</div>
                   ) : (
-                    currentProducts.map((product) => (
+                    products.map((product) => (
                       <div key={product.id} className="px-6 py-4 hover:bg-gray-50">
                         <div className="grid grid-cols-12 gap-4 items-center">
                           <div className="col-span-4 flex items-center space-x-3">
                             <Checkbox
-                              checked={selectedProducts.has(product.id)}
-                              onCheckedChange={(checked) => handleSelectProduct(product.id, checked)}
+                              checked={selectedProducts.has(product.slug)}
+                              onCheckedChange={(checked) => handleSelectProduct(product.slug, checked)}
                             />
                             <div className="w-10 h-10 bg-gray-100 rounded">
                               <img src={product.images[0].path} className="w-full h-full object-cover rounded" />
@@ -229,7 +216,7 @@ export default function ProductListPage() {
                           </div>
                           <div className="col-span-1">
                             <span className={`text-sm ${getStockStatusColor(product.stock)}`}>
-                              {product.stock}
+                              {product.stock === 0 ? product.is_out_of_stock ? 0 : 'Unlimited' : product.stock}
                             </span>
                           </div>
                           <div className="col-span-1">
@@ -277,9 +264,7 @@ export default function ProductListPage() {
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 Previous
               </Button>
-              <span className="text-sm">
-                Page {currentPage} of {totalPages}
-              </span>
+              <span className="text-sm">Page {currentPage} of {totalPages}</span>
               <Button
                 variant="outline"
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
@@ -292,40 +277,33 @@ export default function ProductListPage() {
           </CardContent>
         </Card>
       </div>
-      
+
       <style jsx>{`
         @keyframes spin-slow {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
-        
         @keyframes spin-reverse {
           from { transform: rotate(0deg); }
           to { transform: rotate(-360deg); }
         }
-        
         @keyframes progress {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(100%); }
         }
-        
         @keyframes ping-slow {
           0% { transform: scale(0.9); opacity: 0.8; }
           100% { transform: scale(1.5); opacity: 0; }
         }
-        
         .animate-spin-slow {
           animation: spin-slow 4s linear infinite;
         }
-        
         .animate-spin-reverse {
           animation: spin-reverse 3s linear infinite;
         }
-        
         .animate-progress {
           animation: progress 2s ease-in-out infinite alternate;
         }
-        
         .animate-ping-slow {
           animation: ping-slow 1.5s ease-in-out infinite;
         }

@@ -17,7 +17,9 @@ const CartPage = () => {
   const [cart, setCart] = useState([]);
   const [discount, setDiscount] = useState("");
   const change = cartcontext.setCartChange;
+  const changeState = cartcontext.cartChange;
   const [discountValue, setDiscountValue] = useState(0);
+  const [deleted , setDeleted] = useState(false)
   const cartRef = useRef(null);
 
   // GSAP animation for cart items
@@ -52,7 +54,8 @@ const CartPage = () => {
       .then((data) => {
         toast.success("Item removed successfully!");
         change((prev) => !prev);
-        setCart((prev) => cart.filter((item) => item.product.slug !== slug));
+        setDeleted(prev => !prev)
+        // setCart((prev) => cart.filter((item) => item.product.slug !== slug));
       })
       .catch(() => {
         toast.error("Failed to remove item");
@@ -114,7 +117,7 @@ const CartPage = () => {
         toast.error("Failed to load cart");
         setIsLoading(false);
       });
-  }, [apply]);
+  }, [apply , deleted]);
 
   return (
     <div className="cart-page">

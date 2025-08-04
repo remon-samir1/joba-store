@@ -136,7 +136,7 @@ export function RelatedProducts({ slug }) {
             ) : (
               products.map((product) => (
                 <Link 
-                onClick={()=>window.location.pathname=`/products/${product.id}`}
+                onClick={()=>window.location.pathname=`/products/${product.slug}`}
                   key={product.id}
                   className="flex-shrink-0 px-2 transition-all duration-300 hover:scale-[1.02]"
                   style={{ width: `calc(100% / ${itemsPerView})` }}
@@ -177,14 +177,15 @@ export function RelatedProducts({ slug }) {
                           {product.name.en}
                         </h3>
                         <div className="flex items-center gap-2">
-                          <span className="text-yellow-400 font-bold">
-                            {formatPrice(product.price)}
+                          <span className="text-primary font-bold">
+                          ${product.discount_price & product.sizes[0]?.price ? +product.discount_price + +product.sizes[0]?.price : +product.price + +product.sizes[0]?.price}
+
                           </span>
-                          {product.discount_price && (
-                            <span className="text-gray-300 line-through text-sm">
-                              {formatPrice(product.discount_price)}
-                            </span>
-                          )}
+                          {product.price && (
+                              <span className="original-price">
+                              {product.discount_price & product.sizes[0]?.price ?  `$ ${+product.price + +product.sizes[0]?.price}`: '' }
+                              </span>
+                            )}
                         </div>
                       </div>
                     </div>

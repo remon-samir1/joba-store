@@ -96,17 +96,17 @@ export default function UpdateProduct() {
           productName: product.name?.en || "",
           productDescription: product.description?.en || "",
           productPrice: product.price || "",
-          discountedPrice: product.discount_price || "",
+          discountedPrice: +product.discount_price ,
           salesPrice: product.sales_price || "",
           taxIncluded: product.tax_included ? "yes" : "no",
           expirationStart: product.created_at || "",
           expirationEnd: product.expiration_end || "",
-          stockQuantity: product.stock || "",
-          stockStatus: product.is_out_of_stock ? "out-of-stock" : "in-stock",
-          unlimitedStock: product.unlimited_stock || false,
+          stockQuantity:  product.stock || "",
+          stockStatus: product.is_out_of_stock,
+          unlimitedStock: product.stock === 0 & product.is_out_of_stock === false ? true : false ,
           isBestSeller: product.is_featured || false,
           isNewArrival: product.is_new_arrival || false,
-          productCategory:String(product.category_id),
+          productCategory:product.category_id,
           productTag: product.tags?.[0] || "",
         });
 
@@ -275,20 +275,21 @@ export default function UpdateProduct() {
     formData.append("name", productData.productName);
     formData.append("description", productData.productDescription);
     formData.append("price", productData.productPrice);
+
     formData.append("discount_price", productData.discountedPrice);
     formData.append("sales_price", productData.salesPrice);
     // formData.append(
     //   "tax_included",
     //   productData.taxIncluded === "yes" ? "1" : "0",
     // );
-    formData.append("expiration_start", productData.expirationStart);
-    formData.append("expiration_end", productData.expirationEnd);
-    formData.append("stock", productData.stockQuantity);
-    formData.append(
-      "is_out_of_stock",
-      productData.stockStatus === "out-of-stock" ? "1" : "0",
-    );
-    formData.append("unlimited_stock", productData.unlimitedStock ? "1" : "0");
+    // formData.append("expiration_start", productData.expirationStart);
+    // formData.append("expiration_end", productData.expirationEnd);
+    formData.append("stock", productData.unlimitedStock? 0 : productData.stockQuantity);
+    // formData.append(
+    //   "is_out_of_stock",
+    //   productData.stockStatus === "out-of-stock" ? "1" : "0",
+    // );
+    // formData.append("unlimited_stock", productData.unlimitedStock ? "1" : "0");
     formData.append("is_featured", productData.isBestSeller ? "1" : "0");
     formData.append("is_new_arrival", productData.isNewArrival ? "1" : "0");
     formData.append("category_id", productData.productCategory);
@@ -331,9 +332,23 @@ export default function UpdateProduct() {
         navigate("/dashboard/products");
       }, 1500);
     } catch (error) {
-      console.error("Error updating product:", error);
-      toast.error(error.response?.data?.message || "Failed to update product");
-    } finally {
+      if (error.response) {
+        const { message, errors } = error.response.data;
+    
+        if (!errors) {
+          toast.error(message);
+        }
+    
+        if (errors) {
+          Object.values(errors).forEach((fieldErrors) => {
+            fieldErrors.forEach((msg) => toast.error(msg));
+          });
+        }
+      } else {
+        toast.error("Update Failed");
+      }
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -433,7 +448,7 @@ export default function UpdateProduct() {
                       <span className="text-sm text-gray-500">EGP</span>
                       <Input
                         id="discountedPrice"
-                        type="number"
+                        type="text"
                         value={productData.discountedPrice}
                         onChange={handleChange}
                         placeholder="Discounted price"
@@ -443,7 +458,7 @@ export default function UpdateProduct() {
                       <span className="text-sm text-gray-500">Sales</span>
                       <Input
                         id="salesPrice"
-                        type="number"
+                        type="text"
                         value={productData.salesPrice}
                         onChange={handleChange}
                         placeholder="Sales price"
@@ -670,6 +685,7 @@ export default function UpdateProduct() {
                       Stock Status *
                     </Label>
                     <Select
+                    
                       value={productData.stockStatus}
                       onValueChange={(value) =>
                         handleSelectChange("stockStatus", value)
@@ -682,11 +698,11 @@ export default function UpdateProduct() {
                         <SelectValue placeholder="Select Status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="in-stock">In Stock</SelectItem>
-                        <SelectItem value="out-of-stock">
+                        <SelectItem value='false'>In Stock</SelectItem>
+                        <SelectItem value='true'>
                           Out of Stock
                         </SelectItem>
-                        <SelectItem value="low-stock">Low Stock</SelectItem>
+                  
                       </SelectContent>
                     </Select>
                   </div>
@@ -881,30 +897,24 @@ export default function UpdateProduct() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="productCategory" className="text-gray-700">
                     Product Categories *
                   </Label>
-                  <Select
+                  <select
+                  className="border border-gray-200 rounded shadow-sm px-3 py-2"
                     value={String(productData?.productCategory )}
                     onValueChange={(value) =>
                       handleSelectChange("productCategory",value)
                     }
                   >
-                    <SelectTrigger
-                      className="mt-1 border-gray-300"
-                      id="productCategory"
-                    >
-                      {/* <SelectValue  placeholder="Select your product category" /> */}
-                    </SelectTrigger>
-                    <SelectContent>
+                
                       {categories?.map((data) => (
-                        <SelectItem placeholder={String(data.name)} key={String(data.id)} value={String(data.id)}>
-                          {String(data.name)}
-                        </SelectItem>
+                        <option  key={data.id} value={data.id}>
+                          {data.name}
+                        </option>
                       ))}
-                    </SelectContent>
-                  </Select>
+                  </select>
                 </div>
 
                 <div>

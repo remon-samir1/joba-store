@@ -128,8 +128,8 @@ console.log(productData);
     if (!productData.productName.trim()) errors.push('Product Name');
     if (!productData.productDescription.trim()) errors.push('Product Description');
     if (!productData.productPrice) errors.push('Product Price');
-    if (!productData.expirationStart) errors.push('Expiration Start Date');
-    if (!productData.expirationEnd) errors.push('Expiration End Date');
+    // if (!productData.expirationStart) errors.push('Expiration Start Date');
+    // if (!productData.expirationEnd) errors.push('Expiration End Date');
     if (!productData.stockQuantity && !productData.unlimitedStock) errors.push('Stock Quantity');
     if (!productData.productCategory) errors.push('Product Category');
     if (!productData.productTag) errors.push('Product Tag');
@@ -147,14 +147,14 @@ console.log(productData);
     if (variationErrors.length > 0) errors.push(...variationErrors);
     
     // Expiration date validation
-    if (productData.expirationStart && productData.expirationEnd) {
-      const startDate = new Date(productData.expirationStart);
-      const endDate = new Date(productData.expirationEnd);
+    // if (productData.expirationStart && productData.expirationEnd) {
+    //   const startDate = new Date(productData.expirationStart);
+    //   const endDate = new Date(productData.expirationEnd);
       
-      if (startDate >= endDate) {
-        errors.push('Expiration End Date must be after Start Date');
-      }
-    }
+    //   if (startDate >= endDate) {
+    //     errors.push('Expiration End Date must be after Start Date');
+    //   }
+    // }
 
     return errors;
   };
@@ -217,8 +217,9 @@ console.log(productData);
     formData.append("price", productData.productPrice);
     formData.append("discount_price", +productData.discountedPrice);
     formData.append("payment_method", "cash");
-    formData.append("stock", productData.stockQuantity);
-    formData.append("category_id", productData.productCategory);
+    formData.append("stock", productData.unlimitedStock ? 0 : productData.stockQuantity);
+    formData.append("category_id", +productData.productCategory);
+    formData.append("is_out_of_stock", productData.stockStatus === 'in-stock' ? 1 : 0);
     formData.append("is_featured", productData.isBestSeller ? 1 : 0);
     if (pending) {
       formData.append("status", "pending");
@@ -251,10 +252,10 @@ console.log(productData);
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }).then(() => {
+      }).then((data) => {
         toast.success("Product created successfully!");
         setTimeout(() => {
-          nav(-1);
+          nav('/dashboard/products');
         }, 2000);
         setLoading(false);
       });
@@ -409,7 +410,7 @@ console.log(productData);
                   </div> */}
                 </div>
 
-                <div>
+                {/* <div>
                   <Label className="text-gray-700">Expiration *</Label>
                   <div className="grid grid-cols-2 gap-4 mt-1">
                     <div className="relative">
@@ -433,7 +434,7 @@ console.log(productData);
                       />
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Variation weight and pricing */}
                 <div className="space-y-4">
@@ -594,7 +595,7 @@ console.log(productData);
                         <SelectItem value="out-of-stock">
                           Out of Stock
                         </SelectItem>
-                        <SelectItem value="low-stock">Low Stock</SelectItem>
+                        {/* <SelectItem value="low-stock">Low Stock</SelectItem> */}
                       </SelectContent>
                     </Select>
                   </div>
@@ -780,7 +781,7 @@ console.log(productData);
                     </SelectTrigger>
                     <SelectContent>
                       {categories?.map((data) => (
-                        <SelectItem placeholder={String(data.name)} key={data.id} value={data.id}>
+                        <SelectItem placeholder={String(data.name)} key={data.id} value={String(data.id)}>
                           {data.name}
                         </SelectItem>
                       ))}
