@@ -12,7 +12,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../..//components/ui/dropdown-menu";
+} from "../../components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -31,14 +31,13 @@ import {
 } from "@/components/ui/select";
 import {
   Search,
-  Filter,
   Download,
   MoreHorizontal,
-  Edit,
   Trash2,
+  ArrowLeft,
+  ArrowRight,
 } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
-import { Link } from "react-router-dom";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -46,6 +45,8 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
   const [stats, setStats] = useState({
     total: { count: 0, change_percent: 0 },
     pending: { count: 0, change_percent: 0 },
@@ -55,21 +56,36 @@ export default function OrdersPage() {
 
   useEffect(() => {
     setLoading(true);
-    Axios.get("/admin/orders")
+    Axios.get(`/admin/orders?page=${currentPage}&per_page=10`)
       .then((res) => {
         const { data } = res;
-        setLoading(false);
         setOrders(data.data.orders.data);
         setStats(data.data.stats);
-      })
-      .catch((err) => {
+        setLastPage(data.data.orders.last_page);
         setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [currentPage]);
 
-      });
-  }, []);
-  function handleExport() {
+  useEffect(() => {
+    let filtered = [...orders];
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(
+        (order) =>
+          order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.order_number?.toString().includes(searchTerm)
+      );
+    }
+    if (selectedStatus !== "all") {
+      filtered = filtered.filter(
+        (order) => order.status?.toLowerCase() === selectedStatus
+      );
+    }
+    setFilteredOrders(filtered);
+  }, [orders, searchTerm, selectedStatus]);
+
+  const handleExport = () => {
     if (!filteredOrders.length) return;
-
     const data = filteredOrders.map((order) => ({
       "Order ID": order.order_number,
       Customer: order.customer?.name,
@@ -80,132 +96,84 @@ export default function OrdersPage() {
       Payment: order.payment_status,
       Amount: order.total,
     }));
-
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
-
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
     });
     const file = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(file, "orders.xlsx");
-  }
-
-  useEffect(() => {
-    let filtered = [...orders];
-
-    if (searchTerm.trim()) {
-      filtered = filtered.filter(
-        (order) =>
-          order.customer?.name
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          order.order_number?.toString().includes(searchTerm),
-      );
-    }
-
-    if (selectedStatus !== "all") {
-      filtered = filtered.filter(
-        (order) => order.status?.toLowerCase() === selectedStatus,
-      );
-    }
-
-    setFilteredOrders(filtered);
-  }, [orders, searchTerm, selectedStatus]);
-
-  const orderStats = [
-    {
-      title: "Total Orders",
-      value: stats?.total?.count,
-      change: `${stats?.total?.change_percent > 0 ? "+" : ""}${
-        stats?.total?.change_percent
-      }%`,
-      period: "Last 7 days",
-    },
-    {
-      title: "New Orders",
-      value: stats?.pending?.count,
-      change: `${stats?.new?.change_percent > 0 ? "+" : ""}${
-        stats?.new?.change_percent
-      }%`,
-      period: "Last 7 days",
-    },
-    {
-      title: "Completed Orders",
-      value: stats?.completed?.count,
-      change: `${stats?.completed?.change_percent > 0 ? "+" : ""}${
-        stats?.completed?.change_percent
-      }%`,
-      period: "Last 7 days",
-    },
-    {
-      title: "Cancelled Orders",
-      value: stats?.canceled?.count,
-      change: `${stats?.canceled?.change_percent > 0 ? "+" : ""}${
-        stats?.canceled?.change_percent
-      }%`,
-      period: "Last 7 days",
-    },
-  ];
+  };
 
   const handleDelete = async (id) => {
     try {
-      await Axios.delete(`admin/orders/${id}`).then((data) => {
-        setOrders(orders.filter((data) => data.id !== id));
+      await Axios.delete(`admin/orders/${id}`).then(() => {
+        setOrders((prev) => prev.filter((order) => order.id !== id));
       });
-    } catch (err) {
-    }
+    } catch {}
   };
-  function getStatusBadge(status) {
+
+  const getStatusBadge = (status) => {
     switch (status.toLowerCase()) {
       case "delivered":
         return { variant: "default", className: "bg-green-100 text-green-700" };
       case "processing":
         return { variant: "secondary", className: "bg-blue-100 text-blue-700" };
       case "shipped":
-        return {
-          variant: "secondary",
-          className: "bg-purple-100 text-purple-700",
-        };
+        return { variant: "secondary", className: "bg-purple-100 text-purple-700" };
       case "pending":
-        return {
-          variant: "outline",
-          className: "bg-yellow-100 text-yellow-700",
-        };
+        return { variant: "outline", className: "bg-yellow-100 text-yellow-700" };
       case "cancelled":
         return { variant: "destructive", className: "bg-red-100 text-red-700" };
       default:
         return { variant: "outline", className: "bg-gray-100 text-gray-700" };
     }
-  }
+  };
+
+  const orderStats = [
+    {
+      title: "Total Orders",
+      value: stats?.total?.count,
+      change: `${stats?.total?.change_percent > 0 ? "+" : ""}${stats?.total?.change_percent}%`,
+      period: "Last 7 days",
+    },
+    {
+      title: "New Orders",
+      value: stats?.pending?.count,
+      change: `${stats?.new?.change_percent > 0 ? "+" : ""}${stats?.new?.change_percent}%`,
+      period: "Last 7 days",
+    },
+    {
+      title: "Completed Orders",
+      value: stats?.completed?.count,
+      change: `${stats?.completed?.change_percent > 0 ? "+" : ""}${stats?.completed?.change_percent}%`,
+      period: "Last 7 days",
+    },
+    {
+      title: "Cancelled Orders",
+      value: stats?.canceled?.count,
+      change: `${stats?.canceled?.change_percent > 0 ? "+" : ""}${stats?.canceled?.change_percent}%`,
+      period: "Last 7 days",
+    },
+  ];
 
   return (
     <div className="flex-1 overflow-hidden">
       <DashboardHeader title="Order Management" />
       <div className="md:p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {orderStats?.map((stat, index) => (
+          {orderStats.map((stat, index) => (
             <Card key={index}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      {stat.title}
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {stat.value}
-                    </p>
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                     <p className="text-xs text-gray-500">{stat.period}</p>
                   </div>
-                  <p
-                    className={`text-sm font-medium ${
-                      stat.change.startsWith("+")
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
+                  <p className={`text-sm font-medium ${stat.change.startsWith("+") ? "text-green-600" : "text-red-600"}`}>
                     {stat.change}
                   </p>
                 </div>
@@ -216,9 +184,9 @@ export default function OrdersPage() {
 
         <Card className="overflow-auto w-[94vw] md:w-full">
           <CardHeader>
-            <div className="flex items-center justify-center gap-3 md:justify-between  flex-wrap">
+            <div className="flex items-center justify-center gap-3 md:justify-between flex-wrap">
               <CardTitle>Recent Orders</CardTitle>
-              <div className="flex items-center flex-wrap justify-center gap-3 md:justify-betwee space-x-2">
+              <div className="flex items-center flex-wrap justify-center gap-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -229,10 +197,7 @@ export default function OrdersPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <Select
-                  onValueChange={(value) => setSelectedStatus(value)}
-                  defaultValue="all"
-                >
+                <Select onValueChange={(value) => setSelectedStatus(value)} defaultValue="all">
                   <SelectTrigger className="w-40">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
@@ -266,96 +231,84 @@ export default function OrdersPage() {
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <div className="text-center mx-auto col-span-12 w-full  p-8">
-                    <p className="text-base text-gray-400 font-semibold">
-                      Loading...
-                    </p>
-                  </div>
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8">
+                      <span className="text-gray-400 font-semibold">Loading...</span>
+                    </TableCell>
+                  </TableRow>
                 ) : filteredOrders.length === 0 ? (
-                  <div className="text-center mx-auto col-span-12 w-full  p-8">
-                    <p className="text-base text-gray-400 font-semibold">
-                      No Orders !
-                    </p>
-                  </div>
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8">
+                      <span className="text-gray-400 font-semibold">No Orders!</span>
+                    </TableCell>
+                  </TableRow>
                 ) : (
-                  filteredOrders?.map((order) => (
+                  filteredOrders.map((order) => (
                     <TableRow key={order.id}>
-                      <TableCell className="font-medium">
-                        #{order.order_number}
-                      </TableCell>
+                      <TableCell className="font-medium">#{order.order_number}</TableCell>
                       <TableCell>
                         <div>
-                          <div className="font-medium">
-                            {order.customer?.name}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {order.user?.email}
-                          </div>
+                          <div className="font-medium">{order.customer?.name}</div>
+                          <div className="text-sm text-gray-500">{order.user?.email}</div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        {order.items.length !== 0
-                          ? order.items[0].product?.name?.en
-                          : "Product Deleted"}
+                        {order.items.length !== 0 ? order.items[0].product?.name?.en : "Product Deleted"}
                       </TableCell>
+                      <TableCell>{new Date(order.created_at).toLocaleString("en-GB")}</TableCell>
                       <TableCell>
-                        {new Date(order.created_at).toLocaleString("en-GB")}
-                      </TableCell>
-                      <TableCell>
-                        <Badge {...getStatusBadge(order.status)}>
-                          {order.status}
-                        </Badge>
+                        <Badge {...getStatusBadge(order.status)}>{order.status}</Badge>
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={
-                            order.payment_status === "paid"
-                              ? "default"
-                              : "outline"
-                          }
-                          className={
-                            order.payment_status === "paid"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-yellow-100 text-yellow-700"
-                          }
+                          variant={order.payment_status === "paid" ? "default" : "outline"}
+                          className={order.payment_status === "paid" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}
                         >
-                          {'Cash'}
+                          Cash
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-medium text-orange-600">
-                        $ {order.total}
-                      </TableCell>
+                      <TableCell className="font-medium text-orange-600">${order.total}</TableCell>
                       <TableCell>
-                        <div className="col-span-2">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {/* <DropdownMenuItem asChild>
-                                <Link>
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  Edit
-                                </Link>
-                              </DropdownMenuItem> */}
-                              <DropdownMenuItem
-                                onClick={() => handleDelete(order.id)}
-                                className="text-red-600"
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleDelete(order.id)} className="text-red-600">
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
                 )}
               </TableBody>
             </Table>
+            <div className="flex justify-between items-center mt-6">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
+              <span className="text-sm">
+                Page {currentPage} of {lastPage}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, lastPage))}
+                disabled={currentPage === lastPage}
+              >
+                Next
+                <ArrowRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

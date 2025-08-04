@@ -56,17 +56,29 @@ export default function ReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [spinnner, setSpinner] = useState(false);
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState('');
   const [ratingFilter, setRatingFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
+  const [pagination, setPagination] = useState(null);
+  const [page, setPage] = useState(1);
   const [statusUpdating, setStatusUpdating] = useState(null);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await Axios.get("/admin/reviews");
+        const response = await Axios.get(
+          `/admin/reviews?page=${page}&status=${statusFilter}&q=${searchTerm}`,
+        );
         setReviews(response.data.data.data);
+        console.log(response);
+        setPagination({
+          from: response.data.data.from,
+          to: response.data.data.to,
+          total: response.data.data.total,
+          next_page_url: response.data.data.next_page_url,
+          prev_page_url: response.data.data.prev_page_url,
+        });
         setLoading(false);
       } catch (error) {
         setLoading(false);
@@ -74,25 +86,25 @@ export default function ReviewsPage() {
     };
 
     fetchReviews();
-  }, []);
+  }, [page , statusFilter , searchTerm]);
 
   const filteredReviews = reviews?.filter((review) => {
-    const matchesSearch =
-      review.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (review.product &&
-        review.product.name.en
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())) ||
-      review.comment.toLowerCase().includes(searchTerm.toLowerCase());
+    // const matchesSearch =
+    //   review.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //   review.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //   (review.product &&
+    //     review.product.name.en
+    //       .toLowerCase()
+    //       .includes(searchTerm.toLowerCase())) ||
+    //   review.comment.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus =
-      statusFilter === "all" || review.status === statusFilter;
+    // const matchesStatus =
+    //   statusFilter === "all" || review.status === statusFilter;
 
     const matchesRating =
       ratingFilter === "all" || review.rating === parseInt(ratingFilter);
 
-    return matchesSearch && matchesStatus && matchesRating;
+    return  matchesRating;
   });
 
   const handleDelete = async (id) => {
@@ -100,7 +112,7 @@ export default function ReviewsPage() {
     try {
       await Axios.delete(`admin/reviews/${id}`).then((data) => {
         setReviews(reviews.filter((data) => data.id != id));
-        toast.success('Deleted Successfly')
+        toast.success("Deleted Successfly");
         setSpinner(false);
       });
     } catch (err) {
@@ -111,21 +123,24 @@ export default function ReviewsPage() {
   const handleStatusChange = async (id, newStatus) => {
     setStatusUpdating(id);
     try {
-      setReviews(prev => 
-        prev.map(review => 
-          review.id === id ? { ...review, status: newStatus } : review
-        )
+      setReviews((prev) =>
+        prev.map((review) =>
+          review.id === id ? { ...review, status: newStatus } : review,
+        ),
       );
-      
-      await Axios.post(`admin/reviews/${id}`, { status: newStatus  , _method : 'PUT'})
-      toast.success('Status updated successfully');
+
+      await Axios.post(`admin/reviews/${id}`, {
+        status: newStatus,
+        _method: "PUT",
+      });
+      toast.success("Status updated successfully");
     } catch (error) {
-      setReviews(prev => 
-        prev.map(review => 
-          review.id === id ? { ...review, status: review.status } : review
-        )
+      setReviews((prev) =>
+        prev.map((review) =>
+          review.id === id ? { ...review, status: review.status } : review,
+        ),
       );
-      toast.error('Failed to update status');
+      toast.error("Failed to update status");
     } finally {
       setStatusUpdating(null);
     }
@@ -225,7 +240,7 @@ export default function ReviewsPage() {
   return (
     <div className="flex-1 overflow-auto">
       <DashboardHeader title="Product Reviews" />
-<Notifcation/>
+      <Notifcation />
       <div className="md:p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {reviewStats?.map((stat, index) => (
@@ -272,10 +287,10 @@ export default function ReviewsPage() {
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="published">Published</SelectItem>
+                    <SelectItem value=" ">All Status</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="hidden">Hidden</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select value={ratingFilter} onValueChange={setRatingFilter}>
@@ -306,8 +321,8 @@ export default function ReviewsPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className='w-[90vw] md:w-full'>
-            <Table >
+          <CardContent className="w-[90vw] md:w-full">
+            <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Customer</TableHead>
@@ -321,7 +336,7 @@ export default function ReviewsPage() {
               </TableHeader>
               <TableBody>
                 {paginatedReviews.length > 0 ? (
-                  paginatedReviews?.map((review) => (
+                  reviews?.map((review) => (
                     <TableRow key={review.id}>
                       <TableCell>
                         <div>
@@ -351,16 +366,22 @@ export default function ReviewsPage() {
                         {statusUpdating === review.id ? (
                           <Loader className="h-4 w-4 animate-spin" />
                         ) : (
-                          <Select 
+                          <Select
                             value={review.status}
-                            onValueChange={(value) => handleStatusChange(review.id, value)}
+                            onValueChange={(value) =>
+                              handleStatusChange(review.id, value)
+                            }
                             disabled={statusUpdating !== null}
                           >
-                            <SelectTrigger className={`w-32 ${
-                              review.status === "approved" ? "bg-green-100 text-green-700" :
-                              review.status === "pending" ? "bg-yellow-100 text-yellow-700" :
-                              "bg-red-100 text-red-700"
-                            }`}>
+                            <SelectTrigger
+                              className={`w-32 ${
+                                review.status === "approved"
+                                  ? "bg-green-100 text-green-700"
+                                  : review.status === "pending"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : "bg-red-100 text-red-700"
+                              }`}
+                            >
                               <SelectValue placeholder="Status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -374,9 +395,10 @@ export default function ReviewsPage() {
                       <TableCell>
                         <div className="flex items-center space-x-1">
                           <Button
-                            onClick={() =>{
-                              setSpinner(review.id)
-                              handleDelete(review.id)}}
+                            onClick={() => {
+                              setSpinner(review.id);
+                              handleDelete(review.id);
+                            }}
                             variant="ghost"
                             size="sm"
                             disabled={spinnner}
@@ -384,7 +406,7 @@ export default function ReviewsPage() {
                               spinnner && "cursor-not-allowed"
                             }`}
                           >
-                            {spinnner === review.id? (
+                            {spinnner === review.id ? (
                               <Loader className="h-4 w-4" />
                             ) : (
                               <Trash2 className="h-4 w-4" />
@@ -404,67 +426,29 @@ export default function ReviewsPage() {
               </TableBody>
             </Table>
 
-            {filteredReviews.length > perPage && (
-              <div className="flex items-center justify-between mt-6">
+            {pagination && reviews.length > 0 && (
+              <div className="flex flex-col md:flex-row items-center justify-between mt-6 gap-4">
                 <p className="text-sm text-gray-700">
-                  Showing{" "}
-                  <span className="font-medium">
-                    {(currentPage - 1) * perPage + 1}
-                  </span>{" "}
-                  to{" "}
-                  <span className="font-medium">
-                    {Math.min(currentPage * perPage, filteredReviews.length)}
-                  </span>{" "}
-                  of{" "}
-                  <span className="font-medium">{filteredReviews.length}</span>{" "}
-                  results
+                  Showing <span className="font-medium">{reviews.length}</span>{" "}
+                  of <span className="font-medium">{pagination.total}</span>{" "}
+                  customers
                 </p>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageChange(currentPage - 1)}
+                    onClick={() =>
+                      setPage((prev) => (prev !== 1 ? prev - 1 : prev))
+                    }
+                    disabled={!pagination.prev_page_url}
                   >
                     Previous
                   </Button>
-
-                  {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage === 1) {
-                      pageNum = i + 1;
-                    } else if (currentPage === totalPages) {
-                      pageNum = totalPages - 2 + i;
-                    } else {
-                      pageNum = currentPage - 1 + i;
-                    }
-
-                    return (
-                      <Button
-                        key={pageNum}
-                        variant={
-                          pageNum === currentPage ? "default" : "outline"
-                        }
-                        size="sm"
-                        onClick={() => handlePageChange(pageNum)}
-                        className={
-                          pageNum === currentPage
-                            ? "bg-orange-500 text-white"
-                            : ""
-                        }
-                      >
-                        {pageNum}
-                      </Button>
-                    );
-                  })}
-
                   <Button
                     variant="outline"
+                    onClick={() => setPage((prev) => prev + 1)}
                     size="sm"
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={!pagination.next_page_url}
                   >
                     Next
                   </Button>

@@ -28,7 +28,7 @@ import { toast } from "react-toastify";
 import Notifcation from "../../../components/Notification";
 import StringSlice from "../../../components/Helpers/StringSlice";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
 export default function CategoriesManagementPage() {
   const [loading, setLoading] = useState(true);
@@ -42,6 +42,8 @@ export default function CategoriesManagementPage() {
   const [sortDirection, setSortDirection] = useState("asc");
   const [showFilters, setShowFilters] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(null);
+  const [pagination, setPagination] = useState(null);
+  const [page, setPage] = useState(1);
 
   const OrangeLoader = () => (
     <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
@@ -72,10 +74,20 @@ export default function CategoriesManagementPage() {
   const fetchCategories = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await Axios.get("/categories");
+      const res = await Axios.get(`/categories?page=${page}&per_page=1`);
       const data = Array.isArray(res.data?.data?.data) ? res.data.data.data : [];
       setCategories(data);
+      console.log(
+        res
+      );
       setFilteredCategories(data);
+      setPagination({
+        from: res.data.data.from,
+        to: res.data.data.to,
+        total: res.data.data.total,
+        next_page_url: res.data.data.next_page_url,
+        prev_page_url: res.data.data.prev_page_url,
+      });
     } catch (err) {
       toast.error("Failed to load categories. Please try again later.");
       setCategories([]);
@@ -83,7 +95,7 @@ export default function CategoriesManagementPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     fetchCategories();
@@ -398,76 +410,32 @@ export default function CategoriesManagementPage() {
                   </div>
                 ))
               )}
-            </div>
-
-            {totalPages > 1 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white">
-                <div className="text-sm text-gray-600">
-                  Showing {startIndex + 1} to {Math.min(startIndex + ITEMS_PER_PAGE, filteredCategories.length)} of {filteredCategories.length} categories
-                </div>
-                
+            </div>        {pagination && categories.length > 0 && (
+              <div className="flex flex-col md:flex-row items-center justify-between mt-6 gap-4">
+                <p className="text-sm text-gray-700">
+                  Showing{" "}
+                  <span className="font-medium">
+                    {categories.length}
+                  </span>{" "}
+                  of <span className="font-medium">{pagination.total}</span>{" "}
+                  customers
+                </p>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    className="flex items-center"
+                    size="sm"
+                    onClick={() => setPage((prev) => (prev !== 1 ? prev - 1 : prev))}
+                    disabled={!pagination.prev_page_url}
                   >
-                    <ArrowLeft className="h-4 w-4 mr-1" /> Previous
+                    Previous
                   </Button>
-                  
-                  <div className="flex items-center space-x-1">
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      const pageNum = 
-                        totalPages <= 5 ? i + 1 :
-                        currentPage <= 3 ? i + 1 :
-                        currentPage >= totalPages - 2 ? totalPages - 4 + i :
-                        currentPage - 2 + i;
-                      
-                      return (
-                        <Button
-                          key={pageNum}
-                          variant={currentPage === pageNum ? "solid" : "outline"}
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={`w-10 h-10 p-0 flex items-center justify-center ${
-                            currentPage === pageNum 
-                              ? "bg-orange-500 text-white border-orange-500" 
-                              : ""
-                          }`}
-                        >
-                          {pageNum}
-                        </Button>
-                      );
-                    })}
-                    
-                    {totalPages > 5 && currentPage < totalPages - 2 && (
-                      <span className="px-2">...</span>
-                    )}
-                    
-                    {totalPages > 5 && currentPage < totalPages - 2 && (
-                      <Button
-                        variant={currentPage === totalPages ? "solid" : "outline"}
-                        onClick={() => setCurrentPage(totalPages)}
-                        className={`w-10 h-10 p-0 ${
-                          currentPage === totalPages 
-                            ? "bg-orange-500 text-white border-orange-500" 
-                            : ""
-                        }`}
-                      >
-                        {totalPages}
-                      </Button>
-                    )}
-                  </div>
-                  
                   <Button
                     variant="outline"
-                    onClick={() =>
-                      setCurrentPage(Math.min(totalPages, currentPage + 1))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="flex items-center"
+                    onClick={() => setPage((prev) => prev + 1)}
+                    size="sm"
+                    disabled={!pagination.next_page_url}
                   >
-                    Next <ArrowRight className="h-4 w-4 ml-1" />
+                    Next
                   </Button>
                 </div>
               </div>
@@ -476,7 +444,7 @@ export default function CategoriesManagementPage() {
         </Card>
       </div>
 
-      {/* إضافة أنماط CSS للرسوم المتحركة */}
+      
       <style jsx>{`
         @keyframes spin-slow {
           from { transform: rotate(0deg); }

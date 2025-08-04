@@ -104,9 +104,9 @@ export default function CustomersPage() {
   const [customers, setCustomers] = useState([]);
   const [stats, setStats] = useState(null);
   const [pagination, setPagination] = useState(null);
+  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
   const [isDeleting, setIsDeleting] = useState(null);
 
   // Search and filter states
@@ -116,8 +116,11 @@ export default function CustomersPage() {
 
   // Fetch data
   useEffect(() => {
-    setIsLoading(true);
-    Axios.get(`/admin/customers?page=${page}`)
+    if(searchTerm === ''){
+
+      setIsLoading(true);
+    }
+    Axios.get(`/admin/customers?page=${page}&q=${searchTerm}&per_page=10`)
       .then((response) => {
         const { data } = response;
         setCustomers(data.data.customers.data);
@@ -138,7 +141,7 @@ export default function CustomersPage() {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [page]);
+  }, [page , searchTerm]);
 
   // Filter customers based on search and filters
   const filteredCustomers = useMemo(() => {
@@ -153,7 +156,7 @@ export default function CustomersPage() {
 
       return matchesSearch && matchesStatus;
     });
-  }, [customers, searchTerm, statusFilter]);
+  }, [customers, statusFilter]);
 
   // Prepare stats data
   const customerStats = stats
@@ -436,7 +439,6 @@ export default function CustomersPage() {
         </Card>
       </div>
       
-      {/* إضافة أنماط CSS للرسوم المتحركة */}
       <style jsx>{`
         @keyframes spin-slow {
           from { transform: rotate(0deg); }
