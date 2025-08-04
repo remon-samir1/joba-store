@@ -258,38 +258,38 @@ function Categories() {
 
   useGSAP(() => {
     if (!loading && categories.length > 0) {
-      gsap.fromTo(headerRef.current,
-        { y: -50, opacity: 0 },
-        { 
-          y: 0, 
-          opacity: 1, 
-          duration: 1,
-          scrollTrigger: {
-            trigger: categoriesRef.current,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
+      // // gsap.fromTo(headerRef.current,
+      // //   { y: -50, opacity: 0 },
+      // //   { 
+      // //     y: 0, 
+      // //     opacity: 1, 
+      // //     duration: 1,
+      // //     scrollTrigger: {
+      // //       trigger: categoriesRef.current,
+      // //       start: "top 80%",
+      // //       end: "bottom 20%",
+      // //       toggleActions: "play none none reverse"
+      // //     }
+      // //   }
+      // );
 
-      gsap.fromTo(gridRef.current.children,
-        { y: 100, opacity: 0, scale: 0.8 },
-        { 
-          y: 0, 
-          opacity: 1, 
-          scale: 1,
-          duration: 1,
-          stagger: 0.5,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: gridRef.current,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
+      // gsap.fromTo(gridRef.current.children,
+      //   { y: 100, opacity: 0, scale: 0.8 },
+      //   { 
+      //     y: 0, 
+      //     opacity: 1, 
+      //     scale: 1,
+      //     duration: 1,
+      //     stagger: 0.5,
+      //     ease: "power2.out",
+      //     scrollTrigger: {
+      //       trigger: gridRef.current,
+      //       start: "top 80%",
+      //       end: "bottom 20%",
+      //       toggleActions: "play none none reverse"
+      //     }
+      //   }
+      // );
     }
   }, [loading, categories]);
 
@@ -408,33 +408,33 @@ function ProductCard({
 
   useGSAP(() => {
     const handleHover = (e) => {
-      gsap.to(e.currentTarget, {
-        y: -10,
-        scale: 1.02,
-        duration: 0.3,
-        ease: "power2.out"
-      });
+      // gsap.to(e.currentTarget, {
+      //   y: -10,
+      //   scale: 1.02,
+      //   duration: 0.3,
+      //   ease: "power2.out"
+      // });
       
-      gsap.to(e.currentTarget.querySelector('img'), {
-        scale: 1.1,
-        duration: 0.3,
-        ease: "power2.out"
-      });
+      // gsap.to(e.currentTarget.querySelector('img'), {
+      //   scale: 1.1,
+      //   duration: 0.3,
+      //   ease: "power2.out"
+      // });
     };
 
     const handleHoverOut = (e) => {
-      gsap.to(e.currentTarget, {
-        y: 0,
-        scale: 1,
-        duration: 0.3,
-        ease: "power2.out"
-      });
+      // gsap.to(e.currentTarget, {
+      //   y: 0,
+      //   scale: 1,
+      //   duration: 0.3,
+      //   ease: "power2.out"
+      // });
       
-      gsap.to(e.currentTarget.querySelector('img'), {
-        scale: 1,
-        duration: 0.3,
-        ease: "power2.out"
-      });
+      // gsap.to(e.currentTarget.querySelector('img'), {
+      //   scale: 1,
+      //   duration: 0.3,
+      //   ease: "power2.out"
+      // });
     };
 
     const card = cardRef.current;
@@ -564,38 +564,38 @@ function NewProducts() {
 
   useGSAP(() => {
     if (!loading && products.length > 0) {
-      gsap.fromTo(headerRef.current,
-        { x: -100, opacity: 0 },
-        { 
-          x: 0, 
-          opacity: 1, 
-          duration: 1,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
+      // gsap.fromTo(headerRef.current,
+      //   { x: -100, opacity: 0 },
+      //   { 
+      //     x: 0, 
+      //     opacity: 1, 
+      //     duration: 1,
+      //     scrollTrigger: {
+      //       trigger: sectionRef.current,
+      //       start: "top 80%",
+      //       end: "bottom 20%",
+      //       toggleActions: "play none none reverse"
+      //     }
+      //   }
+      // );
 
-      gsap.fromTo(productsRef.current.children,
-        { x: 100, opacity: 0, rotateY: 45 },
-        { 
-          x: 0, 
-          opacity: 1, 
-          rotateY: 0,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: productsRef.current,
-            start: "left 80%",
-            end: "right 20%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
+      // gsap.fromTo(productsRef.current.children,
+      //   { x: 100, opacity: 0, rotateY: 45 },
+      //   { 
+      //     x: 0, 
+      //     opacity: 1, 
+      //     rotateY: 0,
+      //     duration: 0.8,
+      //     stagger: 0.15,
+      //     ease: "power2.out",
+      //     scrollTrigger: {
+      //       trigger: productsRef.current,
+      //       start: "left 80%",
+      //       end: "right 20%",
+      //       toggleActions: "play none none reverse"
+      //     }
+      //   }
+      // );
     }
   }, [loading, products]);
 
@@ -866,37 +866,37 @@ function DiscountSection() {
   const contentRef = useRef();
 
   useGSAP(() => {
-    gsap.fromTo(sectionRef.current,
-      { scale: 0.95, opacity: 0 },
-      { 
-        scale: 1, 
-        opacity: 1, 
-        duration: 1.2,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse"
-        }
-      }
-    );
+    // gsap.fromTo(sectionRef.current,
+    //   { scale: 0.95, opacity: 0 },
+    //   { 
+    //     scale: 1, 
+    //     opacity: 1, 
+    //     duration: 1.2,
+    //     scrollTrigger: {
+    //       trigger: sectionRef.current,
+    //       start: "top 80%",
+    //       end: "bottom 20%",
+    //       toggleActions: "play none none reverse"
+    //     }
+    //   }
+    // );
 
-    gsap.fromTo(contentRef.current.children,
-      { x: -100, opacity: 0 },
-      { 
-        x: 0, 
-        opacity: 1, 
-        duration: 1,
-        stagger: 0.2,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: contentRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse"
-        }
-      }
-    );
+    // gsap.fromTo(contentRef.current.children,
+    //   { x: -100, opacity: 0 },
+    //   { 
+    //     x: 0, 
+    //     opacity: 1, 
+    //     duration: 1,
+    //     stagger: 0.2,
+    //     ease: "power2.out",
+    //     scrollTrigger: {
+    //       trigger: contentRef.current,
+    //       start: "top 80%",
+    //       end: "bottom 20%",
+    //       toggleActions: "play none none reverse"
+    //     }
+    //   }
+    // );
   }, []);
 
   return (
@@ -939,10 +939,10 @@ export default function HomePage() {
   const pageRef = useRef();
 
   useGSAP(() => {
-    gsap.fromTo(pageRef.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.5, ease: "power2.out" }
-    );
+    // gsap.fromTo(pageRef.current,
+    //   { opacity: 0 },
+    //   { opacity: 1, duration: 0.5, ease: "power2.out" }
+    // );
   }, []);
 
   return (
