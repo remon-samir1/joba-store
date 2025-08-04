@@ -52,15 +52,12 @@ export default function Dashboard() {
   useEffect(() => {
     Axios.get("/admin/dashboard").then((data) => {
       setData(data.data.data);
-      console.log(data);
     });
     Axios.get("/products").then((data) => {
       setProductsData(data.data.data);
-      console.log(data);
     });
     Axios.get("/categories").then((data) => {
       setCategoriesData(data.data.data.data);
-      console.log(data);
     });
   }, []);
   const orderStats = [

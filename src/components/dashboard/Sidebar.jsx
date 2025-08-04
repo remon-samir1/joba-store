@@ -83,9 +83,9 @@ const getData = async()=>{
   try{
 Axios.get('admin/profile').then(data =>{
   setAdmin(data.data.data)
-  console.log(data)})
+}
+  )
   }catch(err){
-console.log(err);
   }
 }
 getData()

@@ -102,7 +102,6 @@ export default function ContactsManagementPage() {
       setContacts(data);
       setFilteredContacts(data);
     } catch (err) {
-      console.error("Failed to fetch contacts", err);
       toast.error("Failed to load contacts. Please try again later.");
       setContacts([]);
       setFilteredContacts([]);
@@ -168,7 +167,6 @@ export default function ContactsManagementPage() {
       const updated = contacts.filter((c) => c.id !== id);
       setContacts(updated);
     } catch (err) {
-      console.error("Failed to delete", err);
       toast.error("Failed to delete contact. Please try again.");
     } finally {
       setDeleteLoading(null);
@@ -192,7 +190,6 @@ export default function ContactsManagementPage() {
       setSelectedContacts(new Set());
       setSelectAll(false);
     } catch (err) {
-      console.error("Bulk delete failed", err);
       toast.error("Failed to delete contacts. Please try again.");
     }
   };

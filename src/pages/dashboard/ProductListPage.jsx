@@ -68,7 +68,7 @@ export default function ProductListPage() {
         setTotal(res.data.total);
         setFilteredProducts(data);
       })
-      .catch(error => console.error(error))
+      .catch(error => toast.error('Failed to load products'))
       .finally(() => setLoading(false));
   }, [currentPage]);
 

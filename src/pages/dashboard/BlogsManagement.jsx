@@ -99,11 +99,9 @@ export default function BlogsManagement() {
     try {
       const res = await Axios.get("/posts");
       const data = Array.isArray(res.data?.data) ? res.data.data : [];
-      console.log(res);
       setContacts(data);
       setFilteredContacts(data);
     } catch (err) {
-      console.error("Failed to fetch contacts", err);
       toast.error("Failed to load contacts. Please try again later.");
       setContacts([]);
       setFilteredContacts([]);
@@ -167,7 +165,6 @@ export default function BlogsManagement() {
       const updated = contacts.filter((c) => c.slug !== id);
       setContacts(updated);
     } catch (err) {
-      console.error("Failed to delete", err);
       toast.error("Failed to delete post. Please try again.");
     } finally {
       setDeleteLoading(null);
@@ -191,7 +188,6 @@ export default function BlogsManagement() {
       setSelectedContacts(new Set());
       setSelectAll(false);
     } catch (err) {
-      console.error("Bulk delete failed", err);
       toast.error("Failed to delete contacts. Please try again.");
     }
   };

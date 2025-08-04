@@ -94,7 +94,6 @@ const UpdateBlogs = () => {
       })
       .catch((error) => {
         toast.error("Error updating blog");
-        console.error(error);
       })
       .finally(() => {
         setLoading(false);

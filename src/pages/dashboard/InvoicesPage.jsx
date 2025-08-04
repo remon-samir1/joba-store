@@ -63,7 +63,6 @@ export default function InvoicesPage() {
       try {
         const response = await Axios.get("/admin/invoices");
         setInvoices(response.data.data.data);
-        console.log(response);
 
         const total = response.data.data.data.length;
         const paid = response.data.data.data.filter(
@@ -89,7 +88,6 @@ export default function InvoicesPage() {
           { title: "Overdue Invoices", value: overdue },
         ]);
       } catch (error) {
-        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }

@@ -77,7 +77,6 @@ export default function CategoriesManagementPage() {
       setCategories(data);
       setFilteredCategories(data);
     } catch (err) {
-      console.error("Failed to fetch categories", err);
       toast.error("Failed to load categories. Please try again later.");
       setCategories([]);
       setFilteredCategories([]);
@@ -141,7 +140,6 @@ export default function CategoriesManagementPage() {
       const updated = categories.filter(c => c.id !== id);
       setCategories(updated);
     } catch (err) {
-      console.error("Failed to delete", err);
       toast.error("Failed to delete category. Please try again.");
     } finally {
       setDeleteLoading(null);
@@ -158,7 +156,7 @@ export default function CategoriesManagementPage() {
     const slugs = Array.from(selectedCategories);
     try {
       for (let slug of slugs) {
-        await Axios.delete(`admin/categories/${slug}`).then(data => console.log(data));
+        await Axios.delete(`admin/categories/${slug}`)
       }
       toast.success(`${slugs.length} categories deleted successfully`);
       
@@ -169,7 +167,6 @@ export default function CategoriesManagementPage() {
       setSelectedCategories(new Set());
       setSelectAll(false);
     } catch (err) {
-      console.error("Bulk delete failed", err);
       toast.error("Failed to delete categories. Please try again.");
     }
   };

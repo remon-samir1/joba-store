@@ -117,10 +117,9 @@ export default function ReviewsPage() {
         )
       );
       
-      await Axios.post(`admin/reviews/${id}`, { status: newStatus  , _method : 'PUT'}).then(data => console.log(data));
+      await Axios.post(`admin/reviews/${id}`, { status: newStatus  , _method : 'PUT'})
       toast.success('Status updated successfully');
     } catch (error) {
-      console.log(error);
       setReviews(prev => 
         prev.map(review => 
           review.id === id ? { ...review, status: review.status } : review

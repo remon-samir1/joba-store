@@ -69,11 +69,9 @@ const AddBlog = () => {
     }).catch(error => {
       setLoading(false);
       toast.error('Error creating Blog');
-      console.error(error);
     });
   };
 
-  // تكوينات المحرر الغني
   const modules = useMemo(() => ({
     toolbar: [
       [{ 'header': [1, 2, 3, 4, 5, 6, false] }],

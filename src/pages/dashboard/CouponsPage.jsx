@@ -64,7 +64,7 @@ export default function CouponsPage() {
   const [page, setPage] = useState(1);
   useEffect(() => {
     Axios.get(`/admin/coupons?page=${page}`).then((data) => {
-      console.log(data);
+
       setStats(data.data.data.stats);
       setCoupons(data.data.data.coupons.data);
     });

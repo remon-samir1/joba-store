@@ -28,13 +28,13 @@ export default function CategoriesPage() {
   const [products, setProducts] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
-  const [activeCategory, setActiveCategory] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [wishlist, setWishlist] = useState([]);
   const [openCategory, setOpenCategory] = useState(null);
-
+console.log(activeCategory);
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get("q");
@@ -74,39 +74,44 @@ export default function CategoriesPage() {
     }
   };
 
+  
   useEffect(() => {
+
     Axios.get("/categories")
       .then((res) => {
         const apiCategories = res.data.data.data;
-        const categoryNames = apiCategories.map((cat) => cat.slug);
+        const categoryNames = apiCategories.map((cat) => cat.id);
         setCategories(apiCategories);
-        setCategoryTabs(["All", ...categoryNames]);
+        setCategoryTabs([ ...apiCategories]);
         setSidebarCategories(apiCategories);
         if (slugFromUrl) {
-          const matchedCategory = categoryNames.find(
-            (cat) => cat.toLowerCase() === slugFromUrl.toLowerCase()
+          const matchedCategory = apiCategories.find(
+            (cat) => cat.slug.toLowerCase() == slugFromUrl.toLowerCase()
           );
-          
-          setActiveCategory(matchedCategory || "All");
+          console.log(slugFromUrl);
+          console.log(matchedCategory);
+          setActiveCategory(matchedCategory.id || "All");
         } else {
           setActiveCategory("All");
         }
       })
       .finally(() => setIsLoadingCategories(false));
   }, [slugFromUrl]);
-console.log(activeCategory);
+
   useEffect(() => {
+    scrollRef.current.scrollIntoView({behavior:'smooth'});
     setIsLoadingProducts(true);
-    let url = `/products`;
+    let url = `/products?q=${encodeURIComponent(searchQuery.trim())}`;
     if (activeCategory && activeCategory !== "All") {
-      url += `&category_id=${encodeURIComponent(activeCategory)}`;
+      url += `&category=${encodeURIComponent(activeCategory)}`;
     }
-    if (searchQuery.trim()) {
-      url += `?q=${encodeURIComponent(searchQuery.trim())}`;
-    }
+    // if (searchQuery.trim()) {
+    //   url += `&q=${encodeURIComponent(searchQuery.trim())}`;
+    // }
     Axios.get(url)
       .then((res) => {
         console.log();
+        console.log(res);
         const responseData = res.data.data;
         setProducts(responseData);
 
@@ -122,9 +127,6 @@ console.log(activeCategory);
   }, [currentPage]);
 
   const scrollRef = useRef();
-  useEffect(() => {
-    scrollRef.current.scrollIntoView();
-  }, []);
 
   return (
     <div ref={scrollRef} className="min-h-screen bg-background">
@@ -149,20 +151,32 @@ console.log(activeCategory);
         </div>
 
         <div className="mb-8 flex flex-wrap gap-9">
-          {categoryTabs.map((category) => (
-            <button
-              key={category}
+        <button
               onClick={() => {
-                setActiveCategory(category);
-                setCurrentPage(1);
+                setActiveCategory('All');
               }}
               className={`pb-2 border-b-4 transition-colors ${
-                activeCategory === category
+                activeCategory === 'All'
                   ? "text-primary border-primary font-medium"
                   : "text-gray-500 border-transparent hover:text-foreground"
               }`}
             >
-              {category}
+          All
+            </button>
+          {categoryTabs.map((category) => (
+            <button
+              key={category}
+              onClick={() => {
+                setActiveCategory(category.id);
+                setCurrentPage(1);
+              }}
+              className={`pb-2 border-b-4 transition-colors ${
+                activeCategory === category.id
+                  ? "text-primary border-primary font-medium"
+                  : "text-gray-500 border-transparent hover:text-foreground"
+              }`}
+            >
+              {category.name}
             </button>
           ))}
         </div>

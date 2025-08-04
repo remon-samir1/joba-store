@@ -58,7 +58,6 @@ export default function OrdersPage() {
     Axios.get("/admin/orders")
       .then((res) => {
         const { data } = res;
-        console.log(res);
         setLoading(false);
         setOrders(data.data.orders.data);
         setStats(data.data.stats);
@@ -66,7 +65,6 @@ export default function OrdersPage() {
       .catch((err) => {
         setLoading(false);
 
-        console.error("Error fetching orders:", err);
       });
   }, []);
   function handleExport() {
@@ -155,11 +153,9 @@ export default function OrdersPage() {
   const handleDelete = async (id) => {
     try {
       await Axios.delete(`admin/orders/${id}`).then((data) => {
-        console.log(data);
         setOrders(orders.filter((data) => data.id !== id));
       });
     } catch (err) {
-      console.log(err);
     }
   };
   function getStatusBadge(status) {
@@ -327,7 +323,7 @@ export default function OrdersPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium text-orange-600">
-                        EGP {order.total}
+                        $ {order.total}
                       </TableCell>
                       <TableCell>
                         <div className="col-span-2">
