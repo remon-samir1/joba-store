@@ -35,13 +35,7 @@ const CartPage = () => {
     }
   }, [cart, isLoading]);
 
-  // Loading screen timeout
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setIsLoading(false);
-  //   }, 1000);
-  //   return () => clearTimeout(timer);
-  // }, []);
+
 
   const removeItem = (slug, id, size) => {
     toast.info("Removing item...", { autoClose: 1000 });
@@ -67,24 +61,41 @@ const CartPage = () => {
     0,
   );
   const total = subtotal - discountValue;
-
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
-
-    // Animate quantity change
+  
     gsap.to(`#quantity-${id}`, {
       scale: 1.2,
       duration: 0.2,
       yoyo: true,
       repeat: 1,
     });
-
+  
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.product.id === id ? { ...item, quantity: newQuantity } : item,
-      ),
+        item.product.id === id ? { ...item, quantity: newQuantity } : item
+      )
     );
+  
+    const updatedItem = cart.find((item) => item.product.id === id);
+    if (updatedItem) {
+      Axios.patch(`/cart/${updatedItem.product.slug}`, {
+        _method: "PUT", 
+        product_id: updatedItem.product.id,
+        product_size_id: updatedItem.size.id,
+        quantity: newQuantity,
+      })
+        .then((res) => {
+          console.log(res);
+          toast.success("Quantity updated!");
+          change((prev) => !prev); 
+        })
+        .catch(() => {
+          toast.error("Failed to update quantity");
+        });
+    }
   };
+  
 
   const applyCoupon = () => {
     if (!discount.trim()) {
