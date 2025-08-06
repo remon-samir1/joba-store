@@ -28,6 +28,7 @@ export default function ProductDetailPage() {
         console.log(data);
         if (data) {
           setProduct(data);
+          setSelectedSize(data.sizes[0]?.id)
         }
       })
       .catch((err) => {
