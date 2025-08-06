@@ -64,6 +64,7 @@ export default function ProductListPage() {
     Axios.get(`/products?page=${currentPage}`)
       .then((res) => {
         const data = res.data?.data || [];
+        console.log(res);
         setProducts(data);
         setTotal(res.data.total);
         setFilteredProducts(data);
@@ -216,7 +217,7 @@ export default function ProductListPage() {
                           </div>
                           <div className="col-span-1">
                             <span className={`text-sm ${getStockStatusColor(product.stock)}`}>
-                              {product.stock === 0 ? product.is_out_of_stock ? 0 : 'Unlimited' : product.stock}
+                              { product.stock}
                             </span>
                           </div>
                           <div className="col-span-1">

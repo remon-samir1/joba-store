@@ -12,6 +12,7 @@ import { RelatedProducts } from "../../..//components/product/RelatedProducts";
 import { Header } from "../../../src/components/Header.jsx";
 import Loading from "../../../components/Loading/Loading.jsx";
 import SeoHelmet from "../../../src/components/SeoHelmet/SeoHelmet.jsx";
+import { Axios } from "../../../components/Helpers/Axios.js";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -20,10 +21,10 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
-    axios
-      .get("https://goba-ecommerce.sunmedagency.com/api/products")
+    Axios
+      .get(`/products/${id}`)
       .then((res) => {
-        const data = res.data.data.filter((p) => p.slug == id)[0];
+        const data = res.data.data
         console.log(data);
         if (data) {
           setProduct(data);

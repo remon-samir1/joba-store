@@ -85,12 +85,11 @@ export default function UpdateProduct() {
         setLoading(true);
 
         // Fetch product data
-        const productsRes = await Axios.get("/products");
-        const product = productsRes.data.data.filter(
-          (prev) => prev.slug === id,
-        )[0];
-        setInitialData(product);
-        console.log(product);
+        const productsRes = await Axios.get(`/products/${id}`);
+        console.log(productsRes);
+        const product =productsRes.data.data
+        setInitialData(productsRes.data.data);
+        // console.log(product);
         // Set product data
         setProductData({
           productName: product.name?.en || "",
@@ -102,8 +101,8 @@ export default function UpdateProduct() {
           expirationStart: product.created_at || "",
           expirationEnd: product.expiration_end || "",
           stockQuantity:  product.stock || "",
-          stockStatus: product.is_out_of_stock,
-          unlimitedStock: product.stock === 0 & product.is_out_of_stock === false ? true : false ,
+          stockStatus: product.stock === 0 ? 'out_of_stock' : 'in_stock',
+          // unlimitedStock: product.stock ,
           isBestSeller: product.is_featured || false,
           isNewArrival: product.is_new_arrival || false,
           productCategory:product.category_id,
@@ -140,7 +139,7 @@ export default function UpdateProduct() {
 
         setLoading(false);
       } catch (err) {
-        console.error("Failed to fetch data:", err);
+        console.error(err);
         toast.error("Failed to load product data");
         setLoading(false);
       }
@@ -284,7 +283,7 @@ export default function UpdateProduct() {
     // );
     // formData.append("expiration_start", productData.expirationStart);
     // formData.append("expiration_end", productData.expirationEnd);
-    formData.append("stock", productData.unlimitedStock? 0 : productData.stockQuantity);
+    formData.append("stock", productData.stockStatus === 'out-of-stock' ? 0 :  productData.stockQuantity);
     // formData.append(
     //   "is_out_of_stock",
     //   productData.stockStatus === "out-of-stock" ? "1" : "0",
@@ -667,7 +666,7 @@ export default function UpdateProduct() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="stockQuantity" className="text-gray-700">
-                      Stock Quantity {!productData.unlimitedStock && "*"}
+                      Stock Quantity {productData.stockStatus !== 'out-of-stock' && "*"}
                     </Label>
                     <Input
                       id="stockQuantity"
@@ -676,7 +675,7 @@ export default function UpdateProduct() {
                       onChange={handleChange}
                       placeholder="100"
                       className="mt-1 border-gray-300"
-                      disabled={productData.unlimitedStock}
+                      disabled={ productData.stockStatus === 'out-of-stock'}
                       min="0"
                     />
                   </div>
@@ -698,8 +697,8 @@ export default function UpdateProduct() {
                         <SelectValue placeholder="Select Status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value='false'>In Stock</SelectItem>
-                        <SelectItem value='true'>
+                        <SelectItem value='in_stock'>In Stock</SelectItem>
+                        <SelectItem value='out_of_stock'>
                           Out of Stock
                         </SelectItem>
                   
@@ -708,7 +707,7 @@ export default function UpdateProduct() {
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <Switch
                     id="unlimitedStock"
                     checked={productData.unlimitedStock}
@@ -720,7 +719,7 @@ export default function UpdateProduct() {
                   <Label htmlFor="unlimitedStock" className="text-gray-700">
                     Unlimited Stock
                   </Label>
-                </div>
+                </div> */}
 
                 {/* <div className="space-y-2">
                   <div className="flex items-center space-x-2">

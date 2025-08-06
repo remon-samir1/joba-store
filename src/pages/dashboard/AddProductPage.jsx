@@ -217,9 +217,9 @@ console.log(productData);
     formData.append("price", productData.productPrice);
     formData.append("discount_price", +productData.discountedPrice);
     formData.append("payment_method", "cash");
-    formData.append("stock", productData.unlimitedStock ? 0 : productData.stockQuantity);
+    formData.append("stock",  productData.stockStatus === 'out-of-stock' ? 0: productData.stockQuantity);
     formData.append("category_id", +productData.productCategory);
-    formData.append("is_out_of_stock", productData.stockStatus === 'in-stock' ? 1 : 0);
+    // formData.append("is_out_of_stock", productData.stockStatus === 'in-stock' ? 0 : 1);
     formData.append("is_featured", productData.isBestSeller ? 1 : 0);
     if (pending) {
       formData.append("status", "pending");
@@ -564,7 +564,7 @@ console.log(productData);
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="stockQuantity" className="text-gray-700">
-                      Stock Quantity {!productData.unlimitedStock && "*"}
+                      Stock Quantity 
                     </Label>
                     <Input
                       id="stockQuantity"
@@ -573,8 +573,8 @@ console.log(productData);
                       onChange={handleChange}
                       placeholder="100"
                       className="mt-1 border-gray-300"
-                      disabled={productData.unlimitedStock}
-                      required={!productData.unlimitedStock}
+                      disabled={ productData.stockStatus === 'out-of-stock'}
+                      required={ productData.stockStatus !== 'out-of-stock'}
                       min="0"
                     />
                   </div>
@@ -601,7 +601,7 @@ console.log(productData);
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <Switch
                     id="unlimitedStock"
                     checked={productData.unlimitedStock}
@@ -611,7 +611,7 @@ console.log(productData);
                     className="data-[state=checked]:bg-orange-500"
                   />
                   <Label htmlFor="unlimitedStock" className="text-gray-700">Unlimited Stock</Label>
-                </div>
+                </div> */}
 
                 {/* <div className="space-y-2">
                   <div className="flex items-center space-x-2">
