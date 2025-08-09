@@ -30,6 +30,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Axios } from "../../../components/Helpers/Axios";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { toast } from "react-toastify";
 
 // Helper functions
 function handleExport(customersToExport) {
@@ -201,12 +202,12 @@ export default function CustomersPage() {
   }
   
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this customer?")) return;
     
     setIsDeleting(id);
     try {
       await Axios.post(`admin/customers/${id}`, { _method: "DELETE" }).then((data) => {
         console.log(data);
+        toast.success('Deleted Successfly')
         setCustomers(customers.filter((data) => data.id !== id));
       });
     } catch (err) {
