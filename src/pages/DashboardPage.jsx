@@ -99,7 +99,7 @@ export default function Dashboard() {
                 <CardTitle className="text-sm font-medium text-gray-600">
                   {stat.title}
                 </CardTitle>
-                <MoreHorizontal className="h-4 w-4 text-gray-400" />
+                {/* <MoreHorizontal className="h-4 w-4 text-gray-400" /> */}
               </CardHeader>
               <CardContent>
                 {stat.pending && stat.canceled ? (
@@ -455,13 +455,13 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
-                    <Link
+                    {/* <Link
                       to="/dashboard/categories"
                       size="sm"
                       className="bg-orange-500 hover:bg-orange-600 text-white py-1 rounded px-2 text-xs"
                     >
                       Add
-                    </Link>
+                    </Link> */}
                   </div>
                 ))}
                 <Link

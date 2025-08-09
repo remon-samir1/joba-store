@@ -85,7 +85,7 @@ const BlogPage = () => {
                     <div className="blog-content">
                       <h3 className="blog-title">{post.title}</h3>
                       <p className="blog-excerpt">
-                        {StringSlice(stripHtml(post.content), 150)}
+                        {StringSlice(stripHtml(post.content), 50)}
                       </p>
                       <div className="blog-meta">
                         {post.user?.name} / {TransformDate(post.created_at)}

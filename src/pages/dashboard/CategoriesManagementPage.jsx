@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -44,7 +44,7 @@ export default function CategoriesManagementPage() {
   const [deleteLoading, setDeleteLoading] = useState(null);
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
-
+const scrollRef= useRef()
   const OrangeLoader = () => (
     <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
       <div className="flex flex-col items-center">
@@ -141,7 +141,6 @@ export default function CategoriesManagementPage() {
   };
 
   const handleDeleteCategory = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this category?")) return;
     
     setDeleteLoading(id);
     try {
@@ -149,7 +148,7 @@ export default function CategoriesManagementPage() {
       toast.success("Category deleted successfully");
       
       // Update state by removing the deleted category
-      const updated = categories.filter(c => c.id !== id);
+      const updated = categories.filter(c => c.slug !== id);
       setCategories(updated);
     } catch (err) {
       toast.error("Failed to delete category. Please try again.");
@@ -197,13 +196,18 @@ export default function CategoriesManagementPage() {
     return sortDirection === "asc" ? "↑" : "↓";
   };
 
+  useEffect(()=>{
+    scrollRef.current.scrollIntoView({behavior:'smooth'});
+
+
+  },[])
   return (
-    <div className="flex-1 overflow-auto bg-gray-50">
+    <div  className="flex-1 overflow-auto bg-gray-50">
       <Notifcation />
       {loading && <OrangeLoader />}
       <DashboardHeader title="Category Management" />
       
-      <div className="p-6 space-y-6">
+      <div ref={scrollRef} className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Manage Categories</h2>
@@ -389,8 +393,8 @@ export default function CategoriesManagementPage() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-red-600 px-3 py-2 hover:bg-red-50 cursor-pointer"
-                              onClick={() => handleDeleteCategory(category.id)}
-                              disabled={deleteLoading === category.id}
+                              onClick={() => handleDeleteCategory(category.slug)}
+                              disabled={deleteLoading === category.slug}
                             >
                               {deleteLoading === category.id ? (
                                 <div className="flex items-center">

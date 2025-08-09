@@ -38,11 +38,11 @@ const [suggestions , setSuggestions]= useState([])
       if (searchQuery.trim()) {
         Axios.get(`/products?q=${searchQuery}`)
           .then((res) => {
-            console.log(res.data.data);
+            // console.log(res.data.data);
             // setSuggestions(res.data.data)
           }
             )
-          .catch((err) => console.error("Search error:", err));
+          // .catch((err) => console.error("Search error:", err));
       } else {
         setSuggestions([]);
       }

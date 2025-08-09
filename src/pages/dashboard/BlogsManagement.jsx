@@ -28,6 +28,7 @@ import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import Notifcation from "../../../components/Notification";
 import * as XLSX from 'xlsx';
+import StringSlice from "../../../components/Helpers/StringSlice";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -311,8 +312,8 @@ export default function BlogsManagement() {
                         </span>
                       </div>
                       <div className="col-span-3">
-                        <span className="text-sm truncate text-gray-600 line-clamp-2">
-                          {contact.content || "No subject"}
+                        <span dangerouslySetInnerHTML={{__html: StringSlice(contact.content , 20)|| "No content"}}  className="text-sm truncate text-gray-600 line-clamp-2">
+                          {/* {} */}
                         </span>
                       </div>
                     

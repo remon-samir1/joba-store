@@ -23,14 +23,20 @@ export function CouponManagement() {
     expires_at: "",
     is_active: true,
     max_uses_user: "",
-  });
+  }); 
+const { max_uses_user,max_uses , ...formError} =form 
 
   const handleSubmit = async () => {
     setLoading(true);
-    const emptyFields = Object.entries(form).filter(
+    const emptyFields = Object.entries(formError).filter(
       ([key, value]) => value === "" || value === null || value === undefined
     );
-  
+    if(form.max_uses === '' & form.max_uses_user === ''){
+      toast.error(`Please fill Usage limit per coupon or Usage limit per user`);
+      setLoading(false);
+      return;
+
+    }
     if (emptyFields.length > 0) {
       const missing = emptyFields.map(([key]) => key).join(", ");
       toast.error(`Please fill all required fields: ${missing}`);
