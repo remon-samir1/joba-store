@@ -303,7 +303,7 @@ function Categories() {
         setCategories(response.data.data.data.slice(-4));
       } catch (err) {
         setError("Failed to load categories. Please try again later.");
-        toast.error("Failed to load categories");
+        toast.error(t("Failed to load categories"));
       } finally {
         setLoading(false);
       }
@@ -311,17 +311,17 @@ function Categories() {
 
     fetchCategories();
   }, []);
-
+const {t , i18n} = useTranslation()
   return (
     <section ref={categoriesRef} className="py-12 sm:py-16 lg:py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div ref={headerRef} className="flex items-center justify-between mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
-            Categories
+            {t("Categories")}
           </h2>
           <Link to="/categories">
             <button className="text-primary text-lg sm:text-xl lg:text-2xl font-bold hover:text-primary/80 transition-colors hover:scale-105 transform">
-              See All
+              {t("See All")}
             </button>
           </Link>
         </div>
@@ -330,13 +330,13 @@ function Categories() {
 
         {error && !loading && (
           <EmptyState
-            message="We encountered an issue loading categories. Please try again later."
+            message={t("We encountered an issue loading categories. Please try again later.")}
             icon={Loader2}
           />
         )}
 
         {!loading && !error && categories.length === 0 && (
-          <EmptyState message="No categories available at the moment. Check back soon!" />
+          <EmptyState message={t("No categories available at the moment. Check back soon!")} />
         )}
 
         {!loading && !error && categories.length > 0 && (
@@ -407,7 +407,7 @@ function ProductCard({
   variant = "overlay",
 }) {
   const cardRef = useRef();
-
+const {t , i18n} = useTranslation()
   useGSAP(() => {
     const handleHover = (e) => {
       // gsap.to(e.currentTarget, {
@@ -501,7 +501,7 @@ function ProductCard({
           </div>
           <button className="w-full bg-primary text-white py-2.5 sm:py-3 rounded flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-all duration-300 text-sm sm:text-base hover:scale-105 transform">
             <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            Show Details
+            {t("Show Details")}
           </button>
         </div>
       </div>
@@ -563,6 +563,7 @@ function NewProducts() {
   const sectionRef = useRef();
   const headerRef = useRef();
   const productsRef = useRef();
+  const {t , i18n} = useTranslation()
 
   useGSAP(() => {
     if (!loading && products.length > 0) {
@@ -609,7 +610,7 @@ function NewProducts() {
         setProducts(response.data.data);
       } catch (err) {
         setError("Failed to load new products. Please try again later.");
-        toast.error("Failed to load new products");
+        toast.error(t("Failed to load new products"));
       } finally {
         setLoading(false);
       }
@@ -646,7 +647,7 @@ function NewProducts() {
         });
       }
     } catch (error) {
-      toast.error("Failed to add to wishlist. Please try again.");
+      toast.error(t("Failed to add to wishlist. Please try again."));
     }
   };
 
@@ -656,11 +657,11 @@ function NewProducts() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div ref={headerRef} className="flex items-center justify-between mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
-            New Products
+            {t("New Products")}
           </h2>
           <Link to="/categories">
             <button className="text-primary text-lg sm:text-xl lg:text-2xl font-bold hover:text-primary/80 transition-colors hover:scale-105 transform">
-              See All
+              {t("See All")}
             </button>
           </Link>
         </div>
