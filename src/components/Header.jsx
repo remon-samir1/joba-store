@@ -79,7 +79,7 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState("EN");
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language === 'ar' ? "AR" : 'EN');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -166,6 +166,10 @@ export function Header() {
     document.documentElement.setAttribute("dir" , value === 'ar' ? 'rtl' : 'ltr')
   }
 
+  useEffect(()=>{
+    document.documentElement.setAttribute("dir" , i18n.language === 'ar' ? 'rtl' : 'ltr')
+
+  },[i18n.language])
   const [cart, setCart] = useState(0);
   const cartcontext = useContext(CartCh);
   const change = cartcontext.cartChange;
