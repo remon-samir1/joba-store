@@ -20,43 +20,45 @@ import SeoHelmet from "../components/SeoHelmet/SeoHelmet.jsx";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useTranslation } from "react-i18next";
 
 gsap.registerPlugin(ScrollTrigger);
 
+function Hero() {
+const { t , i18n} = useTranslation()
 const heroSlides = [
   {
     id: 1,
-    title: "Sort out Your Spring Look",
+    title: t("Sort out Your Spring Look"),
     subtitle:
-      "We will help to develop every smallest thing into a big one for your company.",
+      t("We will help to develop every smallest thing into a big one for your company."),
     image:
       "https://cdn.builder.io/api/v1/image/assets/TEMP/b75262aa522b68f50318332a046e2f24447b13ba?width=2880",
-    buttonText: "SHOP NOW",
+    buttonText: t("SHOP NOW"),
     buttonLink: "/categories",
   },
   {
     id: 2,
-    title: "Discover Natural Wellness",
+    title: t("Discover Natural Wellness"),
     subtitle:
-      "Premium natural health products and supplements designed to support your wellness journey with proven results.",
+      t("Premium natural health products and supplements designed to support your wellness journey with proven results."),
     image:
       "https://cdn.builder.io/api/v1/image/assets/TEMP/e93acb395af83e4dfe38743a56243625c349d4cd?width=2880",
-    buttonText: "EXPLORE NOW",
+    buttonText: t("EXPLORE NOW"),
     buttonLink: "/categories",
   },
   {
     id: 3,
-    title: "Pure Essential Oils",
+    title: t("Pure Essential Oils"),
     subtitle:
-      "Experience the therapeutic power of nature with our premium collection of pure, therapeutic-grade essential oils.",
+      t("Experience the therapeutic power of nature with our premium collection of pure, therapeutic-grade essential oils."),
     image:
       "https://cdn.builder.io/api/v1/image/assets/TEMP/cadd4badf0dd90d25f5e7f4b5a15251a6a065f26?width=2880",
-    buttonText: "SHOP OILS",
+    buttonText: t("SHOP NOW"),
     buttonLink: "/categories",
   },
 ];
 
-function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const heroRef = useRef();
   const contentRef = useRef();
@@ -128,7 +130,7 @@ function Hero() {
               <Link to={slide.buttonLink}>
                 <button className="inline-flex items-center gap-2 bg-primary text-white px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-primary/90 transition-colors transform hover:scale-105">
                   {slide.buttonText}
-                  <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <ChevronRight className={`h-5 w-5 sm:h-6 sm:w-6 ${i18n.language === 'ar' && 'rotate-180'}`} />
                 </button>
               </Link>
             </div>
