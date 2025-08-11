@@ -516,8 +516,36 @@ export function Header() {
                   <X className="h-6 w-6" />
                 </button>
               </div>
+              <DropdownMenu className='mb-4'>
+                <DropdownMenuTrigger className="flex outline-none items-center gap-1 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
+                  <span className="text-base xl:text-lg font-medium text-gray-900">
+                    {selectedLanguage}
+                  </span>
+                  <ChevronDown className="h-4 xl:h-5 w-4 xl:w-5 text-gray-900" />
+                  <Globe className="h-4 xl:h-5 w-4 xl:w-5 text-gray-900 ml-1" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  {languages.map((lang) => (
+                    <DropdownMenuItem
+                      key={lang.code}
+                      onClick={() =>{
+                        handelChangeLanguegae(lang.code)
+                        setSelectedLanguage(lang.flag)}}
+                      className="flex items-center gap-3 cursor-pointer"
+                    >
+                      <span className="text-lg">{lang.flag}</span>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{lang.flag}</span>
+                        <span className="text-sm text-gray-500">
+                          {lang.name}
+                        </span>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-              <nav className="space-y-4">
+              <nav className="space-y-4 mt-4">
                 <Link
                   to="/"
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -582,7 +610,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                  {t("Help")}
+                  {t("help")}
                 </Link>
                 <Link
                   to="/support"
