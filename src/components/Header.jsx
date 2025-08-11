@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslation } from 'react-i18next';
 import { Axios } from "../../components/Helpers/Axios";
 import CartContext, { CartCh } from "../../Context/CartContext";
 
@@ -73,6 +74,8 @@ function convertByKeyboardMap(str, map) {
 }
 
 export function Header() {
+  const { t, i18n } = useTranslation();
+
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -155,12 +158,13 @@ export function Header() {
 
   console.log(suggestions);
   const languages = [
-    { code: "EN", name: "English", flag: "🇺🇸" },
-    { code: "ES", name: "Español", flag: "🇪🇸" },
-    { code: "FR", name: "Français", flag: "🇫🇷" },
-    { code: "DE", name: "Deutsch", flag: "🇩🇪" },
-    { code: "AR", name: "العربية", flag: "🇸🇦" },
+    { code: "en", name: "English", flag: "EN" },
+    { code: "ar", name: "العربية", flag: "AR" },
   ];
+  const handelChangeLanguegae =(value)=>{
+    i18n.changeLanguage(value);
+    document.documentElement.setAttribute("dir" , value === 'ar' ? 'rtl' : 'ltr')
+  }
 
   const [cart, setCart] = useState(0);
   const cartcontext = useContext(CartCh);
@@ -199,7 +203,7 @@ export function Header() {
                   <Search className="h-4 xl:h-5 w-4 xl:w-5 text-gray-400 mr-2 xl:mr-3" />
                   <input
                     type="text"
-                    placeholder="Search our Products.."
+                    placeholder={t("Search our Products..")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => setShowSuggestions(true)}
@@ -245,7 +249,7 @@ export function Header() {
                       ))
                     ) : suggestions.length === 0 &&   (
                       <div className="px-4 py-3 text-gray-500">
-                        No results found
+                        {t('No results found')}
                       </div>
                     )}
                   </div>
@@ -253,7 +257,7 @@ export function Header() {
               </form>
 
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
+                <DropdownMenuTrigger className="flex outline-none items-center gap-1 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
                   <span className="text-base xl:text-lg font-medium text-gray-900">
                     {selectedLanguage}
                   </span>
@@ -264,12 +268,14 @@ export function Header() {
                   {languages.map((lang) => (
                     <DropdownMenuItem
                       key={lang.code}
-                      onClick={() => setSelectedLanguage(lang.code)}
+                      onClick={() =>{
+                        handelChangeLanguegae(lang.code)
+                        setSelectedLanguage(lang.flag)}}
                       className="flex items-center gap-3 cursor-pointer"
                     >
                       <span className="text-lg">{lang.flag}</span>
                       <div className="flex flex-col">
-                        <span className="font-medium">{lang.code}</span>
+                        <span className="font-medium">{lang.flag}</span>
                         <span className="text-sm text-gray-500">
                           {lang.name}
                         </span>
@@ -310,7 +316,7 @@ export function Header() {
                 <Search className="h-5 w-5 text-gray-400 mr-3" />
                 <input
                   type="text"
-                  placeholder="Search our Products.."
+                  placeholder={t("Search our Products..")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setShowSuggestions(true)}
@@ -324,7 +330,7 @@ export function Header() {
                   className="ml-2 text-primary font-medium"
                   onClick={handleSearch}
                 >
-                  Search
+                  {t("Search")}
                 </button>
               )}
             </form>
@@ -359,7 +365,7 @@ export function Header() {
                   ))
                 ) : (
                   <div className="px-4 py-3 text-gray-500">
-                    No results found
+                    {t("No results found")}
                   </div>
                 )}
               </div>
@@ -391,7 +397,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-              Home
+              {t("Home")}
               </Link>
               <Link
                 to="/categories"
@@ -401,7 +407,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-              Categories
+              {t("Categories")}
               </Link>
               <Link
                 to="/about"
@@ -411,7 +417,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-              About
+              {t("About")}
               </Link>
               <Link
                 to="/blog"
@@ -421,7 +427,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-          Blog
+          {t("Blog")}
               </Link>
               <Link
                 to="/contact"
@@ -431,7 +437,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-                Contact us
+                {t("Contact us")}
               </Link>
               <Link
                 to="/dashboard"
@@ -441,7 +447,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-              Dashboard
+              {t("Dashboard")}
               </Link>
             </nav>
 
@@ -451,7 +457,7 @@ export function Header() {
                   to="/help"
                   className="px-2 lg:px-4 py-2 text-white hover:text-gray-200 font-semibold text-sm lg:text-base"
                 >
-                help
+                {t("help")}
                 </Link>
                 <div className="w-px h-6 bg-white/30 mx-2"></div>
                 <Link
@@ -462,7 +468,7 @@ export function Header() {
                       : "text-white hover:text-gray-200"
                   }`}
                 >
-                  Support
+                  {t("Support")}
                 </Link>
               </div>
 
@@ -517,7 +523,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-              Home
+              {t("Home")}
                 </Link>
                 <Link
                   to="/categories"
@@ -528,7 +534,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                Categories
+                {t("Categories")}
                 </Link>
                 <Link
                   to="/about"
@@ -539,7 +545,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-              About
+              {t("About")}
                 </Link>
                 <Link
                   to="/blog"
@@ -550,7 +556,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-              Blog
+              {t("Blog")}
                 </Link>
                 <Link
                   to="/contact"
@@ -561,7 +567,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                Contact us
+                {t("Contact us")}
                 </Link>
                 <Link
                   to="/help"
@@ -572,7 +578,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                  Help
+                  {t("Help")}
                 </Link>
                 <Link
                   to="/support"
@@ -583,7 +589,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                  Support
+                  {t("Support")}
                 </Link>
                 <Link
                   to="/dashboard"
@@ -594,7 +600,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                Dashboard
+                {t("Dashboard")}
                 </Link>
               </nav>
 
@@ -605,7 +611,7 @@ export function Header() {
                   className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:text-primary hover:bg-gray-50 rounded transition-colors"
                 >
                   <Heart className="h-5 w-5" />
-                  <span>Wishlist</span>
+                  <span>{t("Wishlist")}</span>
                 </Link>
                 <Link
                   to="/cart"
@@ -613,7 +619,7 @@ export function Header() {
                   className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:text-primary hover:bg-gray-50 rounded transition-colors"
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  <span>Cart ({cart})</span>
+                  <span>{t("Cart")} ({cart})</span>
                 </Link>
               </div>
             </div>
