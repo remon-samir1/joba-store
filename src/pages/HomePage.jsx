@@ -235,15 +235,16 @@ function SkeletonLoader({ type = "card", count = 4 }) {
     </div>
   );
 }
-
 function EmptyState({ message, icon: Icon = ShoppingCart }) {
+const {t , i18n} = useTranslation()
+
   return (
     <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-lg">
       <div className="bg-gray-200 rounded-full p-4 mb-4">
         <Icon className="h-12 w-12 text-gray-500" />
       </div>
       <h3 className="text-xl font-medium text-gray-700 mb-2">
-        No data available
+        {t("No data available")}
       </h3>
       <p className="text-gray-500 text-center max-w-md">{message}</p>
     </div>
@@ -371,7 +372,7 @@ const {t , i18n} = useTranslation()
                   </h3>
                   {index === 0 && (
                     <>
-                      <button className="hidden md:inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-full text-white hover:bg-primary/90 transition-all duration-300 hover:scale-110 hover:rotate-90">
+                      <button className={`hidden md:inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-full text-white hover:bg-primary/90 transition-all duration-300 hover:scale-110 hover:rotate-90 ${i18n.language === 'ar' && "!hidden"}`}>
                         <ChevronRight className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />
                       </button>
                     </>
@@ -670,13 +671,13 @@ function NewProducts() {
 
         {error && !loading && (
           <EmptyState
-            message="We encountered an issue loading new products. Please try again later."
+            message={t("We encountered an issue loading new products. Please try again later.")}
             icon={Loader2}
           />
         )}
 
         {!loading && !error && products.length === 0 && (
-          <EmptyState message="No new products available at the moment. Check back soon!" />
+          <EmptyState message={t("No new products available at the moment. Check back soon!")} />
         )}
 
         {!loading && !error && products.length > 0 && (
@@ -775,14 +776,14 @@ function BestSeller() {
 
     fetchBestSellers();
   }, []);
-
+const {t , i18n} = useTranslation()
   const handleAddToWishlist = async (e, slug, is_favorite) => {
     e.stopPropagation();
     e.preventDefault();
     try {
       if (is_favorite) {
         await Axios.delete(`/wishlist/${slug}`).then(() => {
-          toast.success(`Removed From wishlist!`);
+          toast.success(t(`Removed From wishlist!`));
 
           setProducts(
             products.map((prev) =>
@@ -792,7 +793,7 @@ function BestSeller() {
         });
       } else {
         await Axios.post(`/wishlist/${slug}`).then(() => {
-          toast.success(`Added to wishlist!`);
+          toast.success(t(`Added to wishlist`));
           setProducts(
             products.map((prev) =>
               prev.slug == slug ? { ...prev, is_favorite: true } : prev,
@@ -801,7 +802,7 @@ function BestSeller() {
         });
       }
     } catch (error) {
-      toast.error("Failed to add to wishlist. Please try again.");
+      toast.error(t("Failed to add to wishlist. Please try again."));
     }
   };
 
@@ -810,7 +811,7 @@ function BestSeller() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div ref={headerRef} className="mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
-            Best Seller
+            {t("Best Seller")}
           </h2>
         </div>
 
@@ -827,13 +828,13 @@ function BestSeller() {
 
         {error && !loading && (
           <EmptyState
-            message="We encountered an issue loading best sellers. Please try again later."
+            message={t("We encountered an issue loading best sellers. Please try again later.")}
             icon={Loader2}
           />
         )}
 
         {!loading && !error && products.length === 0 && (
-          <EmptyState message="No best sellers available at the moment. Check back soon!" />
+          <EmptyState message={t("No best sellers available at the moment. Check back soon!")} />
         )}
 
         {!loading && !error && products.length > 0 && (
@@ -901,7 +902,7 @@ function DiscountSection() {
     //   }
     // );
   }, []);
-
+const {t , i18n} = useTranslation()
   return (
     <section ref={sectionRef} className="h-64 sm:h-80 lg:h-[496px] bg-gray-200 relative overflow-hidden">
       <div className="absolute inset-0">
@@ -917,10 +918,10 @@ function DiscountSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div ref={contentRef} className="max-w-2xl">
             <p className="text-white text-lg sm:text-xl lg:text-2xl font-semibold mb-4 sm:mb-6 lg:mb-8">
-              March Discount
+              {t("March Discount")}
             </p>
             <h2 className="text-white text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 lg:mb-8 leading-tight">
-              Up to 70% off
+              {t("Up to 70% off")}
             </h2>
             <p className="text-white text-sm sm:text-base lg:text-xl mb-6 sm:mb-8 lg:mb-10 leading-relaxed max-w-xl">
               Lorem ipsum dolor sit amet consectetur. Suscipit quisque et ac
@@ -928,8 +929,8 @@ function DiscountSection() {
               rutrum tellus tempus.
             </p>
             <Link to='/categories' className="inline-flex items-center gap-2 bg-white text-primary px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-gray-100 transition-all duration-300 hover:scale-105 transform">
-              Got it
-              <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+              {t("Got it")}
+              <ChevronRight className={`h-5 w-5 sm:h-6 sm:w-6 ${i18n.language === 'ar' && "rotate-180"}`} />
             </Link>
           </div>
         </div>

@@ -20,12 +20,68 @@
   "Pure Essential Oils": "الزيوت العطرية النقية",
   "Premium natural health products and supplements designed to support your wellness journey with proven results.": "منتجات ومكملات صحية طبيعية متميزة مصممة لدعم رحلة العافية الخاصة بك بنتائج مثبتة.",
   "Experience the therapeutic power of nature with our premium collection of pure, therapeutic-grade essential oils.": "استمتع بالقوة العلاجية للطبيعة مع مجموعتنا المتميزة من الزيوت العطرية النقية ذات الدرجة العلاجية.",
-  "See All" :"مشاهدة الكل",
-  "No categories available at the moment. Check back soon !":"لا توجد فئات متاحة حاليًا. تحقق مرة أخرى قريبًا",
-  "We encountered an issue loading categories. Please try again later.":"واجهنا مشكلة في تحميل الفئات. يُرجى المحاولة لاحقًا",
-  "Show Details":"مشاهدة التفاصيل",
-  "Failed to load categories":"فشل في تحميل الفئات",
-  "Failed to load new products":"فشل في تحميل احدث المنتجات",
-  "Failed to add to wishlist. Please try again.":"لم يتم الاضفة الي المقضلة. يرجي المحاولة مرة اخري",
-  "New Products":"احدث المنتجات"
+  "See All": "مشاهدة الكل",
+  "No categories available at the moment. Check back soon !": "لا توجد فئات متاحة حاليًا. تحقق مرة أخرى قريبًا",
+  "We encountered an issue loading categories. Please try again later.": "واجهنا مشكلة في تحميل الفئات. يُرجى المحاولة لاحقًا",
+  "Show Details": "مشاهدة التفاصيل",
+  "Failed to load categories": "فشل في تحميل الفئات",
+  "Failed to load new products": "فشل في تحميل أحدث المنتجات",
+  "Failed to add to wishlist. Please try again.": "فشل في الإضافة إلى المفضلة. يرجى المحاولة مرة أخرى",
+  "New Products": "أحدث المنتجات",
+  "We encountered an issue loading new products. Please try again later.":"واجهنا مشكلة أثناء تحميل المنتجات الجديدة. يُرجى المحاولة لاحقًا.",
+  "No new products available at the moment. Check back soon!":"لا توجد منتجات جديدة متوفرة حاليًا. تحقق مرة أخرى قريبًا",
+  "Removed From wishlist!":"تمت الازالة من المفضلة",
+  "Added to wishlist":"تمت الاضافة الي المفضلة",
+  "Best Seller":"الأعلي مبيعاً",
+  "We encountered an issue loading best sellers. Please try again later.":"واجهنا مشكلة أثناء تحميل الكتب الأكثر مبيعًا. يُرجى المحاولة لاحقًا.",
+  "No best sellers available at the moment. Check back soon!":"لا يوجد حاليًا أي منتجات رائجة. تحقق منها قريبًا",
+  "March Discount":"خصم شهر مارس",
+  "Up to 70% off":"%يصل الي 70",
+  "Got it":"احصل عليها الان",
+  "No data available":"لا يوجد منتجات متاحة",
+  "Our Clients say":"أراء عملائنا",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  "Add to Cart": "أضف إلى العربة",
+  "Out of Stock": "غير متوفر في المخزون",
+  "In Stock": "متوفر",
+  "Quantity": "الكمية",
+  "View Cart": "عرض العربة",
+  "Checkout": "إتمام الشراء",
+  "Proceed to Checkout": "المتابعة لإتمام الشراء",
+  "Order Summary": "ملخص الطلب",
+  "Total": "الإجمالي",
+  "Subtotal": "المجموع الفرعي",
+  "Shipping": "الشحن",
+  "Tax": "الضريبة",
+  "Place Order": "تأكيد الطلب",
+  "Order Placed Successfully": "تم تأكيد الطلب بنجاح",
+  "Payment Failed": "فشل الدفع",
+  "Try Again": "حاول مرة أخرى",
+  "Back to Home": "العودة للرئيسية",
+  "Related Products": "منتجات ذات صلة",
+  "Customer Reviews": "آراء العملاء",
+  "Write a Review": "اكتب مراجعة",
+  "Submit": "إرسال",
+  "Cancel": "إلغاء",
+  "Login": "تسجيل الدخول",
+  "Register": "إنشاء حساب",
+  "Username": "اسم المستخدم",
+  "Password": "كلمة المرور",
+  "Email": "البريد الإلكتروني",
+  "Forgot Password?": "هل نسيت كلمة المرور؟",
+  "Remember Me": "تذكرني"
 }

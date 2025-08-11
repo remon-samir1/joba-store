@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Axios } from '../../components/Helpers/Axios';
 import StringSlice from '../../components/Helpers/StringSlice';
+import { useTranslation } from 'react-i18next';
 
 function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -8,7 +9,7 @@ function Testimonials() {
   const sliderRef = useRef(null);
   const autoSlideInterval = useRef(null);
   const [testimonials, setTestimonials] = useState([]);
-
+const {t , i18n}=useTranslation()
   useEffect(() => {
     Axios.get('/testimonials').then(data => {
       setTestimonials(data.data.data);
@@ -85,7 +86,7 @@ function Testimonials() {
         {/* عنوان القسم */}
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
-            Our Clients say
+            {t("Our Clients say")}
           </h2>
         </div>
 
