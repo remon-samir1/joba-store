@@ -38,7 +38,10 @@ const OrderRequestModal = ({ isOpen, onClose ,id }) => {
   Axios.post('/order-requests' , formData).then(data => {
     toast.success('Request Submmited Successfly')
     console.log(data)})
-    onClose?.();
+    setTimeout(() => {
+      
+      onClose?.();
+    }, 3000);
   };
 
   const [cart , setCart] = useState([])
@@ -194,7 +197,7 @@ const OrderRequestModal = ({ isOpen, onClose ,id }) => {
           </div>
 
           {/* Cart Totals */}
-          <div className="order-summary">
+          {/* <div className="order-summary">
             <h3 className="cart-totals-title">Cart Totals</h3>
             
             <div className="totals-breakdown">
@@ -217,13 +220,13 @@ const OrderRequestModal = ({ isOpen, onClose ,id }) => {
                 <span className="totals-label">Total</span>
                 <span className="totals-value">EGP {subtotal}</span>
               </div>
-            </div>
+        </div>
+            </div> */}
 
             <button type="submit" className="send-request-btn" onClick={handleSubmit}>
               Send Request
             </button>
           </div>
-        </div>
 
         {/* Close Button */}
         <button type='submit' className="modal-close-btn" onClick={onClose} aria-label="Close modal">

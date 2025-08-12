@@ -16,7 +16,6 @@ export function ProductHero({
   const [loaded, setLoaded] = useState(true);
   const preloadedImages = useRef({});
   
-  // تحميل جميع الصور مسبقاً عند التحميل الأولي
   useEffect(() => {
     additionalImages.forEach((img, index) => {
       const imgObj = new Image();
@@ -27,7 +26,6 @@ export function ProductHero({
     });
   }, [additionalImages]);
 
-  // التبديل الفوري للصور المحملة مسبقاً
   const switchImage = (index) => {
     if (preloadedImages.current[index]) {
       setCurrentImageIndex(index);

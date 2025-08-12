@@ -5,11 +5,15 @@
   "Home": "الصفحة الرئيسة",
   "Categories": "الفئات",
   "About": "من نحن",
+  "About us": "من نحن",
   "Blog": "المقالات",
+  "Blog & articles": "المقالات",
   "Contact us": "تواصل معنا",
   "Dashboard": "لوحة التحكم",
   "help": "المساعدة",
+  "Help": "المساعدة",
   "Support": "الدعم",
+  "Support team": "فريق الدعم",
   "Wishlist": "المفضلة",
   "Cart": "عربة التسوق",
   "Sort out Your Spring Look": "رتب مظهرك الربيعي",
@@ -32,6 +36,9 @@
   "No new products available at the moment. Check back soon!":"لا توجد منتجات جديدة متوفرة حاليًا. تحقق مرة أخرى قريبًا",
   "Removed From wishlist!":"تمت الازالة من المفضلة",
   "Added to wishlist":"تمت الاضافة الي المفضلة",
+  "Added to cart":"تمت الاضافة الي السلة",
+  "Error adding to cart:":"فشل الاضافة الي السلة",
+  
   "Best Seller":"الأعلي مبيعاً",
   "We encountered an issue loading best sellers. Please try again later.":"واجهنا مشكلة أثناء تحميل الكتب الأكثر مبيعًا. يُرجى المحاولة لاحقًا.",
   "No best sellers available at the moment. Check back soon!":"لا يوجد حاليًا أي منتجات رائجة. تحقق منها قريبًا",
@@ -40,6 +47,22 @@
   "Got it":"احصل عليها الان",
   "No data available":"لا يوجد منتجات متاحة",
   "Our Clients say":"أراء عملائنا",
+  "Quick links":"روابط سريعة",
+"Get in Touch":"تواصل معنا",
+"Join a Newsletter":"الانضمام",
+"Your Email":"بريدك الالكتروني",
+"Enter Your Email":"ادخل بريدك الالكتروني",
+"Subscribe":"اشترك الان",
+"Search products":"البحث عن المنتجات",
+"View Details":"مشاهدة التفاصيل",
+"No Products":"لا يوجد منتجات",
+"Request Now":"أطلب ألان",
+"Description":"الوصف",
+"No document available.":"لا يوجد ملفات ملحقة مع هذا المنتج",
+"Category":"الفئة",
+"Tags":"العلامات",
+"Documents":"مستند",
+"Review":"الاراء",
 
 
 
@@ -53,11 +76,9 @@
 
 
 
-
-
-  "Add to Cart": "أضف إلى العربة",
-  "Out of Stock": "غير متوفر في المخزون",
-  "In Stock": "متوفر",
+  "Add to Cart": "أضف إلى السلة",
+  "Out of stock": "غير متوفر في المخزون",
+  " in stock": " متوفر  " ,
   "Quantity": "الكمية",
   "View Cart": "عرض العربة",
   "Checkout": "إتمام الشراء",

@@ -15,6 +15,7 @@ import Notifcation from "../Notification.jsx";
 import { Axios } from "../Helpers/Axios.js";
 import { CartCh } from "../../Context/CartContext.jsx";
 import OrderRequestModal from "../../app/products/[id]/RequestModal.jsx";
+import { useTranslation } from "react-i18next";
 
 export function ProductDetails({
   description,
@@ -72,26 +73,25 @@ export function ProductDetails({
         data,
       );
       change((prev) => !prev);
-      toast.success(`Added ${quantity} items (${selectedSize}) to cart!`);
+      toast.success(t(`Added to cart`));
     } catch (error) {
-      console.error("Error adding to cart:", error);
-      alert("Failed to add to cart. Please try again.");
+      console.error(t("Error adding to cart:"), error);
+      // alert("Failed to add to cart. Please try again.");
     }
   };
-
+const {t , i18n} = useTranslation()
   const handleAddToWishlist = async () => {
     try {
       const response = await Axios.post(`/wishlist/${slug}`);
-      toast.success(`Added to wishlist !`);
+      toast.success(t(`Added to wishlist`));
     } catch (error) {
-      console.error("Error adding to wishlist:", error);
-      toast.error("Failed to add to wishlist. Please try again.");
+      toast.error(t("Failed to add to wishlist. Please try again."));
     }
   };
 
   const handleViewDocuments = () => {
     if (!attachment_path) {
-      toast.error("No document available.");
+      toast.error(t("No document available."));
       return;
     }
     setShowDocModal(true);
@@ -104,10 +104,10 @@ export function ProductDetails({
     ratings.length > 0
       ? (ratings.reduce((sum, r) => sum + r, 0) / ratings.length).toFixed(1)
       : 0;
-
+console.log(productData.id);
   return (
     <div className={`${!showDocModal && " "}w-full `}>
-      {/* <Notifcation /> */}
+      <Notifcation />
 
       <div className="space-y-6">
         <div>
@@ -135,8 +135,9 @@ export function ProductDetails({
                   ))}
                 </div>
                 <span className="text-sm text-gray-600">
-                  {averageRating} ({productData.reviews.length} Review
-                  {productData.reviews.length !== 1 ? "s" : ""})
+                  {averageRating} ({productData.reviews.length} {t("Review")}
+                  {/* {productData.reviews.length !== 1 ? "s" : ""} */}
+                  )
                 </span>
               </div>
             </div>
@@ -146,7 +147,10 @@ export function ProductDetails({
             <div className="flex items-center gap-2">
               <Info className="h-6 w-6 text-primary" />
               <span className="text-gray-900">
-                {inStock ? inStock + " in stock" : "Out of stock"}
+
+
+
+                {inStock ? i18n.language ==="ar"? new Intl.NumberFormat('ar-EG').format(inStock) + t(" in stock") : inStock + t(" in stock") : t("Out of stock")}
               </span>
             </div>
           </div>
@@ -156,7 +160,7 @@ export function ProductDetails({
               onClick={() => setShowModal(true)}
               className="bg-primary block hover:bg-primary/90 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors w-full sm:w-auto"
             >
-              Request Now
+              {t("Request Now")}
             </button>
           )}
         </div>
@@ -164,7 +168,7 @@ export function ProductDetails({
 
       <div className="w-92 overflow-hidden">
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-          Description
+          {t("Description")}
         </h2>
         <p className="text-gray-600 leading-relaxed whitespace-pre">
           {description}
@@ -174,18 +178,18 @@ export function ProductDetails({
       <div className="space-y-6 mt-6">
         <div className="flex gap-11">
           <span className="font-semibold text-gray-900 min-w-fit">
-            Category
+            {t("Category")}
           </span>
           <span className="text-gray-600">: {category}</span>
         </div>
 
         <div className="flex gap-11 ">
-          <span className="font-semibold text-gray-900 min-w-fit">Tags</span>
+          <span className="font-semibold text-gray-900 min-w-fit">{t("Tags")}</span>
           <span className="text-gray-600">: {tags?.join(", ") || "N/A"}</span>
         </div>
 
         <div className="flex items-center gap-12">
-          <span className="font-semibold text-gray-900">Quantity</span>
+          <span className="font-semibold text-gray-900">{t("Quantity")}</span>
           <div className="flex items-center bg-white border border-gray-200 rounded">
             <button
               onClick={() => handleQuantityChange(-1)}
@@ -232,7 +236,7 @@ export function ProductDetails({
           onClick={handleAddToCart}
           className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2 px-6 py-3 flex-1 sm:w-[90vw]"
         >
-          <span>Add to Cart</span>
+          <span>{t("Add to Cart")}</span>
           <ShoppingCart className="h-5 w-5" />
         </Button>
 
@@ -241,7 +245,7 @@ export function ProductDetails({
           variant="outline"
           className="border-primary text-primary hover:bg-primary hover:text-white flex items-center gap-2 px-6 py-3 flex-1 sm:flex-none"
         >
-          <span>Wishlist</span>
+          <span>{t("Wishlist")}</span>
           <Heart className="h-5 w-5" />
         </Button>
 
@@ -250,13 +254,13 @@ export function ProductDetails({
           variant="outline"
           className="border-primary text-primary hover:bg-primary hover:text-white flex items-center gap-2 px-6 py-3 flex-1 sm:flex-none"
         >
-          <span>Documents</span>
+          <span>{t("Documents")}</span>
           <Paperclip className="h-5 w-5" />
         </Button>
       </div>
 
       <OrderRequestModal
-        id={id}
+        id={productData.id}
         isOpen={showModal}
         onClose={() => setShowModal(false)}
       />

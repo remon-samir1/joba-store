@@ -283,7 +283,7 @@ export default function UpdateProduct() {
     // );
     // formData.append("expiration_start", productData.expirationStart);
     // formData.append("expiration_end", productData.expirationEnd);
-    formData.append("stock", productData.stockStatus === 'out-of-stock' ? 0 :  productData.stockQuantity);
+    formData.append("stock", productData.stockStatus === 'out_of_stock' ? 0 :  productData.stockQuantity);
     // formData.append(
     //   "is_out_of_stock",
     //   productData.stockStatus === "out-of-stock" ? "1" : "0",
@@ -351,7 +351,7 @@ export default function UpdateProduct() {
       setLoading(false);
     }
   };
-  console.log(productData);
+  console.log(productData.stockStatus);
 
   return (
     <div className="flex-1 bg-gray-50 min-h-screen">
@@ -666,7 +666,7 @@ export default function UpdateProduct() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="stockQuantity" className="text-gray-700">
-                      Stock Quantity {productData.stockStatus !== 'out-of-stock' && "*"}
+                      Stock Quantity {productData.stockStatus !== 'out_of_stock' && "*"}
                     </Label>
                     <Input
                       id="stockQuantity"
@@ -675,7 +675,7 @@ export default function UpdateProduct() {
                       onChange={handleChange}
                       placeholder="100"
                       className="mt-1 border-gray-300"
-                      disabled={ productData.stockStatus === 'out-of-stock'}
+                      disabled={ productData.stockStatus === 'out_of_stock'}
                       min="0"
                     />
                   </div>
@@ -684,7 +684,7 @@ export default function UpdateProduct() {
                       Stock Status *
                     </Label>
                     <Select
-                    
+                  
                       value={productData.stockStatus}
                       onValueChange={(value) =>
                         handleSelectChange("stockStatus", value)

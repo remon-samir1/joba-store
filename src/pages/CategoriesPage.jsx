@@ -16,6 +16,7 @@ import { Axios } from "../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import { Header } from "../components/Header";
 import StringSlice from "../../components/Helpers/StringSlice";
+import { useTranslation } from "react-i18next";
 
 export default function CategoriesPage() {
   const location = useLocation();
@@ -127,7 +128,7 @@ console.log(activeCategory);
   }, [currentPage]);
 
   const scrollRef = useRef();
-
+const {t , i18n} = useTranslation()
   return (
     <div ref={scrollRef} className="min-h-screen bg-background">
       <Notification />
@@ -138,7 +139,7 @@ console.log(activeCategory);
           <div className="relative w-full sm:w-1/2">
             <input
               type="text"
-              placeholder="Search products"
+              placeholder={t("Search products")}
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -184,7 +185,7 @@ console.log(activeCategory);
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
           <aside className="w-full lg:w-80 flex-shrink-0">
             <div className="mb-12">
-              <h3 className="text-2xl font-semibold mb-6">Categories</h3>
+              <h3 className="text-2xl font-semibold mb-6">{t("Categories")}</h3>
               <div className="space-y-4">
                 {sidebarCategories?.map((category) => (
                   <div key={category.name}>
@@ -242,7 +243,7 @@ console.log(activeCategory);
                   ))
               ) : products?.length === 0 ? (
                 <div className="w-full flex text-2xl font-semibold flex-1 justify-center text-gray-700  p-8">
-                  No Products
+                  {t("No Products")}
                 </div>
               ) : (
                 products?.map((product) => (
@@ -292,7 +293,7 @@ console.log(activeCategory);
                         </div>
                         <button className="w-full bg-primary text-white py-3 rounded flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-colors">
                           <ShoppingCart className="h-4 w-4" />
-                          View Details
+                          {t("View Details")}
                         </button>
                       </div>
                     </div>

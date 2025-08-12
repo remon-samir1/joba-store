@@ -66,7 +66,7 @@ export function OrderForm({ productId, productSizeId }) {
     const requestBody = {
       items: [
         {
-          product_id: productId, 
+          product_id: productId,
           // product_size_id: productSizeId || null,
           quantity: parseInt(formData.quantity),
         },
@@ -75,7 +75,7 @@ export function OrderForm({ productId, productSizeId }) {
       shipping_email: formData.shipping_email,
       shipping_address: formData.shipping_address,
       shipping_city: formData.shipping_city,
-  payment_method:'visa',
+      payment_method: "visa",
 
       shipping_state: formData.shipping_state,
       shipping_zip: formData.shipping_zip,
@@ -84,10 +84,7 @@ export function OrderForm({ productId, productSizeId }) {
     };
 
     try {
-      const res = await Axios.post(
-        "/orders",
-        requestBody,
-      );
+      const res = await Axios.post("/orders", requestBody);
       toast.success("Order submitted successfully!");
       console.log(res);
       // reset
@@ -104,10 +101,9 @@ export function OrderForm({ productId, productSizeId }) {
       });
     } catch (err) {
       console.error(err);
-      if(err.response.data.errors.coupon_code){
-        toast.error(err.response.data.errors.coupon_code[0])
-      }else{
-
+      if (err.response.data.errors.coupon_code) {
+        toast.error(err.response.data.errors.coupon_code[0]);
+      } else {
       }
       toast.error("Error submitting order");
     }

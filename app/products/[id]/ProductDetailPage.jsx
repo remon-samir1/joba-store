@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 
-import { Footer } from "../../..//components/Footer.jsx";
 import { ProductHero } from "../../../components/product/ProductHero.jsx";
 import { ProductDetails } from "../../..//components/product/ProductDetails.jsx";
 import { OrderForm } from "../../../components/product/OrderForm.jsx";
@@ -13,6 +12,7 @@ import { Header } from "../../../src/components/Header.jsx";
 import Loading from "../../../components/Loading/Loading.jsx";
 import SeoHelmet from "../../../src/components/SeoHelmet/SeoHelmet.jsx";
 import { Axios } from "../../../components/Helpers/Axios.js";
+import { Footer } from "../../../src/components/Footer.jsx";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -21,14 +21,13 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
-    Axios
-      .get(`/products/${id}`)
+    Axios.get(`/products/${id}`)
       .then((res) => {
-        const data = res.data.data
+        const data = res.data.data;
         console.log(data);
         if (data) {
           setProduct(data);
-          setSelectedSize(data.sizes[0]?.id)
+          setSelectedSize(data.sizes[0]?.id);
         }
       })
       .catch((err) => {
@@ -50,32 +49,30 @@ export default function ProductDetailPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-start justify-center gap-20  px-5  md:flex-row flex-col">
             <div className="flex-1">
-
-            <ProductHero
-              // reviews={product?.reviews}
-              image={product?.image}
-              additionalImages={product?.images}
+              <ProductHero
+                // reviews={product?.reviews}
+                image={product?.image}
+                additionalImages={product?.images}
               />
-              </div>
-<div className="flex-1">
-
-            <ProductDetails
-              inStock={product?.stock}
-              name={product?.name?.en}
-              productData={product}
-              price={product?.price}
-              rating={product?.rating}
-              attachment_path={product?.attachment_path}
-              selectedSize={selectedSize}
-              setSelectedSize={setSelectedSize}
-              slug={product?.slug}
-              id={id}
-              sizes={product?.sizes}
-              description={product?.description?.en}
-              category={product?.category.name}
-              tags={product?.tags || []}
-            />
-              </div>
+            </div>
+            <div className="flex-1">
+              <ProductDetails
+                inStock={product?.stock}
+                name={product?.name?.en}
+                productData={product}
+                price={product?.price}
+                rating={product?.rating}
+                attachment_path={product?.attachment_path}
+                selectedSize={selectedSize}
+                setSelectedSize={setSelectedSize}
+                slug={product?.slug}
+                id={id}
+                sizes={product?.sizes}
+                description={product?.description?.en}
+                category={product?.category.name}
+                tags={product?.tags || []}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 mt-11 gap-12 mb-16">

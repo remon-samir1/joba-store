@@ -6,9 +6,11 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 export function Footer() {
+  const {t , i18n} = useTranslation()
   return (
     <footer className="bg-primary text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
@@ -34,50 +36,50 @@ export function Footer() {
           {/* Quick Links */}
           <div className="lg:col-span-1">
             <h3 className="text-base sm:text-lg font-bold mb-6 sm:mb-8">
-              Quick links
+              {t("Quick links")}
             </h3>
             <nav className="space-y-3 sm:space-y-4">
               <Link
                 to="/"
                 className="block text-white/90 hover:text-white transition-colors text-sm sm:text-base"
               >
-                Home
+                {t("Home")}
               </Link>
               <Link
                 to="/about"
                 className="block text-white/90 hover:text-white transition-colors text-sm sm:text-base"
               >
-                About us
+                {t("About us")}
               </Link>
               <Link
                 to="/categories"
                 className="block text-white/90 hover:text-white transition-colors text-sm sm:text-base"
               >
-                Categories
+                {t("Categories")}
               </Link>
               <Link
                 to="/blog"
                 className="block text-white/90 hover:text-white transition-colors text-sm sm:text-base"
               >
-                Blog & articles
+                {t("Blog & articles")}
               </Link>
               <Link
                 to="/contact"
                 className="block text-white/90 hover:text-white transition-colors text-sm sm:text-base"
               >
-                Contact us
+                {t("Contact us")}
               </Link>
               <Link
                 to="/support"
                 className="block text-white/90 hover:text-white transition-colors text-sm sm:text-base"
               >
-                Support team
+                {t("Support team")}
               </Link>
               <Link
                 to="/help"
                 className="block text-white/90 hover:text-white transition-colors text-sm sm:text-base"
               >
-                Help
+                {t("Help")}
               </Link>
             </nav>
           </div>
@@ -85,7 +87,7 @@ export function Footer() {
           {/* Contact Info */}
           <div className="lg:col-span-1">
             <h3 className="text-base sm:text-lg font-bold mb-6 sm:mb-8">
-              Get in Touch
+              {t("Get in Touch")}
             </h3>
             <div className="space-y-4 sm:space-y-6">
               <div className="flex items-start gap-3 sm:gap-4">
@@ -114,20 +116,20 @@ export function Footer() {
           {/* Newsletter & Social */}
           <div className="sm:col-span-2 lg:col-span-1">
             <h3 className="text-base sm:text-lg font-bold mb-6 sm:mb-8">
-              Join a Newsletter
+              {t("Join a Newsletter")}
             </h3>
             <div className="mb-6 sm:mb-8">
               <p className="text-white/90 mb-3 sm:mb-4 text-sm sm:text-base">
-                Your Email
+                {t("Your Email")}
               </p>
               <div className="flex flex-col gap-3 sm:gap-4">
                 <input
                   type="email"
-                  placeholder="Enter Your Email"
+                  placeholder={`${t("Enter Your Email")}`}
                   className="bg-transparent border border-white rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm sm:text-base"
                 />
                 <button className="bg-white text-primary px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors text-sm sm:text-base">
-                  Subscribe
+                  {t("Subscribe")}
                 </button>
               </div>
             </div>

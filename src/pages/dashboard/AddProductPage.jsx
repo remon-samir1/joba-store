@@ -130,7 +130,7 @@ console.log(productData);
     if (!productData.productPrice) errors.push('Product Price');
     // if (!productData.expirationStart) errors.push('Expiration Start Date');
     // if (!productData.expirationEnd) errors.push('Expiration End Date');
-    if (!productData.stockQuantity && !productData.unlimitedStock) errors.push('Stock Quantity');
+    // if (!productData.stockQuantity && !productData.unlimitedStock) errors.push('Stock Quantity');
     if (!productData.productCategory) errors.push('Product Category');
     if (!productData.productTag) errors.push('Product Tag');
     
@@ -217,7 +217,7 @@ console.log(productData);
     formData.append("price", productData.productPrice);
     formData.append("discount_price", +productData.discountedPrice);
     formData.append("payment_method", "cash");
-    formData.append("stock",  productData.stockStatus === 'out-of-stock' ? 0: productData.stockQuantity);
+    formData.append("stock",  productData.stockStatus === 'out-of-stock' ? "0" : productData.stockQuantity);
     formData.append("category_id", +productData.productCategory);
     // formData.append("is_out_of_stock", productData.stockStatus === 'in-stock' ? 0 : 1);
     formData.append("is_featured", productData.isBestSeller ? 1 : 0);
