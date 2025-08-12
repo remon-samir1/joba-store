@@ -9,6 +9,7 @@ import Loading from "../../components/Loading/Loading.jsx";
 import SeoHelmet from "../../src/components/SeoHelmet/SeoHelmet";
 import { Footer } from "../../src/components/Footer";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 // import Footer from "./Footer"; 
 
 const BlogPage = () => {
@@ -16,6 +17,7 @@ const BlogPage = () => {
   const [loading, setLoading] = useState(true);
   const [blogs, setBlogs] = useState([]);
   const [error, setError] = useState(null);
+  const {t , i18n} = useTranslation()
 
   // Fetch blog data
   useEffect(() => {
@@ -57,7 +59,6 @@ const BlogPage = () => {
 
   if (loading) return <Loading fullscreen={true} />;
   if (error) return <div className="error-message">{error}</div>;
-
   return (
     <div className="blog-page">
       <SeoHelmet 
@@ -95,8 +96,8 @@ const BlogPage = () => {
                 ))
               ) : (
                 <div className="no-results">
-                  <h3>No posts found</h3>
-                  <p>Try adjusting your search terms</p>
+                  <h3>{t("No posts found")}</h3>
+                  <p>{t("Try adjusting your search terms")}</p>
                 </div>
               )}
             </div>
@@ -108,7 +109,7 @@ const BlogPage = () => {
                 <div className="search-box">
                   <input
                     type="text"
-                    placeholder="Search articles..."
+                    placeholder={t("Search articles...")}
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                     aria-label="Search blog posts"
@@ -119,7 +120,7 @@ const BlogPage = () => {
 
               {/* Recent Posts */}
               <div className="recent-posts">
-                <h3 className="sidebar-title">Recent Articles</h3>
+                <h3 className="sidebar-title">{t("Recent Articles")}</h3>
                 {recentPosts.map(post => (
                   <Link to={`/blog/${post.slug}`} key={`recent-${post.id}`} className="recent-post">
                     <img 

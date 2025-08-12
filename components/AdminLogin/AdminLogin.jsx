@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import juba from '../../src/assets/juba.svg'
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +33,7 @@ const nav = useNavigate()
         cookie.set("token", token , {path: '/'});
 
         console.log(token);
-        toast.success('Login Succssefly')
+        toast.success(t('Login Succssefly'))
         window.location.pathname = '/'
         // nav('/')
       });
@@ -43,6 +44,7 @@ const nav = useNavigate()
       setLoading(false);
     }
   };
+  const {t ,i18n} = useTranslation()
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -56,11 +58,11 @@ const nav = useNavigate()
 <img src={juba} alt="juba" />
           </div>
         <h2 className="text-2xl font-bold mb-6 text-[#F15A24] text-center">
-        Admin Login
+        {t("Admin Login")}
         </h2>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1"> Email</label>
+          <label className="block text-sm font-medium mb-1"> {t("Email")}</label>
           <Input
             type="email"
             required
@@ -71,7 +73,7 @@ const nav = useNavigate()
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium mb-1"> Password</label>
+          <label className="block text-sm font-medium mb-1"> {t("Password")}</label>
           <Input
             type="password"
             required
@@ -88,7 +90,7 @@ const nav = useNavigate()
           disabled={loading}
           className="w-full bg-[#F15A24] hover:bg-orange-800 text-white duration-300"
         >
-          {loading ? "Loading..." : "Sign in"}
+          {loading ? t("Loading...") : t("Sign in")}
         </Button>
       </form>
     </div>

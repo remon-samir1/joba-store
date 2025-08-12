@@ -23,40 +23,44 @@ import {
   Paperclip,
 } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
+import { useTranslation } from "react-i18next";
 
 // Main menu navigation
-const mainNavigation = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Order Management", href: "/dashboard/orders", icon: ShoppingCart },
-  { name: "Customers", href: "/dashboard/customers", icon: Users },
-  { name: "Coupon Code", href: "/dashboard/coupons", icon: Ticket },
-  { name: "Categories", href: "/dashboard/categories", icon: Grid3X3 },
-  { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
-  { name: "Contacts", href: "/dashboard/contacts", icon: Contact },
-  { name: "Blogs", href: "/dashboard/blogs", icon: Paperclip },
-  // { name: "Popup maker", href: "/dashboard/popup-maker", icon: Megaphone },
 
-];
 const cookie = Cookies();
 const token = cookie.get("token");
 // Product section navigation
-const productNavigation = [
-  { name: "Product List", href: "/dashboard/products", icon: Package },
-  { name: "Add Products", href: "/dashboard/products/add", icon: Plus },
-  { name: "Product Reviews", href: "/dashboard/reviews", icon: Star },
-];
 
-// Admin section navigation
-const adminNavigation = [
-  { name: "Setting", href: "/dashboard/settings", icon: Settings },
-];
+
+
 
 const handleLogout = ()=>{
   cookie.remove('toekn');
   window.location.pathname='/'
 }
 export function Sidebar() {
+const {t , i18n} = useTranslation();
+const mainNavigation = [
+  { name: t("Dashboard"), href: "/dashboard", icon: Home },
+  { name: t("Order Management"), href: "/dashboard/orders", icon: ShoppingCart },
+  { name: t("Customers"), href: "/dashboard/customers", icon: Users },
+  { name: t("Coupon Code"), href: "/dashboard/coupons", icon: Ticket },
+  { name: t("Categories"), href: "/dashboard/categories", icon: Grid3X3 },
+  { name: t("Invoices"), href: "/dashboard/invoices", icon: Receipt },
+  { name: t("Contacts"), href: "/dashboard/contacts", icon: Contact },
+  { name: t("Blogs"), href: "/dashboard/blogs", icon: Paperclip },
+  // { name: "Popup maker", href: "/dashboard/popup-maker", icon: Megaphone },
 
+];
+const productNavigation = [
+  { name: t("Product List"), href: "/dashboard/products", icon: Package },
+  { name: t("Add Products"), href: "/dashboard/products/add", icon: Plus },
+  { name: t("Product Reviews"), href: "/dashboard/reviews", icon: Star },
+];
+// Admin section navigation
+const adminNavigation = [
+  { name: t("Setting"), href: "/dashboard/settings", icon: Settings },
+];
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -145,7 +149,7 @@ getData()
         <div className="flex-1 px-0 py-0 overflow-y-auto">
           {/* Main menu section */}
           <div className="px-6 py-3">
-            <p className="text-sm font-normal text-[#656565] mb-3">Main menu</p>
+            <p className="text-sm font-normal text-[#656565] mb-3">{t("Main menu")}</p>
             <div className="px-3.5 space-y-2">
               {mainNavigation.map((item) => {
                 const isActive = location.pathname === item.href;
@@ -156,7 +160,7 @@ getData()
 
           {/* Product section */}
           <div className="px-6 py-3">
-            <p className="text-sm font-normal text-[#656565] mb-3">Product</p>
+            <p className="text-sm font-normal text-[#656565] mb-3">{t("Products")}</p>
             <div className="px-3.5 space-y-2">
               {productNavigation.map((item) => {
                 const isActive = location.pathname === item.href;
@@ -167,7 +171,7 @@ getData()
 
           {/* Admin section */}
           <div className="px-6 py-3">
-            <p className="text-sm font-normal text-[#656565] mb-3">Admin</p>
+            <p className="text-sm font-normal text-[#656565] mb-3">{t("Admin")}</p>
             <div className="px-3.5 space-y-2">
               {adminNavigation.map((item) => {
                 const isActive = location.pathname === item.href;

@@ -12,6 +12,7 @@ import {
 import { Axios } from "../../components/Helpers/Axios";
 import Notifcation from "../../components/Notification";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 export default function ContactPage() {
   const [loading , setLoadnig] = useState(false)
@@ -37,17 +38,17 @@ export default function ContactPage() {
       Axios.post("contact", formData).then((data) => {
         console.log(data);
         setLoadnig(false)
-        toast.success('Your message has been sent successfully.')
+        toast.success(t('Your message has been sent successfully.'))
         setFormData({ name: "", email: "", message: "" , subject:'' });
       });
     } catch (err) {
       console.log(err);
-      toast.error('Some Thing Wrong !')
+      toast.error(t('Some Thing Wrong !'))
       setLoadnig(false)
 
     }
   };
-
+const {t ,i18n} = useTranslation()
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -55,7 +56,7 @@ export default function ContactPage() {
 {loading && (
         <div className="loading-screen">
           <div className="spinner"></div>
-          <p>Sending your Message...</p>
+          <p>{t("Sending your Message...")}</p>
         </div>
       )}
       {/* Hero Section */}
@@ -69,12 +70,8 @@ export default function ContactPage() {
         </div>
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 h-full flex items-center">
           <div className="text-white">
-            <nav className="text-xl mb-4">
-              <span>Home</span>
-              <span className="mx-2">&gt;</span>
-              <span>Contact us</span>
-            </nav>
-            <h1 className="text-6xl font-bold">Contact us</h1>
+          
+            <h1 className="text-6xl font-bold">{t("Contact us")}</h1>
           </div>
         </div>
       </section>
@@ -87,11 +84,10 @@ export default function ContactPage() {
             <div className="space-y-12">
               <div className="space-y-8">
                 <h2 className="text-4xl font-semibold text-gray-900">
-                  Get in Touch
+                  {t("Get in Touch")}
                 </h2>
                 <p className="text-xl text-gray-600 leading-relaxed">
-                  We'd love to hear from you. Send us a message and we'll
-                  respond as soon as possible.
+                  {t("We'd love to hear from you. Send us a message and we'll respond as soon as possible.")}
                 </p>
               </div>
 
@@ -104,7 +100,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      Address
+                      {t("Address")}
                     </h3>
                     <p className="text-gray-600">
                       8819 Ohio St. South Gate,
@@ -121,7 +117,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      Phone
+                      {t("Phone")}
                     </h3>
                     <p className="text-gray-600">+(374) 217-0577</p>
                   </div>
@@ -134,7 +130,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      Email
+                      {t("Email")}
                     </h3>
                     <p className="text-gray-600">Herman.Morar78@gmail.com</p>
                   </div>
@@ -144,7 +140,7 @@ export default function ContactPage() {
               {/* Social Media */}
               <div className="space-y-4">
                 <h3 className="text-xl font-semibold text-gray-900">
-                  Follow Us
+                  {t("Follow Us")}
                 </h3>
                 <div className="flex items-center gap-4">
                   <a
@@ -175,7 +171,7 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div className="bg-white p-8 rounded-lg shadow-sm">
               <h2 className="text-3xl font-semibold text-gray-900 mb-8">
-                Send us a Message
+                {t("Send us a Message")}
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -185,7 +181,7 @@ export default function ContactPage() {
                     htmlFor="name"
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
-                    Full Name
+                    {t("Full Name")}
                   </label>
                   <input
                     type="text"
@@ -195,7 +191,7 @@ export default function ContactPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-                    placeholder="Enter your full name"
+                    placeholder={t("Enter your full name")}
                   />
                 </div>
 
@@ -205,7 +201,7 @@ export default function ContactPage() {
                     htmlFor="email"
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
-                    Email Address
+                    {t("Email Address")}
                   </label>
                   <input
                     type="email"
@@ -215,7 +211,7 @@ export default function ContactPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-                    placeholder="Enter your email address"
+                    placeholder={t("Enter your email address")}
                   />
                 </div>
                 <div>
@@ -223,7 +219,7 @@ export default function ContactPage() {
                     htmlFor="email"
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
-              Subject
+              {t("Subject")}
                   </label>
                   <input
                     type="text"
@@ -233,7 +229,7 @@ export default function ContactPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-                    placeholder="Enter your Subject"
+                    placeholder={t("Enter your Subject")}
                   />
                 </div>
 
@@ -243,7 +239,7 @@ export default function ContactPage() {
                     htmlFor="message"
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
-                    Message
+                    {t("Message")}
                   </label>
                   <textarea
                     id="message"
@@ -253,7 +249,7 @@ export default function ContactPage() {
                     required
                     rows={6}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none"
-                    placeholder="Enter your message"
+                    placeholder={t("Enter your message")}
                   ></textarea>
                 </div>
 
@@ -262,7 +258,7 @@ export default function ContactPage() {
                   type="submit"
                   className={`w-full bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors ${loading && 'cursor-wait'}`}
                 >
-              {loading? 'Loading...' : 'Send Message'}
+              {loading? t('Loading...') : t('Send')}
                 </button>
               </form>
             </div>

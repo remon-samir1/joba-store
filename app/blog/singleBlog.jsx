@@ -6,12 +6,14 @@ import TransformDate from "../../components/Helpers/TransformDate";
 import SeoHelmet from "../../src/components/SeoHelmet/SeoHelmet";
 import { Footer } from "../../src/components/Footer";
 import { FaUser, FaCalendarAlt, FaClock } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 const SingleBlog = () => {
   const { id } = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {t , i18n} = useTranslation()
 
   useEffect(() => {
     const getData = async () => {
@@ -166,8 +168,8 @@ const SingleBlog = () => {
         {/* Author Bio */}
         <div className="mt-12 bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-6 md:p-8 flex items-start">
-            <div className="flex-shrink-0 mr-4">
-              <img src={blog.user?.avatar} className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
+            <div className="flex-shrink-0 mx-4">
+              <img src={blog.user?.avatar} className={`bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 `} />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">

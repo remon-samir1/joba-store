@@ -3,6 +3,7 @@ import './RequestModal.css'
 import { Axios } from '../../../components/Helpers/Axios';
 import { toast } from 'react-toastify';
 import Notifcation from '../../../components/Notification';
+import { useTranslation } from 'react-i18next';
 const OrderRequestModal = ({ isOpen, onClose ,id }) => {
   
   const [formData, setFormData] = useState({
@@ -58,7 +59,7 @@ const OrderRequestModal = ({ isOpen, onClose ,id }) => {
     0,
   );
   if (!isOpen) return null;
-
+const { t , i18n} = useTranslation()
   return (
     <div className="order-request-overlay">
       <Notifcation/>
