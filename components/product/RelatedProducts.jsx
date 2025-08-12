@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { Axios, baseURL } from "../Helpers/Axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export function RelatedProducts({ slug }) {
   const [products, setProducts] = useState([]);
@@ -96,11 +97,12 @@ export function RelatedProducts({ slug }) {
       toast.error("Failed to add to wishlist. Please try again.");
     }
   };
+  const {t , i18n} = useTranslation()
 
   return (
     <div className="space-y-8 mt-8 relative">
       <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 px-4">
-        Related Items
+        {t("Related Items")}
       </h2>
 
       <div className="relative overflow-hidden group">
@@ -128,9 +130,9 @@ export function RelatedProducts({ slug }) {
             }}
           >
             {products.length === 0 ? (
-              <div className="flex justify-center p-11">
+              <div className="flex justify-center p-20 w-full">
                 <p className="text-gray-600">
-                  No Related Products For This Product !
+                  {t("No Related Products For This Product !")}
                 </p>
               </div>
             ) : (

@@ -17,6 +17,7 @@ import { Axios } from "../Helpers/Axios";
 import { toast } from "react-toastify";
 import Notifcation from "../Notification";
 import Loading from "../Loading/Loading";
+import { useTranslation } from "react-i18next";
 
 
 export function ReviewsSection({ slug }) {
@@ -49,12 +50,12 @@ export function ReviewsSection({ slug }) {
       setChange(prev => !prev)
       setLoading(false);
 
-      toast.success("Review submitted successfully!");
+      toast.success(t("Review submitted successfully!"));
       // setNewReview({ name: "", rating: "", comment: ""  , email:''});
     } catch (error) {
       setLoading(false);
       console.error(error);
-      toast.error(error.response.data.message || "Something went wrong while submitting the review.");
+      toast.error(error.response.data.message || t("Something went wrong while submitting the review."));
     }
   };
 
@@ -75,11 +76,12 @@ export function ReviewsSection({ slug }) {
   };
 
   const activeReviews = reviews?.filter( data => data.status === 'approved')
+  const {t , i18n} = useTranslation()
   return (
     <div className="space-y-8  mt-8">
       <Notifcation />
       {loading && <Loading />}
-      <h2 className="text-4xl font-medium text-gray-900">Reviews ({activeReviews?.length})</h2>
+      <h2 className="text-4xl font-medium text-gray-900">{t("Reviews")} ({activeReviews?.length})</h2>
 
       {/* Reviews List */}
       <div className="space-y-8">
@@ -107,7 +109,7 @@ export function ReviewsSection({ slug }) {
       <form onSubmit={handleSubmitReview} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <Input
-            placeholder="Name"
+            placeholder={t("Name")}
             value={newReview.name}
             onChange={(e) =>
               setNewReview((prev) => ({ ...prev, name: e.target.value }))
@@ -115,7 +117,7 @@ export function ReviewsSection({ slug }) {
             className="border-primary focus:border-primary bg-background"
           />
           <Input
-            placeholder="Email"
+            placeholder={t("Email")}
             type="email"
             required
             value={newReview.email}
@@ -131,20 +133,20 @@ export function ReviewsSection({ slug }) {
             }
           >
             <SelectTrigger className="border-primary focus:border-primary bg-background">
-              <SelectValue placeholder="Rating" />
+              <SelectValue placeholder={t("Rating")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="5">5 Stars</SelectItem>
-              <SelectItem value="4">4 Stars</SelectItem>
-              <SelectItem value="3">3 Stars</SelectItem>
-              <SelectItem value="2">2 Stars</SelectItem>
-              <SelectItem value="1">1 Star</SelectItem>
+              <SelectItem value="5">5 {t("Stars")}</SelectItem>
+              <SelectItem value="4">4 {t("Stars")}</SelectItem>
+              <SelectItem value="3">3 {t("Stars")}</SelectItem>
+              <SelectItem value="2">2 {t("Stars")}</SelectItem>
+              <SelectItem value="1">1 {t("Star")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <Textarea
-          placeholder="Write comment"
+          placeholder={t("Write comment")}
           rows={4}
           value={newReview.comment}
           onChange={(e) =>
@@ -158,7 +160,7 @@ export function ReviewsSection({ slug }) {
           disabled={loading}
           className={`bg-primary hover:bg-primary/90 text-white ${loading && 'cursor-wait'}`}
         >
-{loading ? 'Loading...' : "Share"}
+{loading ? t('Loading...') : t("Share")}
         </Button>
       </form>
     </div>
