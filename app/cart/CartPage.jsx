@@ -5,10 +5,10 @@ import { Axios } from "../../components/Helpers/Axios";
 import Notifcation from "../../components/Notification";
 import { toast } from "react-toastify";
 import empty from "../../src/assets/joba-empty-cart.svg";
-import { Footer } from "../../components/Footer";
 import { Link } from "react-router-dom";
 import { CartCh } from "../../Context/CartContext";
 import gsap from "gsap";
+import { Footer } from "../../src/components/Footer";
 
 const CartPage = () => {
   const cartcontext = useContext(CartCh);

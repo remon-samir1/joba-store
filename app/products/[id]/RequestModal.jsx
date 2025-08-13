@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import Notifcation from '../../../components/Notification';
 import { useTranslation } from 'react-i18next';
 const OrderRequestModal = ({ isOpen, onClose ,id }) => {
+const { t , i18n} = useTranslation()
   
   const [formData, setFormData] = useState({
     first_name: '',
@@ -37,7 +38,7 @@ const OrderRequestModal = ({ isOpen, onClose ,id }) => {
     e.preventDefault();
   
   Axios.post('/order-requests' , formData).then(data => {
-    toast.success('Request Submmited Successfly')
+    toast.success(t('Request Submmited Successfly'))
     console.log(data)})
     setTimeout(() => {
       
@@ -59,7 +60,6 @@ const OrderRequestModal = ({ isOpen, onClose ,id }) => {
     0,
   );
   if (!isOpen) return null;
-const { t , i18n} = useTranslation()
   return (
     <div className="order-request-overlay">
       <Notifcation/>
@@ -67,54 +67,54 @@ const { t , i18n} = useTranslation()
         <div className="order-request-content">
           {/* Order Request Form */}
           <div className="order-request-form">
-            <h2 className="order-request-title">Order Request</h2>
+            <h2 className="order-request-title">{t("Order Request")}</h2>
             
             <form onSubmit={handleSubmit} className="request-form">
               {/* Name Fields */}
               <div className="form-row">
                 <div className="form-field">
-                  <label htmlFor="firstName">First Name</label>
+                  <label htmlFor="firstName">{t("First Name")}</label>
                   <input
                     type="text"
                     id="firstName"
                     name="first_name"
-                    placeholder="First name"
+                    placeholder={t("First Name")}
                     value={formData.first_name}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
                 <div className="form-field">
-                  <label htmlFor="lastName">Last Name</label>
+                  <label htmlFor="lastName">{t("Last Name")}</label>
                   <input
                     type="text"
                     id="lastName"
                     name="last_name"
-                    placeholder="Last name"
+                    placeholder={t("Last Name")}
                     value={formData.last_name}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
                 <div className="form-field">
-                  <label htmlFor="product">Product</label>
+                  <label htmlFor="product">{t("Product")}</label>
                   <input
                     type="text"
                     id="product"
                     name="product"
-                    placeholder="product"
+                    placeholder={t("Product")}
                     value={formData.product}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
                 <div className="form-field">
-                  <label htmlFor="lastName">Message</label>
+                  <label htmlFor="lastName">{t("Message")}</label>
                   <input
                     type="text"
                     id="message"
                     name="message"
-                    placeholder="message"
+                    placeholder={t("Message")}
                     value={formData.message}
                     onChange={handleInputChange}
                     required
@@ -124,12 +124,12 @@ const { t , i18n} = useTranslation()
 
               {/* Email */}
               <div className="form-field">
-                <label htmlFor="email">Email Address</label>
+                <label htmlFor="email">{t("Email Address")}</label>
                 <input
                   type="email"
                   id="email"
                   name="email"
-                  placeholder="Email address"
+                  placeholder={t("Email Address")}
                   value={formData.email}
                   onChange={handleInputChange}
                   required
@@ -138,12 +138,12 @@ const { t , i18n} = useTranslation()
 
               {/* Phone Number */}
               <div className="form-field">
-                <label htmlFor="phoneNumber">Phone Number</label>
+                <label htmlFor="phoneNumber">{t("Phone Number")}</label>
                 <input
                   type="tel"
                   id="phoneNumber"
                   name="phone"
-                  placeholder="Phone number"
+                  placeholder={t("Phone Number")}
                   value={formData.phone}
                   onChange={handleInputChange}
                   required
@@ -152,11 +152,11 @@ const { t , i18n} = useTranslation()
 
               {/* Address */}
               <div className="form-field">
-                <label htmlFor="addressLine">Address Line</label>
+                <label htmlFor="addressLine">{t("Address Line")}</label>
                 <textarea
                   id="addressLine"
                   name="address"
-                  placeholder="Address line"
+                  placeholder={t("Address Line")}
                   value={formData.address}
                   onChange={handleInputChange}
                   required
@@ -165,7 +165,7 @@ const { t , i18n} = useTranslation()
 
               {/* Country */}
               <div className="form-field">
-                <label htmlFor="country">Country</label>
+                <label htmlFor="country">{t("Country")}</label>
                 <select
                   id="country"
                   name="country"
@@ -183,7 +183,7 @@ const { t , i18n} = useTranslation()
 
               {/* Quantity */}
               <div className="form-field">
-                <label htmlFor="quantity">Quantity</label>
+                <label htmlFor="quantity">{t("Quantity")}</label>
                 <input
                   type="number"
                   id="quantity"
@@ -225,7 +225,7 @@ const { t , i18n} = useTranslation()
             </div> */}
 
             <button type="submit" className="send-request-btn" onClick={handleSubmit}>
-              Send Request
+              {t("Send Request")}
             </button>
           </div>
 

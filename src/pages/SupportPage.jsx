@@ -20,63 +20,7 @@ import { useState } from "react";
 import Notifcation from "../../components/Notification";
 import { toast } from "react-toastify";
 import { Axios } from "../../components/Helpers/Axios";
-
-const supportStats = [
-  {
-    icon: Clock,
-    title: "Average Response Time",
-    value: "< 2 hours",
-    description: "We respond to most queries within 2 hours"
-  },
-  {
-    icon: Users,
-    title: "Support Team Size",
-    value: "24/7",
-    description: "Our team is available around the clock"
-  },
-  {
-    icon: Award,
-    title: "Customer Satisfaction",
-    value: "98%",
-    description: "Based on customer feedback surveys"
-  },
-  {
-    icon: Headphones,
-    title: "Issues Resolved",
-    value: "99.5%",
-    description: "First contact resolution rate"
-  }
-];
-
-const supportChannels = [
-  {
-    icon: MessageCircle,
-    title: "Live Chat",
-    description: "Get instant help from our support agents",
-    availability: "24/7 Available",
-    responseTime: "< 1 minute",
-    buttonText: "Start Chat",
-    buttonVariant: "default"
-  },
-  {
-    icon: Phone,
-    title: "Phone Support",
-    description: "Speak directly with our support team",
-    availability: "Mon-Fri 9AM-6PM",
-    responseTime: "Immediate",
-    buttonText: "Call Now",
-    buttonVariant: "outline"
-  },
-  {
-    icon: Mail,
-    title: "Email Support",
-    description: "Send detailed questions and get comprehensive answers",
-    availability: "24/7 Available",
-    responseTime: "< 2 hours",
-    buttonText: "Send Email",
-    buttonVariant: "outline"
-  }
-];
+import { useTranslation } from "react-i18next";
 
 const teamMembers = [
   {
@@ -110,6 +54,7 @@ const teamMembers = [
 ];
 
 export default function SupportPage() {
+  const {t , i18n} = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -117,6 +62,63 @@ export default function SupportPage() {
     message: ""
   });
 
+  const supportStats = [
+    {
+      icon: Clock,
+      title: t("Average Response Time"),
+      value: t("< 2 hours"),
+      description: t("We respond to most queries within 2 hours")
+    },
+    {
+      icon: Users,
+      title: t("Support Team Size"),
+      value: "24/7",
+      description: t("Our team is available around the clock")
+    },
+    {
+      icon: Award,
+      title: t("Customer Satisfaction"),
+      value: "98%",
+      description: t("Based on customer feedback surveys")
+    },
+    {
+      icon: Headphones,
+      title: t("Issues Resolved"),
+      value: "99.5%",
+      description: t("First contact resolution rate")
+    }
+  ];
+  
+  const supportChannels = [
+    {
+      icon: MessageCircle,
+      title: t("Live Chat"),
+      description: t("Get instant help from our support agents"),
+      availability: t("24/7 Available"),
+      responseTime: t("< 1 minute"),
+      buttonText: t("Start Chat"),
+      buttonVariant: "default"
+    },
+    {
+      icon: Phone,
+      title: t("Phone Support"),
+      description: t("Speak directly with our support team"),
+      availability: "Mon-Fri 9AM-6PM",
+      responseTime: t("Immediate"),
+      buttonText: t("Call Now"),
+      buttonVariant: "outline"
+    },
+    {
+      icon: Mail,
+      title: t("Email Support"),
+      description: t("Send detailed questions and get comprehensive answers"),
+      availability: t("24/7 Available"),
+      responseTime: t("< 2 hours"),
+      buttonText: t("Send Email"),
+      buttonVariant: "outline"
+    }
+  ];
+  
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
@@ -132,12 +134,12 @@ const [loading , setLoading] = useState(false)
       Axios.post("contact", formData).then((data) => {
         console.log(data);
         setLoading(false)
-        toast.success('Your message has been sent successfully.')
+        toast.success(t('Your message has been sent successfully.'))
         setFormData({ name: "", email: "", message: ""  , subject:''});
       });
     } catch (err) {
       console.log(err);
-      toast.error('Some Thing Wrong !')
+      toast.error(t("Some Thing Wrong !"))
       setLoading(false)
 
     }
@@ -150,17 +152,17 @@ const [loading , setLoading] = useState(false)
 {loading && (
         <div className="loading-screen">
           <div className="spinner"></div>
-          <p>Sending your Message...</p>
+          <p>{t("Sending your Message....")}</p>
         </div>
       )}
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/10 to-primary/5 py-16 lg:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Support Team
+            {t("Support Team")}
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Our dedicated support team is here to help you with any questions or concerns about our natural health products
+            {t("Our dedicated support team is here to help you with any questions or concerns about our natural health products")}
           </p>
           
           {/* Quick Contact */}
@@ -181,7 +183,7 @@ const [loading , setLoading] = useState(false)
       <section className="py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Why Choose Our Support
+            {t("Why Choose Our Support")}
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -214,7 +216,7 @@ const [loading , setLoading] = useState(false)
       <section className="py-16 lg:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Get in Touch
+            {t("Get in Touch")}
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -263,10 +265,10 @@ const [loading , setLoading] = useState(false)
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Send Us a Message
+              {t("Send Us a Message")}
             </h2>
             <p className="text-xl text-gray-600">
-              Fill out the form below and we'll get back to you as soon as possible
+              {t("Fill out the form below and we'll get back to you as soon as possible")}
             </p>
           </div>
           
@@ -276,7 +278,7 @@ const [loading , setLoading] = useState(false)
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name *
+                      {t("Full Name")} *
                     </label>
                     <Input
                       id="name"
@@ -285,13 +287,13 @@ const [loading , setLoading] = useState(false)
                       required
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Enter your full name"
+                      placeholder={t("Enter your full name")}
                     />
                   </div>
                   
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address *
+                      {t("Email Address")} *
                     </label>
                     <Input
                       id="email"
@@ -300,14 +302,14 @@ const [loading , setLoading] = useState(false)
                       required
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="Enter your email"
+                      placeholder={t("Enter your email")}
                     />
                   </div>
                 </div>
                 
                 <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                    Subject *
+                    {t("Subject")} *
                   </label>
                   <Input
                     id="subject"
@@ -316,13 +318,13 @@ const [loading , setLoading] = useState(false)
                     required
                     value={formData.subject}
                     onChange={handleInputChange}
-                    placeholder="What can we help you with?"
+                    placeholder={t("What can we help you with?")}
                   />
                 </div>
                 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                    Message *
+                    {t("Message")} *
                   </label>
                   <Textarea
                     id="message"
@@ -331,13 +333,13 @@ const [loading , setLoading] = useState(false)
                     rows={6}
                     value={formData.message}
                     onChange={handleInputChange}
-                    placeholder="Please describe your question or issue in detail..."
+                    placeholder={t("Please describe your question or issue in detail...")}
                   />
                 </div>
                 
                 <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
                   <Send className="h-4 w-4 mr-2" />
-                  Send Message
+                  {t("Send Message")}
                 </Button>
               </form>
             </CardContent>
@@ -346,7 +348,7 @@ const [loading , setLoading] = useState(false)
       </section>
 
       {/* Support Team */}
-      <section className="py-16 lg:py-20 bg-gray-50">
+      {/* <section className="py-16 lg:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             Meet Our Support Team
@@ -388,7 +390,7 @@ const [loading , setLoading] = useState(false)
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <Footer />
     </div>

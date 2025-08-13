@@ -6,8 +6,10 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Notifcation from "../../components/Notification";
 import { Footer } from "../../src/components/Footer";
+import { useTranslation } from "react-i18next";
 const WishlistPage = () => {
   const [wishlist, setWishlist] = useState([]);
+  const {t , i18n}=useTranslation()
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
@@ -25,16 +27,15 @@ const WishlistPage = () => {
       const response = await Axios.delete(`/wishlist/${slug}`);
       console.log("API response:", response.data);
       setWishlist(wishlist.filter((data) => data.slug !== slug));
-      toast.success(`Removed from wishlist !`);
-      setLoading(true);
+      toast.success(t(`Removed from wishlist !`));
+      setLoading(false);
 
     } catch (error) {
-      console.error("Error adding to wishlist:", error);
-      toast.error("Failed to add to wishlist. Please try again.");
-      setLoading(true);
+      console.error(t("Error adding to wishlist:"), error);
+      // toast.error("Failed to add to wishlist. Please try again.");
+      setLoading(false);
 
-    } finally {
-    }
+    } 
   };
 
   return (
@@ -42,7 +43,7 @@ const WishlistPage = () => {
       {loading && (
         <div className="loading-screen">
           <div className="spinner"></div>
-          <p>Loading your Wishlist...</p>
+          <p>{t("Loading your Wishlist...")}</p>
         </div>
       )}
       <Notifcation />
@@ -52,7 +53,7 @@ const WishlistPage = () => {
       {/* Main Content */}
       <main className="wishlist-main">
         <div className="container">
-          <h1 className="page-title">Wishlist</h1>
+          <h1 className="page-title">{t("Wishlist")}</h1>
 
           {wishlist.length > 0 ? (
             <>
@@ -99,7 +100,7 @@ const WishlistPage = () => {
                               fill="white"
                             />
                           </svg>
-                          <span>Remove From Washlist</span>
+                          <span>{t("Remove From Washlist")}</span>
                         </button>
                       </div>
                       {item.is_out_of_stock && (
@@ -112,15 +113,15 @@ const WishlistPage = () => {
 
               <div className="continue-shopping-container">
                 <Link to="/categories" className="continue-shopping-btn">
-                  Continue shopping
+                  {t("Continue shopping")}
                 </Link>
               </div>
             </>
           ) : (
             <div className="empty-wishlist">
-              <p>Your wishlist is empty</p>
+              <p>{t("Your wishlist is empty")}</p>
               <Link to="/categories" className="continue-shopping-btn">
-                Continue shopping
+              {t("Continue shopping")}
               </Link>
             </div>
           )}

@@ -107,7 +107,7 @@ const {t , i18n} = useTranslation()
 console.log(productData.id);
   return (
     <div className={`${!showDocModal && " "}w-full `}>
-      <Notifcation />
+      {/* <Notifcation /> */}
 
       <div className="space-y-6">
         <div>
@@ -158,7 +158,7 @@ console.log(productData.id);
           {!inStock && (
             <button
               onClick={() => setShowModal(true)}
-              className="bg-primary block hover:bg-primary/90 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors w-full sm:w-auto"
+              className="bg-primary block hover:bg-primary/90 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors mb-4 w-full sm:w-auto"
             >
               {t("Request Now")}
             </button>

@@ -2,7 +2,7 @@
 .order-request-overlay {
   position: fixed;
   top: -5%;
-  height: 100vh;
+  height: 110vh;
   left: 0;
   right: 0;
   z-index: 99;
