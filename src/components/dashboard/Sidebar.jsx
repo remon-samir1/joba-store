@@ -21,9 +21,15 @@ import {
   X,
   Contact,
   Paperclip,
+  LayoutDashboardIcon,
+  LayoutDashboard,
+  ListOrdered,
+  LucideLayoutDashboard,
+  Contact2,
 } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
 import { useTranslation } from "react-i18next";
+import { FaBlog } from "react-icons/fa";
 
 // Main menu navigation
 
@@ -39,6 +45,16 @@ const productNavigation = [
 // Admin section navigation
 const adminNavigation = [
   { name: "Setting", href: "/dashboard/settings", icon: Settings },
+];
+const mainNavigation = [
+  { name: "Dashboard", href: "/dashboard", icon: Home },
+  { name: "Order Management", href: "/dashboard/orders", icon: ShoppingCart },
+  { name: "Customers", href: "/dashboard/customers", icon: Users },
+  { name: "Coupon Code", href: "/dashboard/coupons", icon: Ticket },
+  { name: "Categories", href: "/dashboard/categories", icon: Grid3X3 },
+  { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
+  { name: "Blogs", href: "/dashboard/blogs", icon: FaBlog },
+  { name: "Contacts", href: "/dashboard/contacts", icon: Contact2 },
 ];
 
 const handleLogout = ()=>{

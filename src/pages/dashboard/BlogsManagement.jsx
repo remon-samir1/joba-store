@@ -57,10 +57,10 @@ export default function BlogsManagement() {
 
         <div className="text-center">
           <h2 className="text-2xl font-bold text-orange-700 mb-2">
-            Loading Contacts
+            Loading Blogs
           </h2>
           <p className="text-orange-600 max-w-md mb-6">
-            Fetching your contacts data, please wait...
+            Fetching your Blogs data, please wait...
           </p>
 
           <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
