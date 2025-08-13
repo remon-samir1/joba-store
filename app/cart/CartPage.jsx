@@ -9,8 +9,10 @@ import { Link } from "react-router-dom";
 import { CartCh } from "../../Context/CartContext";
 import gsap from "gsap";
 import { Footer } from "../../src/components/Footer";
+import { useTranslation } from "react-i18next";
 
 const CartPage = () => {
+  const { t, i18n } = useTranslation();
   const cartcontext = useContext(CartCh);
   const [apply, setApply] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +21,7 @@ const CartPage = () => {
   const change = cartcontext.setCartChange;
   const changeState = cartcontext.cartChange;
   const [discountValue, setDiscountValue] = useState(0);
-  const [deleted , setDeleted] = useState(false)
+  const [deleted, setDeleted] = useState(false);
   const cartRef = useRef(null);
 
   // GSAP animation for cart items
@@ -35,10 +37,8 @@ const CartPage = () => {
     }
   }, [cart, isLoading]);
 
-
-
   const removeItem = (slug, id, size) => {
-    toast.info("Removing item...", { autoClose: 1000 });
+    toast.info(t("Removing item..."), { autoClose: 1000 });
 
     Axios.post(`/cart/${slug}`, {
       _method: "DELETE",
@@ -46,13 +46,13 @@ const CartPage = () => {
       product_size_id: size,
     })
       .then((data) => {
-        toast.success("Item removed successfully!");
+        toast.success(t("Item removed successfully!"));
         change((prev) => !prev);
-        setDeleted(prev => !prev)
+        setDeleted((prev) => !prev);
         // setCart((prev) => cart.filter((item) => item.product.slug !== slug));
       })
       .catch(() => {
-        toast.error("Failed to remove item");
+        toast.error(t("Failed to remove item"));
       });
   };
 
@@ -63,49 +63,48 @@ const CartPage = () => {
   const total = subtotal - discountValue;
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
-  
+
     gsap.to(`#quantity-${id}`, {
       scale: 1.2,
       duration: 0.2,
       yoyo: true,
       repeat: 1,
     });
-  
+
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.product.id === id ? { ...item, quantity: newQuantity } : item
-      )
+        item.product.id === id ? { ...item, quantity: newQuantity } : item,
+      ),
     );
-  
+
     const updatedItem = cart.find((item) => item.product.id === id);
     if (updatedItem) {
       Axios.patch(`/cart/${updatedItem.product.slug}`, {
-        _method: "PUT", 
+        _method: "PUT",
         product_id: updatedItem.product.id,
         product_size_id: updatedItem.size.id,
         quantity: newQuantity,
       })
         .then((res) => {
           console.log(res);
-          toast.success("Quantity updated!");
-          change((prev) => !prev); 
+          toast.success(t("Quantity updated!"));
+          change((prev) => !prev);
         })
         .catch(() => {
-          toast.error("Failed to update quantity");
+          toast.error(t("Failed to update quantity"));
         });
     }
   };
-  
 
   const applyCoupon = () => {
     if (!discount.trim()) {
-      toast.warn("Please enter a coupon code");
+      toast.warn(t("Please enter a coupon code"));
       return;
     }
 
     setIsLoading(true);
     setApply((prev) => !prev);
-    toast.info("Applying coupon...");
+    toast.info(t("Applying coupon..."));
   };
 
   useEffect(() => {
@@ -118,17 +117,17 @@ const CartPage = () => {
 
         if (discount) {
           if (data.data.data.discount) {
-            toast.success("Coupon applied successfully!");
+            toast.success(t("Coupon applied successfully!"));
           } else {
-            toast.warning("Invalid coupon code");
+            toast.warning(t("Invalid coupon code"));
           }
         }
       })
       .catch(() => {
-        toast.error("Failed to load cart");
+        toast.error(t("Failed to load cart"));
         setIsLoading(false);
       });
-  }, [apply , deleted]);
+  }, [apply, deleted]);
 
   return (
     <div className="cart-page">
@@ -138,7 +137,7 @@ const CartPage = () => {
       {isLoading && (
         <div className="loading-screen">
           <div className="spinner"></div>
-          <p>Loading your cart...</p>
+          <p>{t("Loading your cart...")}</p>
         </div>
       )}
 
@@ -146,14 +145,14 @@ const CartPage = () => {
 
       <section className="cart-section">
         <div className="container">
-          <h2 className="section-title">My Cart</h2>
+          <h2 className="section-title">{t("My Cart")}</h2>
 
           <div className="cart-table-container">
             <div className="cart-table-header">
-              <span>Product</span>
-              <span>Name</span>
-              <span>Quantity</span>
-              <span>Sub Total</span>
+              <span>{t("Product")}</span>
+              <span>{t("Name")}</span>
+              <span>{t("Quantity")}</span>
+              <span>{t("Sub Total")}</span>
             </div>
 
             <div className="cart-items" ref={cartRef}>
@@ -168,7 +167,7 @@ const CartPage = () => {
                     />
                   </div>
                   <h3 className="text-2xl font-medium text-[#1D1919]">
-                    your cart is empty!
+                    {t("your cart is empty!")}
                   </h3>
                   <p className="text-[#656565] mt-4 max-w-80">
                     {/* Lorem ipsum dolor sit amet consectetur. Suspendisse proin
@@ -238,7 +237,7 @@ const CartPage = () => {
                     </div>
 
                     <div className="item-total">
-                      EGP {(item.product.price * item.quantity).toFixed(2)}
+                      $ {(item.product.price * item.quantity).toFixed(2)}
                     </div>
                   </div>
                 ))
@@ -247,33 +246,32 @@ const CartPage = () => {
           </div>
 
           {/* Coupon Section */}
-        
 
           {/* Cart Totals */}
           <div className="cart-totals md:p-6 ">
-            <h3 className="totals-title">Cart Totals</h3>
+            <h3 className="totals-title">{t("Cart Totals")}</h3>
             <div className="totals-row">
-              <span className="totals-label ">Subtotal</span>
+              <span className="totals-label ">{t("Subtotal")}</span>
               <span className="totals-value">$ {subtotal.toFixed(2)}</span>
             </div>
             {discount !== "" && (
               <div className="totals-row">
-                <span className="totals-label">Discount</span>
+                <span className="totals-label">{t("Discount")}</span>
                 <span className="totals-value">
                   - $ {discountValue.toFixed(2)}
                 </span>
               </div>
             )}
             <div className="totals-row">
-              <span className="totals-label">Shipping</span>
-              <span className="totals-value">Free Shipping</span>
+              <span className="totals-label">{t("Shipping")}</span>
+              <span className="totals-value">{t("Free Shipping")}</span>
             </div>
             <div className="totals-row total-row">
-              <span className="totals-label">Total</span>
+              <span className="totals-label">{t("Total")}</span>
               <span className="totals-value">$ {total.toFixed(2)}</span>
             </div>
             <Link to="/checkout" className="checkout-btn">
-              Checkout
+              {t("Checkout")}
             </Link>
           </div>
         </div>
@@ -282,10 +280,14 @@ const CartPage = () => {
       {/* Related Items */}
       <section className="related-items">
         <div className="container">
-          <h2 className="section-title">Related Items</h2>
+          <h2 className="section-title">{t("Related Items")}</h2>
           <div className="products-grid">
             {cart?.map((product) => (
-              <Link to={`/products/${product.product?.slug}`} key={product.product.id} className="product-card">
+              <Link
+                to={`/products/${product.product?.slug}`}
+                key={product.product.id}
+                className="product-card"
+              >
                 <div className="product-image-container">
                   <img
                     src={product.product.images[0].path}
@@ -310,7 +312,7 @@ const CartPage = () => {
                       </h3>
                       <div className="product-pricing">
                         <span className="current-price">
-                          EGP {product.product.price}
+                          $ {product.product.price}
                         </span>
                       </div>
                     </div>

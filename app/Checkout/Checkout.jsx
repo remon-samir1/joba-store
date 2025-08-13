@@ -7,8 +7,10 @@ import Notifcation from "../../components/Notification";
 import Loading from "../../components/Loading/Loading";
 import image from "../../src/assets/done.svg";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const CheckoutPage = () => {
+  const {t , i18n} = useTranslation()
   const scrollRef = useRef();
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -175,24 +177,26 @@ const CheckoutPage = () => {
       setIsLoading(false);
       if (discount) {
         if (data.data.data.discount) {
-          toast.success("Coupon applied successfully!");
+          toast.success(t("Coupon applied successfully!"));
+
         } else {
-          toast.warning("Invalid coupon code");
+          toast.warning(t("Invalid coupon code"));
         }
       }
+      
     });
   }, [apply]);
   const [isLoading, setIsLoading] = useState(false);
 
   const applyCoupon = () => {
     if (!discount.trim()) {
-      toast.warn("Please enter a coupon code");
+      toast.warn(t("Please enter a coupon code"));
       return;
     }
 
-    setIsLoading(true);
+    // setIsLoading(true);
     setApply((prev) => !prev);
-    toast.info("Applying coupon...");
+    toast.info(t("Applying coupon..."));
   };
   const total = cart?.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -247,14 +251,14 @@ const CheckoutPage = () => {
 
     try {
       const response = await Axios.post("/orders", payload);
-      toast.success("Order placed successfully!");
+      toast.success(t("Order placed successfully!"));
       setLoading(false);
       setDone(true);
     } catch (error) {
       if (items.length === 0) {
-        toast.warn("Please Add Items To Cart First");
+        toast.warn(t("Please Add Items To Cart First"));
       }
-      toast.error("Order failed. Please check your inputs.");
+      toast.error(t("Order failed. Please check your inputs."));
       setLoading(false);
     }
   };
@@ -264,7 +268,7 @@ const CheckoutPage = () => {
       {isLoading && (
         <div className="loading-screen">
           <div className="spinner"></div>
-          <p>Loading your Coupon...</p>
+          <p>{t("Loading your Coupon...")}</p>
         </div>
       )}
       {done ? (
@@ -276,16 +280,15 @@ const CheckoutPage = () => {
             </div>
 
             <h3 style={{ fontSize: "1.5rem", fontWeight: 600, color: "#333" }}>
-              Thanks for your order!
+              {t("Thanks for your order!")}
             </h3>
 
             <p style={{ color: "#666", lineHeight: 1.6 }}>
-              A proforma invoice has been issued and sent to your email. Our
-              team will be in touch shortly to confirm the payment.
+              {t("A proforma invoice has been issued and sent to your email. Our team will be in touch shortly to confirm the payment.")}
             </p>
 
             <Link to="/" style={styles.doneButton}>
-              Continue shopping
+              {t("Continue shopping")}
             </Link>
           </div>
           <Footer />
@@ -299,9 +302,9 @@ const CheckoutPage = () => {
             <div style={styles.container}>
               {/* Checkout Header */}
               <div style={styles.header}>
-                <h1 style={styles.title}>Checkout</h1>
+                <h1 style={styles.title}>{t("Checkout")}</h1>
                 <p style={styles.description}>
-                  Please enter your details to complete your order.
+                  {t("Please enter your details to complete your order.")}
                 </p>
               </div>
 
@@ -311,14 +314,14 @@ const CheckoutPage = () => {
                 <div style={styles.formSection}>
                   <form onSubmit={handleSubmit}>
                     <div style={{ marginBottom: "34px" }}>
-                      <h2 style={styles.sectionTitle}>Shipping Information</h2>
+                      <h2 style={styles.sectionTitle}>{t("Shipping Information")}</h2>
 
                       <div style={styles.formGroup}>
-                        <label style={styles.label}>Email</label>
+                        <label style={styles.label}>{t("Email")}</label>
                         <input
                           type="email"
                           name="shipping_email"
-                          placeholder="Email"
+                          placeholder={t("Email")}
                           value={formData.shipping_email}
                           onChange={handleInputChange}
                           required
@@ -327,11 +330,11 @@ const CheckoutPage = () => {
                       </div>
 
                       <div style={styles.formGroup}>
-                        <label style={styles.label}>Full Name</label>
+                        <label style={styles.label}>{t("Full Name")}</label>
                         <input
                           type="text"
                           name="shipping_name"
-                          placeholder="Full name"
+                          placeholder={t("Full Name")}
                           value={formData.shipping_name}
                           onChange={handleInputChange}
                           required
@@ -340,10 +343,10 @@ const CheckoutPage = () => {
                       </div>
 
                       <div style={styles.formGroup}>
-                        <label style={styles.label}>Address</label>
+                        <label style={styles.label}>{t("Address")}</label>
                         <textarea
                           name="shipping_address"
-                          placeholder="Address"
+                          placeholder={t("Address")}
                           value={formData.shipping_address}
                           onChange={handleInputChange}
                           required
@@ -353,7 +356,7 @@ const CheckoutPage = () => {
 
                       <div style={styles.formRow}>
                         <div style={styles.formGroup}>
-                          <label style={styles.label}>City</label>
+                          <label style={styles.label}>{t("City")}</label>
                           <input
                             type="text"
                             name="shipping_city"
@@ -365,10 +368,10 @@ const CheckoutPage = () => {
                         </div>
 
                         <div style={styles.formGroup}>
-                          <label style={styles.label}>State</label>
+                          <label style={styles.label}>{t("State")}</label>
                           <input
                             type="text"
-                            name="shipping_state"
+                            name={"shipping_state"}
                             value={formData.shipping_state}
                             onChange={handleInputChange}
                             required
@@ -379,7 +382,7 @@ const CheckoutPage = () => {
 
                       <div style={styles.formRow}>
                         <div style={styles.formGroup}>
-                          <label style={styles.label}>Zip Code</label>
+                          <label style={styles.label}>{t("Zip Code")}</label>
                           <input
                             type="text"
                             name="shipping_zip"
@@ -391,7 +394,7 @@ const CheckoutPage = () => {
                         </div>
 
                         <div style={styles.formGroup}>
-                          <label style={styles.label}>Country</label>
+                          <label style={styles.label}>{t("Country")}</label>
                           <input
                             type="text"
                             name="shipping_country"
@@ -415,7 +418,7 @@ const CheckoutPage = () => {
                       </div> */}
 
                       <div style={styles.formGroup}>
-                        <label style={styles.label}>Payment Method</label>
+                        <label style={styles.label}>{t("Payment Method")}</label>
                         <select
                           name="payment_method"
                           value={formData.payment_method}
@@ -423,13 +426,13 @@ const CheckoutPage = () => {
                           required
                           style={styles.input}
                         >
-                          <option value="cash">Cash</option>
+                          <option value="cash">{t("Cash")}</option>
                           {/* <option value="credit_card">Credit Card</option> */}
                         </select>
                       </div>
 
                       <button type="submit" style={styles.submitButton}>
-                        Submit Order
+                        {t("Submit Order")}
                       </button>
                     </div>
                   </form>
@@ -438,19 +441,19 @@ const CheckoutPage = () => {
                 {/* Right Side - Summary */}
                 <div className=" w-[100%] mx-auto md:w-[400px]" style={styles.summarySection}>
                   <div style={styles.summary}>
-                    <h3 style={styles.totalsTitle}>Cart Totals</h3>
+                    <h3 style={styles.totalsTitle}>{t("Cart Totals")}</h3>
 
                     {cart?.map((item, idx) => (
                       <div style={styles.totalsRow} key={idx}>
                         <span>
                           {item.product.name.en} × {item.quantity}
                         </span>
-                        <span>{item.product.price * item.quantity} EGP</span>
+                        <span>{item.product.price * item.quantity} $</span>
                       </div>
                     ))}
                     {discount !== "" && (
                       <div className="totals-row">
-                        <span className="totals-label">Discount</span>
+                        <span className="totals-label">{t("Discount")}</span>
                         <span className="totals-value">
                           $ {discountValue.toFixed(2)}
                         </span>
@@ -460,7 +463,7 @@ const CheckoutPage = () => {
                       className="totals-row"
                       style={{ ...styles.totalsRow, fontWeight: 600 }}
                     >
-                      <span className="totals-label">Total</span>
+                      <span className="totals-label">{t("Total")}</span>
                       <span>$ {total - discountValue}</span>
                     </div>
                   </div>
@@ -468,12 +471,12 @@ const CheckoutPage = () => {
                     <div className="coupon-container">
                       <input
                         type="text"
-                        placeholder="Coupon code"
+                        placeholder={t("Coupon code")}
                         onChange={(e) => setDiscount(e.target.value)}
                         className="coupon-input"
                       />
                       <button className="apply-btn" onClick={applyCoupon}>
-                        Apply
+                        {t("Apply")}
                       </button>
                     </div>
                   </div>
