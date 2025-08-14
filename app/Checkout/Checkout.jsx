@@ -199,7 +199,10 @@ const CheckoutPage = () => {
     toast.info(t("Applying coupon..."));
   };
   const total = cart?.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + (item.product.discount_price != 0
+      ? +item.product.discount_price +
+        +item.size?.price
+      : +item.product.price + +item.size.price) * item.quantity,
     0,
   );
 
@@ -448,7 +451,10 @@ const CheckoutPage = () => {
                         <span>
                           {item.product.name.en} × {item.quantity}
                         </span>
-                        <span>{item.product.price * item.quantity} $</span>
+                        <span>{(item.product.discount_price != 0
+      ? +item.product.discount_price +
+        +item.size?.price
+      : +item.product.price + +item.size.price) * item.quantity} $</span>
                       </div>
                     ))}
                     {discount !== "" && (
