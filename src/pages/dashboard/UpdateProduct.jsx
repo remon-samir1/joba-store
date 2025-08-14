@@ -251,14 +251,14 @@ export default function UpdateProduct() {
     });
 
     // Expiration date validation
-    if (productData.expirationStart && productData.expirationEnd) {
-      const startDate = new Date(productData.expirationStart);
-      const endDate = new Date(productData.expirationEnd);
+    // if (productData.expirationStart && productData.expirationEnd) {
+    //   const startDate = new Date(productData.expirationStart);
+    //   const endDate = new Date(productData.expirationEnd);
 
-      if (startDate >= endDate) {
-        errors.push("Expiration End Date must be after Start Date");
-      }
-    }
+    //   if (startDate >= endDate) {
+    //     errors.push("Expiration End Date must be after Start Date");
+    //   }
+    // }
 
     // Show errors
     if (errors.length > 0) {

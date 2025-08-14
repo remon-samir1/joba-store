@@ -489,11 +489,11 @@ const {t , i18n} = useTranslation()
             </p>
             <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
               <span className="text-primary font-medium text-sm sm:text-base">
-                ${discount_price ? +discount_price + +sizes : +price + +sizes}
+                ${discount_price != 0 ? +discount_price + +sizes : +price + +sizes}
               </span>
               {originalPrice  && (
                 <span className="text-white/70 line-through text-sm sm:text-base">
-                  {discount_price ?  `$ ${+price + +sizes}`: '' }
+                  {discount_price != 0 ?  `$ ${+price + +sizes}`: '' }
                 </span>
               )}
             </div>

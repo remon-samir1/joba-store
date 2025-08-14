@@ -57,7 +57,10 @@ const CartPage = () => {
   };
 
   const subtotal = cart?.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + (item.product.discount_price != 0
+      ? +item.product.discount_price +
+        +item.size?.price
+      : +item.product.price + +item.size.price) * item.quantity,
     0,
   );
   const total = subtotal - discountValue;
@@ -106,6 +109,7 @@ const CartPage = () => {
     setApply((prev) => !prev);
     toast.info(t("Applying coupon..."));
   };
+
 
   useEffect(() => {
     Axios.get(`/cart?coupon_code=${discount}`)
@@ -237,7 +241,10 @@ const CartPage = () => {
                     </div>
 
                     <div className="item-total">
-                      $ {(item.product.price * item.quantity).toFixed(2)}
+                      $ {(item.product.discount_price != 0
+                            ? +item.product.discount_price +
+                              +item.size?.price
+                            : +item.product.price + +item.size.price) * item.quantity}
                     </div>
                   </div>
                 ))
@@ -312,7 +319,11 @@ const CartPage = () => {
                       </h3>
                       <div className="product-pricing">
                         <span className="current-price">
-                          $ {product.product.price}
+                          ${" "}
+                          {product.product.discount_price != 0
+                            ? +product.product.discount_price +
+                              +product.size?.price
+                            : +product.product.price + +product.size.price}
                         </span>
                       </div>
                     </div>
