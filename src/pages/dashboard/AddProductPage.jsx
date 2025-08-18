@@ -344,7 +344,7 @@ console.log(productData);
                     type="number"
                     value={productData.productPrice}
                     onChange={handleChange}
-                    placeholder="Price in EGP"
+                    placeholder="Price in $"
                     className="mt-1 border-gray-300"
                     required
                     min="0"
@@ -357,7 +357,7 @@ console.log(productData);
                       Discounted Price (Optional)
                     </Label>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-sm text-gray-500">EGP</span>
+                      <span className="text-sm text-gray-500">$</span>
                       <Input
                         id="discountedPrice"
                         type="number"
@@ -367,7 +367,7 @@ console.log(productData);
                         className="flex-1 border-gray-300"
                         min="0"
                       />
-                      <span className="text-sm text-gray-500">Sales</span>
+                      {/* <span className="text-sm text-gray-500">Sales</span>
                       <Input
                         id="salesPrice"
                         type="number"
@@ -376,7 +376,7 @@ console.log(productData);
                         placeholder="Sales price"
                         className="flex-1 border-gray-300"
                         min="0"
-                      />
+                      /> */}
                     </div>
                   </div>
 
@@ -467,7 +467,7 @@ console.log(productData);
                         <Input
                           name="price"
                           type="number"
-                          placeholder="e.g., EGP 350"
+                          placeholder="e.g., $ 350"
                           value={variation.price}
                           onChange={(e) => handleVariationChange(index, e)}
                           className="border-gray-300"

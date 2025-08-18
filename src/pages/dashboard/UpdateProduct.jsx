@@ -318,6 +318,8 @@ export default function UpdateProduct() {
       formData.append(`sizes[${i}][price]`, v.price);
       formData.append(`sizes[${i}][stock]`, productData.stockQuantity);
     });
+    // formData.append("sizes", JSON.stringify(variations));
+
 
     try {
       await Axios.post(`admin/products/${id}`, formData, {
@@ -351,7 +353,7 @@ export default function UpdateProduct() {
       setLoading(false);
     }
   };
-  console.log(productData.stockStatus);
+  console.log(variations);
 
   return (
     <div className="flex-1 bg-gray-50 min-h-screen">
@@ -431,7 +433,7 @@ export default function UpdateProduct() {
                     type="number"
                     value={productData.productPrice}
                     onChange={handleChange}
-                    placeholder="Price in EGP"
+                    placeholder="Price in $"
                     className="mt-1 border-gray-300"
                     required
                     min="0"
@@ -444,7 +446,7 @@ export default function UpdateProduct() {
                       Discounted Price (Optional)
                     </Label>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-sm text-gray-500">EGP</span>
+                      <span className="text-sm text-gray-500">$</span>
                       <Input
                         id="discountedPrice"
                         type="text"
@@ -454,7 +456,7 @@ export default function UpdateProduct() {
                         className="flex-1 border-gray-300"
                         min="0"
                       />
-                      <span className="text-sm text-gray-500">Sales</span>
+                      {/* <span className="text-sm text-gray-500">Sales</span>
                       <Input
                         id="salesPrice"
                         type="text"
@@ -463,7 +465,7 @@ export default function UpdateProduct() {
                         placeholder="Sales price"
                         className="flex-1 border-gray-300"
                         min="0"
-                      />
+                      /> */}
                     </div>
                   </div>
 
@@ -559,7 +561,7 @@ export default function UpdateProduct() {
                         <Input
                           name="price"
                           type="number"
-                          placeholder="e.g., EGP 350"
+                          placeholder="e.g.,350$"
                           value={variation.price}
                           onChange={(e) => handleVariationChange(index, e)}
                           className="border-gray-300"

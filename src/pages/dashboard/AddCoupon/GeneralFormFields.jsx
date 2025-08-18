@@ -1,7 +1,13 @@
 import { Select } from '@react-three/drei';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export function GeneralFormFields({setForm , form}) {
+  const [today ,setToday] = useState();
+  useEffect(()=>{
+    const currentDate = new Date().toISOString().split("T")[0];
+  
+
+  },[])
   return (
     <div className="flex w-full flex-col items-start gap-8 px-6 py-6">
       {/* Discount Type */}

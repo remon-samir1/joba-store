@@ -489,11 +489,11 @@ const {t , i18n} = useTranslation()
             </p>
             <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
               <span className="text-primary font-medium text-sm sm:text-base">
-                ${discount_price != 0 ? +discount_price + +sizes : +price + +sizes}
+                ${ +sizes - +discount_price}
               </span>
               {originalPrice  && (
                 <span className="text-white/70 line-through text-sm sm:text-base">
-                  {discount_price != 0 ?  `$ ${+price + +sizes}`: '' }
+                  {discount_price != 0 ?  `$ ${sizes}`: '' }
                 </span>
               )}
             </div>
@@ -609,6 +609,7 @@ function NewProducts() {
         setLoading(true);
         const response = await Axios.get("/products");
         setProducts(response.data.data);
+        console.log(response.data);
       } catch (err) {
         setError("Failed to load new products. Please try again later.");
         toast.error(t("Failed to load new products"));

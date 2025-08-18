@@ -24,6 +24,7 @@ export function ProductDetails({
   rating,
   reviews,
   setSelectedSize,
+  discount,
   productData,
   attachment_path,
   selectedSize,
@@ -113,7 +114,7 @@ console.log(productData.id);
         <div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">{name}</h1>
           <div className="text-3xl font-semibold text-primary mb-6">
-            $ {+price + +sizePrice}
+            $ {+sizePrice - +discount}
           </div>
 
           <div className="flex items-center gap-2 mb-6">

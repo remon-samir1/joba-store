@@ -29,13 +29,13 @@ export default function CategoriesPage() {
   const [products, setProducts] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [wishlist, setWishlist] = useState([]);
   const [openCategory, setOpenCategory] = useState(null);
-console.log(activeCategory);
+  console.log(activeCategory);
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get("q");
@@ -57,16 +57,16 @@ console.log(activeCategory);
         toast.success(`Removed From wishlist !`);
         setProducts(
           products.map((prev) =>
-            prev.slug == slug ? { ...prev, is_favorite: false } : prev
-          )
+            prev.slug == slug ? { ...prev, is_favorite: false } : prev,
+          ),
         );
       } else {
         await Axios.post(`/wishlist/${slug}`);
         toast.success(`Added to wishlist !`);
         setProducts(
           products.map((prev) =>
-            prev.slug == slug ? { ...prev, is_favorite: true } : prev
-          )
+            prev.slug == slug ? { ...prev, is_favorite: true } : prev,
+          ),
         );
       }
     } catch (error) {
@@ -75,19 +75,17 @@ console.log(activeCategory);
     }
   };
 
-  
   useEffect(() => {
-
     Axios.get("/categories")
       .then((res) => {
         const apiCategories = res.data.data.data;
         const categoryNames = apiCategories.map((cat) => cat.id);
         setCategories(apiCategories);
-        setCategoryTabs([ ...apiCategories]);
+        setCategoryTabs([...apiCategories]);
         setSidebarCategories(apiCategories);
         if (slugFromUrl) {
           const matchedCategory = apiCategories.find(
-            (cat) => cat.slug.toLowerCase() == slugFromUrl.toLowerCase()
+            (cat) => cat.slug.toLowerCase() == slugFromUrl.toLowerCase(),
           );
           console.log(slugFromUrl);
           console.log(matchedCategory);
@@ -100,7 +98,7 @@ console.log(activeCategory);
   }, [slugFromUrl]);
 
   useEffect(() => {
-    scrollRef.current.scrollIntoView({behavior:'smooth'});
+    scrollRef.current.scrollIntoView({ behavior: "smooth" });
     setIsLoadingProducts(true);
     let url = `/products?q=${encodeURIComponent(searchQuery.trim())}`;
     if (activeCategory && activeCategory !== "All") {
@@ -128,7 +126,7 @@ console.log(activeCategory);
   }, [currentPage]);
 
   const scrollRef = useRef();
-const {t , i18n} = useTranslation()
+  const { t, i18n } = useTranslation();
   return (
     <div ref={scrollRef} className="min-h-screen bg-background">
       <Notification />
@@ -152,18 +150,18 @@ const {t , i18n} = useTranslation()
         </div>
 
         <div className="mb-8 flex flex-wrap gap-9">
-        <button
-              onClick={() => {
-                setActiveCategory('All');
-              }}
-              className={`pb-2 border-b-4 transition-colors ${
-                activeCategory === 'All'
-                  ? "text-primary border-primary font-medium"
-                  : "text-gray-500 border-transparent hover:text-foreground"
-              }`}
-            >
-          All
-            </button>
+          <button
+            onClick={() => {
+              setActiveCategory("All");
+            }}
+            className={`pb-2 border-b-4 transition-colors ${
+              activeCategory === "All"
+                ? "text-primary border-primary font-medium"
+                : "text-gray-500 border-transparent hover:text-foreground"
+            }`}
+          >
+            All
+          </button>
           {categoryTabs.map((category) => (
             <button
               key={category}
@@ -264,7 +262,7 @@ const {t , i18n} = useTranslation()
                           handleAddToWishlist(
                             e,
                             product.slug,
-                            product.is_favorite
+                            product.is_favorite,
                           )
                         }
                         className="absolute top-4 right-4 w-8 h-8 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/70 transition-colors"
@@ -286,7 +284,15 @@ const {t , i18n} = useTranslation()
                           </p>
                           <div className="flex items-center justify-center gap-2 mb-4">
                             <span className="text-primary font-medium">
-                              ${product.price}
+                              $
+                              {
+                                 
+                                 product.sizes[0]?.price - +product.discount_price}
+                            </span>
+                            <span className="text-white/70 line-through text-sm sm:text-base">
+                              {product.discount_price != 0
+                                ? `$ ${product.sizes[0]?.price}`
+                                : ""}
                             </span>
                           </div>
                           <div className="w-10 h-0.5 bg-white mx-auto"></div>
@@ -315,27 +321,30 @@ const {t , i18n} = useTranslation()
                 <ChevronLeft className="h-4 w-4" />
               </button>
 
-              {Array.from({ length: Math.ceil(totalPages / 10) }, (_, index) => index + 1).map(
-                (page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-4 py-2 rounded border ${
-                      currentPage === page
-                        ? "bg-primary text-white"
-                        : "bg-white hover:bg-gray-100"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                )
-              )}
+              {Array.from(
+                { length: Math.ceil(totalPages / 10) },
+                (_, index) => index + 1,
+              ).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-4 py-2 rounded border ${
+                    currentPage === page
+                      ? "bg-primary text-white"
+                      : "bg-white hover:bg-gray-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
 
               <button
                 onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(totalPages / 10)))
+                  setCurrentPage((prev) =>
+                    Math.min(prev + 1, Math.ceil(totalPages / 10)),
+                  )
                 }
-                disabled={currentPage === (totalPages / 10)}
+                disabled={currentPage === totalPages / 10}
                 className={`px-4 py-2 rounded border ${
                   currentPage === totalPages
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"

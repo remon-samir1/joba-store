@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const CheckoutPage = () => {
-  const {t , i18n} = useTranslation()
+  const { t, i18n } = useTranslation();
   const scrollRef = useRef();
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -167,23 +167,24 @@ const CheckoutPage = () => {
     },
   };
   const [discount, setDiscount] = useState("");
+  const [total, setTotal] = useState("");
+  const [couponType, setCouponType] = useState("");
   const [apply, setApply] = useState(false);
   useEffect(() => {
     Axios.get(`/cart?coupon_code=${discount}`).then((data) => {
       setCart(data.data.data.items);
       setDiscountValue(data.data.data.discount || 0);
-
+      setTotal(data.data.data.total);
+      setCouponType(data.data.data.coupon_type);
       console.log(data);
       setIsLoading(false);
       if (discount) {
         if (data.data.data.discount) {
           toast.success(t("Coupon applied successfully!"));
-
         } else {
           toast.warning(t("Invalid coupon code"));
         }
       }
-      
     });
   }, [apply]);
   const [isLoading, setIsLoading] = useState(false);
@@ -198,13 +199,13 @@ const CheckoutPage = () => {
     setApply((prev) => !prev);
     toast.info(t("Applying coupon..."));
   };
-  const total = cart?.reduce(
-    (sum, item) => sum + (item.product.discount_price != 0
-      ? +item.product.discount_price +
-        +item.size?.price
-      : +item.product.price + +item.size.price) * item.quantity,
-    0,
-  );
+  // const total = cart?.reduce(
+  //   (sum, item) => sum + (item.product.discount_price != 0
+  //     ? +item.product.discount_price +
+  //       +item.size?.price
+  //     : +item.product.price + +item.size.price) * item.quantity,
+  //   0,
+  // );
 
   useEffect(() => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -287,7 +288,9 @@ const CheckoutPage = () => {
             </h3>
 
             <p style={{ color: "#666", lineHeight: 1.6 }}>
-              {t("A proforma invoice has been issued and sent to your email. Our team will be in touch shortly to confirm the payment.")}
+              {t(
+                "A proforma invoice has been issued and sent to your email. Our team will be in touch shortly to confirm the payment.",
+              )}
             </p>
 
             <Link to="/" style={styles.doneButton}>
@@ -317,7 +320,9 @@ const CheckoutPage = () => {
                 <div style={styles.formSection}>
                   <form onSubmit={handleSubmit}>
                     <div style={{ marginBottom: "34px" }}>
-                      <h2 style={styles.sectionTitle}>{t("Shipping Information")}</h2>
+                      <h2 style={styles.sectionTitle}>
+                        {t("Shipping Information")}
+                      </h2>
 
                       <div style={styles.formGroup}>
                         <label style={styles.label}>{t("Email")}</label>
@@ -421,7 +426,9 @@ const CheckoutPage = () => {
                       </div> */}
 
                       <div style={styles.formGroup}>
-                        <label style={styles.label}>{t("Payment Method")}</label>
+                        <label style={styles.label}>
+                          {t("Payment Method")}
+                        </label>
                         <select
                           name="payment_method"
                           value={formData.payment_method}
@@ -442,7 +449,10 @@ const CheckoutPage = () => {
                 </div>
 
                 {/* Right Side - Summary */}
-                <div className=" w-[100%] mx-auto md:w-[400px]" style={styles.summarySection}>
+                <div
+                  className=" w-[100%] mx-auto md:w-[400px]"
+                  style={styles.summarySection}
+                >
                   <div style={styles.summary}>
                     <h3 style={styles.totalsTitle}>{t("Cart Totals")}</h3>
 
@@ -451,18 +461,17 @@ const CheckoutPage = () => {
                         <span>
                           {item.product.name.en} × {item.quantity}
                         </span>
-                        <span>{(item.product.discount_price != 0
-      ? +item.product.discount_price +
-        +item.size?.price
-      : +item.product.price + +item.size.price) * item.quantity} $</span>
+                        <span>
+                          {(item.size.price - +item.product.discount_price) *
+                            item.quantity}{" "}
+                          $
+                        </span>
                       </div>
                     ))}
-                    {discount !== "" && (
+                    {discountValue !== 0 && (
                       <div className="totals-row">
                         <span className="totals-label">{t("Discount")}</span>
-                        <span className="totals-value">
-                          $ {discountValue.toFixed(2)}
-                        </span>
+                        <span className="totals-value">{couponType === "percentage" ? "%" : "$"} {discountValue}</span>
                       </div>
                     )}
                     <div
@@ -470,7 +479,7 @@ const CheckoutPage = () => {
                       style={{ ...styles.totalsRow, fontWeight: 600 }}
                     >
                       <span className="totals-label">{t("Total")}</span>
-                      <span>$ {total - discountValue}</span>
+                      <span>$ {total}</span>
                     </div>
                   </div>
                   <div className="coupon-section">

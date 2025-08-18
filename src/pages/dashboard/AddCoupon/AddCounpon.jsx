@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./Tabs.jsx";
 import { GeneralTab } from "./GeneralTabs.jsx";
 import { GeneralFormFields } from "./GeneralFormFields.jsx";
@@ -25,8 +25,18 @@ export function CouponManagement() {
     max_uses_user: "",
   }); 
 const { max_uses_user,max_uses , ...formError} =form 
+const [today ,setToday] = useState(new Date().toISOString().split("T")[0]);
+useEffect(()=>{
+  const currentDate = new Date().toISOString().split("T")[0];
+setToday(currentDate)
 
+},[])
+console.log(today > form.expires_at)
   const handleSubmit = async () => {
+    if(today > form.expires_at){
+      toast.warn("Choose a new Date for expiration Date !")
+      return ;
+    }
     setLoading(true);
     const emptyFields = Object.entries(formError).filter(
       ([key, value]) => value === "" || value === null || value === undefined

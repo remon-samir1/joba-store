@@ -27,9 +27,8 @@ export function Footer() {
               </Link>
             </div>
             <p className="text-white/90 leading-relaxed text-sm sm:text-base">
-              Lorem ipsum dolor sit amet consectetur. Gravida dui tellus
-              pharetra quisque erat in pulvinar. Quis pharetra tincidunt mauris
-              habitasse massa nec habitant.
+            {t("specialized online platform for selling premium medical and aromatic oils. We provide 100% natural, high-quality oils carefully extracted to support health, wellness, and beauty. Our collection includes essential oils, therapeutic blends, and aromatic products designed to enhance your daily lifestyle.")}
+
             </p>
           </div>
 

@@ -221,7 +221,7 @@ export default function ProductListPage() {
                             </span>
                           </div>
                           <div className="col-span-1">
-                            <span className="text-sm text-gray-600">{product.price} EGP</span>
+                            <span className="text-sm text-gray-600">{product.sizes[0]?.price} $</span>
                           </div>
                           <div className="col-span-2">{getStatusBadge(product.status)}</div>
                           <div className="col-span-2">

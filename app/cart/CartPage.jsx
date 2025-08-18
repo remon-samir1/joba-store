@@ -57,10 +57,12 @@ const CartPage = () => {
   };
 
   const subtotal = cart?.reduce(
-    (sum, item) => sum + (item.product.discount_price != 0
-      ? +item.product.discount_price +
-        +item.size?.price
-      : +item.product.price + +item.size.price) * item.quantity,
+    (sum, item) =>
+      sum +
+      (item.product.discount_price != 0
+        ? +item.product.discount_price + +item.size?.price
+        : +item.product.price + +item.size.price) *
+        item.quantity,
     0,
   );
   const total = subtotal - discountValue;
@@ -110,13 +112,12 @@ const CartPage = () => {
     toast.info(t("Applying coupon..."));
   };
 
-
   useEffect(() => {
     Axios.get(`/cart?coupon_code=${discount}`)
       .then((data) => {
         console.log(data.data);
         setCart(data.data.data.items);
-        setDiscountValue(data.data.data.discount || 0);
+        setDiscountValue(data.data.data);
         setIsLoading(false);
 
         if (discount) {
@@ -184,11 +185,7 @@ const CartPage = () => {
                     <button
                       className="remove-btn"
                       onClick={() =>
-                        removeItem(
-                          item.product.slug,
-                          item.product.id,
-                          item.size.id,
-                        )
+                        removeItem(item.product.slug, item.product.id, 43)
                       }
                     >
                       <svg
@@ -214,6 +211,7 @@ const CartPage = () => {
                     </div>
 
                     <div className="product-name">{item.product.name.en}</div>
+                    {/* <div className="product-name">{item.product.size?.name}</div> */}
 
                     <div className="quantity-controls">
                       <button
@@ -241,10 +239,9 @@ const CartPage = () => {
                     </div>
 
                     <div className="item-total">
-                      $ {(item.product.discount_price != 0
-                            ? +item.product.discount_price +
-                              +item.size?.price
-                            : +item.product.price + +item.size.price) * item.quantity}
+                      ${" "}
+                      {(item.size ? +item.size?.price - +item.product.discount_price : +item.product.price - +item.product.discount_price) *
+                        item.quantity}
                     </div>
                   </div>
                 ))
@@ -259,13 +256,15 @@ const CartPage = () => {
             <h3 className="totals-title">{t("Cart Totals")}</h3>
             <div className="totals-row">
               <span className="totals-label ">{t("Subtotal")}</span>
-              <span className="totals-value">$ {subtotal.toFixed(2)}</span>
+              <span className="totals-value">
+                $ {discountValue?.subtotal?.toFixed(2)}
+              </span>
             </div>
             {discount !== "" && (
               <div className="totals-row">
                 <span className="totals-label">{t("Discount")}</span>
                 <span className="totals-value">
-                  - $ {discountValue.toFixed(2)}
+                  - $ {discountValue?.discount?.toFixed(2)}
                 </span>
               </div>
             )}
@@ -275,7 +274,9 @@ const CartPage = () => {
             </div>
             <div className="totals-row total-row">
               <span className="totals-label">{t("Total")}</span>
-              <span className="totals-value">$ {total.toFixed(2)}</span>
+              <span className="totals-value">
+                $ {discountValue?.total?.toFixed(2)}
+              </span>
             </div>
             <Link to="/checkout" className="checkout-btn">
               {t("Checkout")}
@@ -320,10 +321,12 @@ const CartPage = () => {
                       <div className="product-pricing">
                         <span className="current-price">
                           ${" "}
-                          {product.product.discount_price != 0
-                            ? +product.product.discount_price +
-                              +product.size?.price
-                            : +product.product.price + +product.size.price}
+                          {/* {product.product.discount_price != 0
+                            ? product.product.discount_price
+                            : product.size.price} */}
+                            {
+                              +product.size ? +product.size?.price - +product.product.discount_price : +product.product.price - +product.product.discount_price
+                            }
                         </span>
                       </div>
                     </div>

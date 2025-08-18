@@ -24,7 +24,7 @@ export function UsageLimitsTab({form , setForm}) {
         <label className="w-full text-main-text text-[18px] font-medium">
           Usage limit per user
         </label>
-        <div className="flex bg-transparent w-full items-center px-4 py-4 border border-stroke rounded bg-white-color">
+        <div className="flex bg-transparent w-full items-center px-4 py-4 border border-stroke rounded">
           <input
             type="number"
             value={form.max_uses_user}
