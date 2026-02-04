@@ -44,7 +44,7 @@ export default function CategoriesManagementPage() {
   const [deleteLoading, setDeleteLoading] = useState(null);
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
-const scrollRef= useRef()
+  const scrollRef = useRef();
   const OrangeLoader = () => (
     <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
       <div className="flex flex-col items-center">
@@ -54,17 +54,17 @@ const scrollRef= useRef()
           <div className="absolute inset-8 rounded-full border-8 border-orange-300 border-b-transparent animate-spin-reverse"></div>
           <div className="absolute inset-12 rounded-full border-8 border-orange-200 border-l-transparent animate-ping"></div>
         </div>
-        
+
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-orange-700 mb-2">Loading Categories</h2>
+          <h2 className="text-2xl font-bold text-orange-700 mb-2">
+            Loading Categories
+          </h2>
           <p className="text-orange-600 max-w-md mb-6">
             Fetching your categories data, please wait...
           </p>
-          
+
           <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"
-            ></div>
+            <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"></div>
           </div>
         </div>
       </div>
@@ -75,11 +75,11 @@ const scrollRef= useRef()
     setLoading(true);
     try {
       const res = await Axios.get(`/categories?page=${page}&per_page=1`);
-      const data = Array.isArray(res.data?.data?.data) ? res.data.data.data : [];
+      const data = Array.isArray(res.data?.data?.data)
+        ? res.data.data.data
+        : [];
       setCategories(data);
-      console.log(
-        res
-      );
+      console.log(res);
       setFilteredCategories(data);
       setPagination({
         from: res.data.data.from,
@@ -103,34 +103,38 @@ const scrollRef= useRef()
 
   useEffect(() => {
     let filtered = [...categories];
-    
+
     // Apply search filter
     if (searchQuery) {
-      filtered = filtered.filter(c => 
-        c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter(
+        (c) =>
+          c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          c.description?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
-    
+
     // Apply sorting
     filtered.sort((a, b) => {
       if (a[sortField] < b[sortField]) return sortDirection === "asc" ? -1 : 1;
       if (a[sortField] > b[sortField]) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-    
+
     setFilteredCategories(filtered);
     setCurrentPage(1);
   }, [searchQuery, categories, sortField, sortDirection]);
 
   const totalPages = Math.ceil(filteredCategories.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentCategories = filteredCategories.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentCategories = filteredCategories.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
 
   const handleSelectAll = (checked) => {
     setSelectAll(checked);
     setSelectedCategories(
-      checked ? new Set(currentCategories.map(c => c.slug)) : new Set()
+      checked ? new Set(currentCategories.map((c) => c.slug)) : new Set(),
     );
   };
 
@@ -141,14 +145,13 @@ const scrollRef= useRef()
   };
 
   const handleDeleteCategory = async (id) => {
-    
     setDeleteLoading(id);
     try {
-      await Axios.delete(`admin/categories/${id}`);
+      await Axios.delete(`/admin/categories/${id}`);
       toast.success("Category deleted successfully");
-      
+
       // Update state by removing the deleted category
-      const updated = categories.filter(c => c.slug !== id);
+      const updated = categories.filter((c) => c.slug !== id);
       setCategories(updated);
     } catch (err) {
       toast.error("Failed to delete category. Please try again.");
@@ -162,19 +165,18 @@ const scrollRef= useRef()
       toast.warning("Please select at least one category to delete");
       return;
     }
-    
-    
+
     const slugs = Array.from(selectedCategories);
     try {
       for (let slug of slugs) {
-        await Axios.delete(`admin/categories/${slug}`)
+        await Axios.delete(`/admin/categories/${slug}`);
       }
       toast.success(`${slugs.length} categories deleted successfully`);
-      
+
       // Update state by removing all deleted categories
-      const updated = categories.filter(c => !slugs.includes(c.slug));
+      const updated = categories.filter((c) => !slugs.includes(c.slug));
       setCategories(updated);
-        
+
       setSelectedCategories(new Set());
       setSelectAll(false);
     } catch (err) {
@@ -196,22 +198,24 @@ const scrollRef= useRef()
     return sortDirection === "asc" ? "↑" : "↓";
   };
 
-  useEffect(()=>{
-    scrollRef.current.scrollIntoView({behavior:'smooth'});
-
-
-  },[])
+  useEffect(() => {
+    scrollRef.current.scrollIntoView({ behavior: "smooth" });
+  }, []);
   return (
-    <div  className="flex-1 overflow-auto bg-gray-50">
+    <div className="flex-1 overflow-auto bg-gray-50">
       <Notifcation />
       {loading && <OrangeLoader />}
       <DashboardHeader title="Category Management" />
-      
+
       <div ref={scrollRef} className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Manage Categories</h2>
-            <p className="text-gray-600 mt-1">Create, edit, and organize your product categories</p>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Manage Categories
+            </h2>
+            <p className="text-gray-600 mt-1">
+              Create, edit, and organize your product categories
+            </p>
           </div>
           <Link to="/dashboard/categories/add">
             <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg">
@@ -234,17 +238,17 @@ const scrollRef= useRef()
                     className="pl-10 bg-gray-50 border-gray-200 rounded-lg"
                   />
                 </div>
-                
+
                 <div className="flex gap-2 w-full md:w-auto">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="flex items-center gap-2"
                     onClick={() => setShowFilters(!showFilters)}
                   >
                     <Filter className="h-4 w-4" />
                     {showFilters ? "Hide Filters" : "Show Filters"}
                   </Button>
-                  
+
                   <Button
                     onClick={handleBulkDelete}
                     className="bg-red-500 hover:bg-red-600 text-white shadow-md"
@@ -255,14 +259,16 @@ const scrollRef= useRef()
                   </Button>
                 </div>
               </div>
-              
+
               {showFilters && (
                 <div className="mt-4 bg-orange-50 p-4 rounded-lg border border-orange-100">
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-medium text-orange-800">Sort Options</h3>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <h3 className="font-medium text-orange-800">
+                      Sort Options
+                    </h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => {
                         setSortField("name");
                         setSortDirection("asc");
@@ -271,7 +277,7 @@ const scrollRef= useRef()
                       Reset
                     </Button>
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-2">
                     <Button
                       variant={sortField === "name" ? "secondary" : "outline"}
@@ -280,7 +286,9 @@ const scrollRef= useRef()
                       Name {sortIndicator("name")}
                     </Button>
                     <Button
-                      variant={sortField === "created_at" ? "secondary" : "outline"}
+                      variant={
+                        sortField === "created_at" ? "secondary" : "outline"
+                      }
                       onClick={() => toggleSort("created_at")}
                     >
                       Date {sortIndicator("created_at")}
@@ -289,7 +297,6 @@ const scrollRef= useRef()
                 </div>
               )}
             </div>
-
             <div className="bg-gradient-to-r  from-orange-500 to-orange-600 px-6 py-3">
               <div className="grid grid-cols-12 gap-4 items-center w-full overflow-auto">
                 <div className="col-span-6 flex items-center space-x-3">
@@ -306,7 +313,7 @@ const scrollRef= useRef()
                   <span className="text-sm font-medium text-white">Slug</span>
                 </div>
                 <div className="col-span-2">
-                  <button 
+                  <button
                     className="text-sm font-medium text-white flex items-center"
                     onClick={() => toggleSort("created_at")}
                   >
@@ -318,20 +325,24 @@ const scrollRef= useRef()
                 </div>
               </div>
             </div>
-
             <div className="divide-y divide-gray-200 bg-white">
               {currentCategories.length === 0 ? (
                 <div className="text-center py-16">
                   <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
                     <X className="h-8 w-8 text-gray-400" />
                   </div>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">No categories found</h3>
+                  <h3 className="mt-4 text-lg font-medium text-gray-900">
+                    No categories found
+                  </h3>
                   <p className="mt-1 text-gray-500 max-w-md mx-auto">
-                    {searchQuery 
-                      ? "No categories match your search. Try different keywords." 
+                    {searchQuery
+                      ? "No categories match your search. Try different keywords."
                       : "You haven't created any categories yet. Get started by adding your first category."}
                   </p>
-                  <Link to="/dashboard/categories/add" className="mt-4 inline-block">
+                  <Link
+                    to="/dashboard/categories/add"
+                    className="mt-4 inline-block"
+                  >
                     <Button className="bg-orange-500 hover:bg-orange-600">
                       <Plus className="h-4 w-4 mr-2" /> Add Category
                     </Button>
@@ -339,7 +350,10 @@ const scrollRef= useRef()
                 </div>
               ) : (
                 currentCategories.map((category) => (
-                  <div key={category.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
+                  <div
+                    key={category.id}
+                    className="px-6 py-4 hover:bg-gray-50 transition-colors"
+                  >
                     <div className="grid grid-cols-12 gap-4 items-center">
                       <div className="col-span-6 flex items-center space-x-3">
                         <Checkbox
@@ -350,7 +364,11 @@ const scrollRef= useRef()
                         />
                         <div className="flex items-center">
                           <div className="rounded-xl w-10 h-10 flex items-center justify-center mr-3">
-                        <img src={`${category.image}`} alt=""  className="w-full h-full object-cover"/>
+                            <img
+                              src={`${category.image}`}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
                           </div>
                           <span className="text-sm font-medium text-gray-900">
                             {category.name}
@@ -360,40 +378,52 @@ const scrollRef= useRef()
 
                       <div className="col-span-2">
                         <span className="text-sm text-gray-600 line-clamp-2">
-                          {StringSlice(category.slug , 10) || "No slug"}
+                          {StringSlice(category.slug, 10) || "No slug"}
                         </span>
                       </div>
 
                       <div className="col-span-3">
                         <span className="text-sm text-gray-600">
-                          {new Date(category.created_at).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
+                          {new Date(category.created_at).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )}
                         </span>
                       </div>
 
                       <div className="col-span-1 flex justify-start">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="hover:bg-gray-200">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="hover:bg-gray-200"
+                            >
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="min-w-[150px]">
+                          <DropdownMenuContent
+                            align="end"
+                            className="min-w-[150px]"
+                          >
                             <DropdownMenuItem asChild>
                               <Link
                                 to={`/dashboard/categories/edit/${category.slug}`}
                                 className="flex items-center px-3 py-2 hover:bg-gray-100"
                               >
-                                <Edit className="h-4 w-4 mr-2 text-gray-600" /> 
+                                <Edit className="h-4 w-4 mr-2 text-gray-600" />
                                 <span>Edit</span>
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-red-600 px-3 py-2 hover:bg-red-50 cursor-pointer"
-                              onClick={() => handleDeleteCategory(category.slug)}
+                              onClick={() =>
+                                handleDeleteCategory(category.slug)
+                              }
                               disabled={deleteLoading === category.slug}
                             >
                               {deleteLoading === category.id ? (
@@ -414,21 +444,22 @@ const scrollRef= useRef()
                   </div>
                 ))
               )}
-            </div>        {pagination && categories.length > 0 && (
+            </div>{" "}
+            {pagination && categories.length > 0 && (
               <div className="flex flex-col md:flex-row items-center justify-between mt-6 gap-4">
                 <p className="text-sm text-gray-700">
                   Showing{" "}
-                  <span className="font-medium">
-                    {categories.length}
-                  </span>{" "}
-                  of <span className="font-medium">{pagination.total}</span>{" "}
-                  customers
+                  <span className="font-medium">{categories.length}</span> of{" "}
+                  <span className="font-medium">{pagination.total}</span>{" "}
+                  categories
                 </p>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setPage((prev) => (prev !== 1 ? prev - 1 : prev))}
+                    onClick={() =>
+                      setPage((prev) => (prev !== 1 ? prev - 1 : prev))
+                    }
                     disabled={!pagination.prev_page_url}
                   >
                     Previous
@@ -448,40 +479,57 @@ const scrollRef= useRef()
         </Card>
       </div>
 
-      
       <style jsx>{`
         @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
         }
-        
+
         @keyframes spin-reverse {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(-360deg); }
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(-360deg);
+          }
         }
-        
+
         @keyframes progress {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
         }
-        
+
         @keyframes ping-slow {
-          0% { transform: scale(0.9); opacity: 0.8; }
-          100% { transform: scale(1.5); opacity: 0; }
+          0% {
+            transform: scale(0.9);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(1.5);
+            opacity: 0;
+          }
         }
-        
+
         .animate-spin-slow {
           animation: spin-slow 4s linear infinite;
         }
-        
+
         .animate-spin-reverse {
           animation: spin-reverse 3s linear infinite;
         }
-        
+
         .animate-progress {
           animation: progress 2s ease-in-out infinite alternate;
         }
-        
+
         .animate-ping-slow {
           animation: ping-slow 1.5s ease-in-out infinite;
         }

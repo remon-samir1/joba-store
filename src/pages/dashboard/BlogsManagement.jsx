@@ -27,19 +27,19 @@ import {
 import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import Notifcation from "../../../components/Notification";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 import StringSlice from "../../../components/Helpers/StringSlice";
 
 const ITEMS_PER_PAGE = 8;
 
 export default function BlogsManagement() {
   const [loading, setLoading] = useState(true);
-  const [contacts, setContacts] = useState([]);
-  const [filteredContacts, setFilteredContacts] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
-  const [selectedContacts, setSelectedContacts] = useState(new Set());
+  const [selectedBlogs, setSelectedBlogs] = useState(new Set());
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
   const [showFilters, setShowFilters] = useState(false);
@@ -77,16 +77,16 @@ export default function BlogsManagement() {
       return;
     }
 
-    const data = filteredContacts.map(contact => ({
+    const data = filteredContacts.map((contact) => ({
       "Contact Name": contact.name,
-      "Email": contact.email,
-      "Subject": contact.subject,
-      "Message": contact.message || "",
+      Email: contact.email,
+      Subject: contact.subject,
+      Message: contact.message || "",
       "Created Date": new Date(contact.created_at).toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric",
-      })
+      }),
     }));
 
     const ws = XLSX.utils.json_to_sheet(data);
@@ -95,35 +95,34 @@ export default function BlogsManagement() {
     XLSX.writeFile(wb, "contacts_export.xlsx");
   };
 
-  const fetchContacts = useCallback(async () => {
+  const fetchBlogs = useCallback(async () => {
     setLoading(true);
     try {
       const res = await Axios.get("/posts");
       const data = Array.isArray(res.data?.data) ? res.data.data : [];
-      setContacts(data);
-      setFilteredContacts(data);
+      setBlogs(data);
+      setFilteredBlogs(data);
     } catch (err) {
-      toast.error("Failed to load contacts. Please try again later.");
-      setContacts([]);
-      setFilteredContacts([]);
+      toast.error("Failed to load blogs. Please try again later.");
+      setBlogs([]);
+      setFilteredBlogs([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchContacts();
-  }, [fetchContacts]);
+    fetchBlogs();
+  }, [fetchBlogs]);
 
   useEffect(() => {
-    let filtered = [...contacts];
+    let filtered = [...blogs];
 
     if (searchQuery) {
       filtered = filtered.filter(
-        (contact) =>
-          contact.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          contact.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          contact.subject?.toLowerCase().includes(searchQuery.toLowerCase())
+        (post) =>
+          post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          post.content?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -133,38 +132,37 @@ export default function BlogsManagement() {
       return 0;
     });
 
-    setFilteredContacts(filtered);
+    setFilteredBlogs(filtered);
     setCurrentPage(1);
-  }, [searchQuery, contacts, sortField, sortDirection]);
+  }, [searchQuery, blogs, sortField, sortDirection]);
 
-  const totalPages = Math.ceil(filteredContacts.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredBlogs.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentItems = filteredContacts.slice(
+  const currentItems = filteredBlogs.slice(
     startIndex,
-    startIndex + ITEMS_PER_PAGE
+    startIndex + ITEMS_PER_PAGE,
   );
 
   const handleSelectAll = (checked) => {
     setSelectAll(checked);
-    setSelectedContacts(
-      checked ? new Set(currentItems.map((c) => c.id)) : new Set()
+    setSelectedBlogs(
+      checked ? new Set(currentItems.map((c) => c.id)) : new Set(),
     );
   };
 
-  const handleSelectContact = (id, checked) => {
-    const newSelected = new Set(selectedContacts);
+  const handleSelectBlog = (id, checked) => {
+    const newSelected = new Set(selectedBlogs);
     checked ? newSelected.add(id) : newSelected.delete(id);
-    setSelectedContacts(newSelected);
+    setSelectedBlogs(newSelected);
   };
 
   const handleDelete = async (id) => {
-  
     setDeleteLoading(id);
     try {
-      await Axios.post(`admin/posts/${id}`, {_method:'DELETE'});
+      await Axios.post(`/admin/posts/${id}`, { _method: "DELETE" });
       toast.success("Post deleted successfully");
-      const updated = contacts.filter((c) => c.slug !== id);
-      setContacts(updated);
+      const updated = blogs.filter((c) => c.slug !== id);
+      setBlogs(updated);
     } catch (err) {
       toast.error("Failed to delete post. Please try again.");
     } finally {
@@ -173,23 +171,23 @@ export default function BlogsManagement() {
   };
 
   const handleBulkDelete = async () => {
-    if (selectedContacts.size === 0) {
-      toast.warning("Please select at least one contact to delete");
+    if (selectedBlogs.size === 0) {
+      toast.warning("Please select at least one blog to delete");
       return;
     }
 
-    const ids = Array.from(selectedContacts);
+    const ids = Array.from(selectedBlogs);
     try {
       for (let id of ids) {
-        await Axios.delete(`admin/contacts/${id}`);
+        await Axios.post(`/admin/posts/${id}`, { _method: "DELETE" });
       }
-      toast.success(`${ids.length} contacts deleted successfully`);
-      const updated = contacts.filter((c) => !ids.includes(c.id));
-      setContacts(updated);
-      setSelectedContacts(new Set());
+      toast.success(`${ids.length} blogs deleted successfully`);
+      const updated = blogs.filter((c) => !ids.includes(c.id));
+      setBlogs(updated);
+      setSelectedBlogs(new Set());
       setSelectAll(false);
     } catch (err) {
-      toast.error("Failed to delete contacts. Please try again.");
+      toast.error("Failed to delete blogs. Please try again.");
     }
   };
 
@@ -211,13 +209,13 @@ export default function BlogsManagement() {
     <div className="flex-1 overflow-auto bg-gray-50">
       <Notifcation />
       {loading && <OrangeLoader />}
-      <DashboardHeader title="Contacts Management" />
+      <DashboardHeader title="Blogs Management" />
 
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Manage Contacts</h2>
-            <p className="text-gray-600 mt-1">View and manage contact messages</p>
+            <h2 className="text-2xl font-bold text-gray-900">Manage Blogs</h2>
+            <p className="text-gray-600 mt-1">View and manage blog posts</p>
           </div>
         </div>
 
@@ -236,8 +234,13 @@ export default function BlogsManagement() {
                       className="pl-10 bg-gray-50 border-gray-200 rounded-lg"
                     />
                   </div>
-                  
-                <Link to='add' className="px-4 whitespace-nowrap py-2 rounded bg-primary text-white ">Add Post</Link>
+
+                  <Link
+                    to="add"
+                    className="px-4 whitespace-nowrap py-2 rounded bg-primary text-white "
+                  >
+                    Add Post
+                  </Link>
                 </div>
               </div>
             </div>
@@ -245,7 +248,6 @@ export default function BlogsManagement() {
             <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3">
               <div className="grid grid-cols-12 gap-4 items-center">
                 <div className="col-span-2 flex items-center space-x-3">
-              
                   <span className="text-sm font-medium text-white">
                     Blog name
                   </span>
@@ -258,7 +260,7 @@ export default function BlogsManagement() {
                     Content
                   </span>
                 </div>
-              
+
                 <div className="col-span-2">
                   <button
                     className="text-sm font-medium text-white flex items-center"
@@ -268,9 +270,7 @@ export default function BlogsManagement() {
                   </button>
                 </div>
                 <div className="col-span-3">
-                  <span className="text-sm font-medium text-white">
-                    Action
-                  </span>
+                  <span className="text-sm font-medium text-white">Action</span>
                 </div>
               </div>
             </div>
@@ -282,45 +282,49 @@ export default function BlogsManagement() {
                     <X className="h-8 w-8 text-gray-400" />
                   </div>
                   <h3 className="mt-4 text-lg font-medium text-gray-900">
-                    No contacts found
+                    No blogs found
                   </h3>
                   <p className="mt-1 text-gray-500 max-w-md mx-auto">
                     {searchQuery
-                      ? "No contacts match your search. Try different keywords."
-                      : "No contacts available."}
+                      ? "No blogs match your search. Try different keywords."
+                      : "No blogs available."}
                   </p>
                 </div>
               ) : (
-                currentItems.map((contact) => (
+                currentItems.map((post) => (
                   <div
-                    key={contact.id}
+                    key={post.id}
                     className="px-6 py-4 hover:bg-gray-50 transition-colors"
                   >
                     <div className="grid grid-cols-12 gap-4 items-center">
                       <div className="col-span-2 flex items-center space-x-3">
-                    
                         <div className="flex items-center">
                           <span className="text-sm font-medium text-gray-900">
-                            {contact.title}
+                            {post.title}
                           </span>
                         </div>
                       </div>
 
                       <div className="col-span-2">
                         <span className="text-sm text-gray-600 line-clamp-2">
-                      <img src={contact.image} className="w-10 h-10" />
+                          <img src={post.image} className="w-10 h-10" />
                         </span>
                       </div>
                       <div className="col-span-3">
-                        <span dangerouslySetInnerHTML={{__html: StringSlice(contact.content , 20)|| "No content"}}  className="text-sm truncate text-gray-600 line-clamp-2">
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html:
+                              StringSlice(post.content, 20) || "No content",
+                          }}
+                          className="text-sm truncate text-gray-600 line-clamp-2"
+                        >
                           {/* {} */}
                         </span>
                       </div>
-                    
 
                       <div className="col-span-2 ">
                         <span className="text-sm  text-gray-600">
-                          {new Date(contact.created_at).toLocaleDateString(
+                          {new Date(post.created_at).toLocaleDateString(
                             "en-GB",
                             {
                               day: "2-digit",
@@ -339,14 +343,14 @@ export default function BlogsManagement() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
-                              <Link to={`/dashboard/blogs/edit/${contact.slug}`}>
+                              <Link to={`/dashboard/blogs/edit/${post.slug}`}>
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-red-600"
-                              onClick={() => handleDelete(contact.slug)}
+                              onClick={() => handleDelete(post.slug)}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
@@ -364,11 +368,8 @@ export default function BlogsManagement() {
               <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white">
                 <div className="text-sm text-gray-600">
                   Showing {startIndex + 1} to{" "}
-                  {Math.min(
-                    startIndex + ITEMS_PER_PAGE,
-                    filteredContacts.length,
-                  )}{" "}
-                  of {filteredContacts.length} contacts
+                  {Math.min(startIndex + ITEMS_PER_PAGE, filteredBlogs.length)}{" "}
+                  of {filteredBlogs.length} blogs
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -387,10 +388,10 @@ export default function BlogsManagement() {
                         totalPages <= 5
                           ? i + 1
                           : currentPage <= 3
-                          ? i + 1
-                          : currentPage >= totalPages - 2
-                          ? totalPages - 4 + i
-                          : currentPage - 2 + i;
+                            ? i + 1
+                            : currentPage >= totalPages - 2
+                              ? totalPages - 4 + i
+                              : currentPage - 2 + i;
 
                       return (
                         <Button

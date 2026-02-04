@@ -14,7 +14,7 @@ import Notifcation from "../../../components/Notification";
 import { useNavigate, useParams } from "react-router-dom";
 import StringSlice from "../../../components/Helpers/StringSlice";
 import ReactQuill from "react-quill";
-import 'react-quill/dist/quill.snow.css';
+import "react-quill/dist/quill.snow.css";
 
 const UpdateBlogs = () => {
   const { id } = useParams();
@@ -28,9 +28,14 @@ const UpdateBlogs = () => {
 
   useEffect(() => {
     setLoading(true);
-    Axios.get("posts")
-      .then((data) => {
-        const post = data.data.data.find((item) => item.slug === id);
+    Axios.get("/posts")
+      .then((res) => {
+        const postsArray =
+          res.data?.data?.data || res.data?.data || res.data || [];
+        const post = postsArray.find(
+          (item) => item.slug === id || item.id == id,
+        );
+        if (!post) throw new Error("Blog post not found");
         setCategoryData({
           title: post.title,
           content: post.content,
@@ -81,13 +86,12 @@ const UpdateBlogs = () => {
     const formData = new FormData();
     formData.append("title", categoryData.title);
     formData.append("content", categoryData.content);
-    if(typeof categoryData.image !== 'string'){
-      
+    if (typeof categoryData.image !== "string") {
       formData.append("image", categoryData.image);
     }
     formData.append("_method", "PUT");
 
-    Axios.post(`admin/posts/${id}`, formData)
+    Axios.post(`/admin/posts/${id}`, formData)
       .then(() => {
         toast.success("Blog Updated successfully!");
         setTimeout(() => nav(-1), 1500);
@@ -100,19 +104,28 @@ const UpdateBlogs = () => {
       });
   };
 
-  const modules = useMemo(() => ({
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      ['link', 'image'],
-      ['clean']
-    ]
-  }), []);
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        ["clean"],
+      ],
+    }),
+    [],
+  );
 
   const formats = [
-    'header', 'bold', 'italic', 'underline',
-    'list', 'bullet', 'link', 'image'
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "list",
+    "bullet",
+    "link",
+    "image",
   ];
 
   const ProfessionalLoader = () => (
@@ -125,7 +138,9 @@ const UpdateBlogs = () => {
             <div className="absolute inset-6 rounded-full border-6 border-purple-500 border-l-transparent animate-ping"></div>
           </div>
           <h3 className="text-xl font-bold text-gray-800 mb-2">Loading...</h3>
-          <p className="text-gray-600 text-center mb-6">Please wait while we update your Blog...</p>
+          <p className="text-gray-600 text-center mb-6">
+            Please wait while we update your Blog...
+          </p>
           <div className="w-full bg-gray-200 rounded-full h-2 mb-4 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full animate-progress"></div>
           </div>
@@ -150,7 +165,9 @@ const UpdateBlogs = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-lg font-medium">Post Title *</Label>
+              <Label htmlFor="title" className="text-lg font-medium">
+                Post Title *
+              </Label>
               <Input
                 id="title"
                 value={categoryData.title}
@@ -163,7 +180,9 @@ const UpdateBlogs = () => {
 
             {/* Image Upload */}
             <div className="space-y-4">
-              <Label htmlFor="image" className="text-lg font-medium">Featured Image *</Label>
+              <Label htmlFor="image" className="text-lg font-medium">
+                Featured Image *
+              </Label>
               <div className="flex items-center gap-4">
                 <Input
                   id="image"
@@ -175,8 +194,10 @@ const UpdateBlogs = () => {
                 />
                 {categoryData.image && (
                   <span className="text-sm text-gray-700">
-                    Selected: <span className="font-medium">
-                      {categoryData.image.name || StringSlice(categoryData.image, 20)}
+                    Selected:{" "}
+                    <span className="font-medium">
+                      {categoryData.image.name ||
+                        StringSlice(categoryData.image, 20)}
                     </span>
                   </span>
                 )}
@@ -185,7 +206,9 @@ const UpdateBlogs = () => {
 
             {/* Rich Text Editor */}
             <div className="space-y-2">
-              <Label htmlFor="content" className="text-lg font-medium">Post Content *</Label>
+              <Label htmlFor="content" className="text-lg font-medium">
+                Post Content *
+              </Label>
               <div className="custom-quill-container rounded-xl border-2 border-gray-200 overflow-hidden shadow-sm">
                 <ReactQuill
                   theme="snow"
@@ -229,7 +252,7 @@ const UpdateBlogs = () => {
         .custom-quill-container .ql-container {
           font-size: 16px;
           min-height: 600px;
-          font-family: 'Inter', sans-serif;
+          font-family: "Inter", sans-serif;
         }
 
         .custom-quill-container .ql-editor {

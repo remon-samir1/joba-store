@@ -27,7 +27,7 @@ import {
 import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import Notifcation from "../../../components/Notification";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -76,16 +76,16 @@ export default function ContactsManagementPage() {
       return;
     }
 
-    const data = filteredContacts.map(contact => ({
+    const data = filteredContacts.map((contact) => ({
       "Contact Name": contact.name,
-      "Email": contact.email,
-      "Subject": contact.subject,
-      "Message": contact.message || "",
+      Email: contact.email,
+      Subject: contact.subject,
+      Message: contact.message || "",
       "Created Date": new Date(contact.created_at).toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric",
-      })
+      }),
     }));
 
     const ws = XLSX.utils.json_to_sheet(data);
@@ -122,7 +122,7 @@ export default function ContactsManagementPage() {
         (contact) =>
           contact.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           contact.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          contact.subject?.toLowerCase().includes(searchQuery.toLowerCase())
+          contact.subject?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -140,13 +140,13 @@ export default function ContactsManagementPage() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentItems = filteredContacts.slice(
     startIndex,
-    startIndex + ITEMS_PER_PAGE
+    startIndex + ITEMS_PER_PAGE,
   );
 
   const handleSelectAll = (checked) => {
     setSelectAll(checked);
     setSelectedContacts(
-      checked ? new Set(currentItems.map((c) => c.id)) : new Set()
+      checked ? new Set(currentItems.map((c) => c.id)) : new Set(),
     );
   };
 
@@ -162,7 +162,7 @@ export default function ContactsManagementPage() {
 
     setDeleteLoading(id);
     try {
-      await Axios.delete(`admin/contacts/${id}`);
+      await Axios.delete(`/admin/contacts/${id}`);
       toast.success("Contact deleted successfully");
       const updated = contacts.filter((c) => c.id !== id);
       setContacts(updated);
@@ -182,7 +182,7 @@ export default function ContactsManagementPage() {
     const ids = Array.from(selectedContacts);
     try {
       for (let id of ids) {
-        await Axios.delete(`admin/contacts/${id}`);
+        await Axios.delete(`/admin/contacts/${id}`);
       }
       toast.success(`${ids.length} contacts deleted successfully`);
       const updated = contacts.filter((c) => !ids.includes(c.id));
@@ -217,8 +217,12 @@ export default function ContactsManagementPage() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Manage Contacts</h2>
-            <p className="text-gray-600 mt-1">View and manage contact messages</p>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Manage Contacts
+            </h2>
+            <p className="text-gray-600 mt-1">
+              View and manage contact messages
+            </p>
           </div>
         </div>
 
@@ -237,10 +241,10 @@ export default function ContactsManagementPage() {
                       className="pl-10 bg-gray-50 border-gray-200 rounded-lg"
                     />
                   </div>
-                  
+
                   <Button variant="outline" onClick={exportToExcel}>
-                  <Download className="h-4 w-4 mr-2" /> Export
-                </Button>
+                    <Download className="h-4 w-4 mr-2" /> Export
+                  </Button>
                 </div>
               </div>
             </div>
@@ -248,7 +252,6 @@ export default function ContactsManagementPage() {
             <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3">
               <div className="grid grid-cols-12 gap-4 items-center">
                 <div className="col-span-2 flex items-center space-x-3">
-              
                   <span className="text-sm font-medium text-white">
                     Contact name
                   </span>
@@ -300,7 +303,6 @@ export default function ContactsManagementPage() {
                   >
                     <div className="grid grid-cols-12 gap-4 items-center">
                       <div className="col-span-2 flex items-center space-x-3">
-                    
                         <div className="flex items-center">
                           <span className="text-sm font-medium text-gray-900">
                             {contact.name}
@@ -369,10 +371,10 @@ export default function ContactsManagementPage() {
                         totalPages <= 5
                           ? i + 1
                           : currentPage <= 3
-                          ? i + 1
-                          : currentPage >= totalPages - 2
-                          ? totalPages - 4 + i
-                          : currentPage - 2 + i;
+                            ? i + 1
+                            : currentPage >= totalPages - 2
+                              ? totalPages - 4 + i
+                              : currentPage - 2 + i;
 
                       return (
                         <Button

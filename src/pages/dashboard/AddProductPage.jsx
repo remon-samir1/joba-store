@@ -19,7 +19,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Upload, Plus, Calendar, X, Image as ImageIcon } from "lucide-react";
+import {
+  Search,
+  Upload,
+  Plus,
+  Calendar,
+  X,
+  Image as ImageIcon,
+} from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -37,9 +44,7 @@ const ModernLoadingScreen = () => (
     <p className="mt-6 text-xl font-bold text-white animate-pulse">
       Adding product...
     </p>
-    <p className="mt-2 text-orange-300">
-      This may take a few moments
-    </p>
+    <p className="mt-2 text-orange-300">This may take a few moments</p>
   </div>
 );
 
@@ -62,7 +67,7 @@ export default function AddProductPage() {
     productCategory: "",
     productTag: "",
   });
-console.log(productData);
+  console.log(productData);
   const [variations, setVariations] = useState([{ weight: "", price: "" }]);
   const [attachment, setAttachment] = useState(null);
   const [productImages, setProductImages] = useState([]);
@@ -86,7 +91,7 @@ console.log(productData);
       [id]: checked,
     }));
   };
-  
+
   // Handler for Switches
   const handleSwitchChange = (id, checked) => {
     setProductData((prevData) => ({
@@ -125,32 +130,35 @@ console.log(productData);
     const errors = [];
 
     // Required fields validation
-    if (!productData.productName.trim()) errors.push('Product Name');
-    if (!productData.productDescription.trim()) errors.push('Product Description');
-    if (!productData.productPrice) errors.push('Product Price');
+    if (!productData.productName.trim()) errors.push("Product Name");
+    if (!productData.productDescription.trim())
+      errors.push("Product Description");
+    if (!productData.productPrice) errors.push("Product Price");
     // if (!productData.expirationStart) errors.push('Expiration Start Date');
     // if (!productData.expirationEnd) errors.push('Expiration End Date');
     // if (!productData.stockQuantity && !productData.unlimitedStock) errors.push('Stock Quantity');
-    if (!productData.productCategory) errors.push('Product Category');
-    if (!productData.productTag) errors.push('Product Tag');
-    
+    if (!productData.productCategory) errors.push("Product Category");
+    if (!productData.productTag) errors.push("Product Tag");
+
     // Product image validation
-    if (productImages.length === 0) errors.push('Product Image');
+    if (productImages.length === 0) errors.push("Product Image");
 
     // Variations validation
     let variationErrors = [];
     variations.forEach((variation, index) => {
-      if (!variation.weight.trim()) variationErrors.push(`Variation ${index + 1} weight`);
-      if (!variation.price) variationErrors.push(`Variation ${index + 1} price`);
+      if (!variation.weight.trim())
+        variationErrors.push(`Variation ${index + 1} weight`);
+      if (!variation.price)
+        variationErrors.push(`Variation ${index + 1} price`);
     });
-    
+
     if (variationErrors.length > 0) errors.push(...variationErrors);
-    
+
     // Expiration date validation
     // if (productData.expirationStart && productData.expirationEnd) {
     //   const startDate = new Date(productData.expirationStart);
     //   const endDate = new Date(productData.expirationEnd);
-      
+
     //   if (startDate >= endDate) {
     //     errors.push('Expiration End Date must be after Start Date');
     //   }
@@ -162,22 +170,23 @@ console.log(productData);
   // Handlers for image uploads
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-    const validImages = files.filter(file => 
-      file.type.includes('image/jpeg') || 
-      file.type.includes('image/png') ||
-      file.type.includes('image/gif')
+    const validImages = files.filter(
+      (file) =>
+        file.type.includes("image/jpeg") ||
+        file.type.includes("image/png") ||
+        file.type.includes("image/gif"),
     );
-    
+
     if (validImages.length === 0) {
-      toast.error('Only image files (JPEG, PNG, GIF) are allowed');
+      toast.error("Only image files (JPEG, PNG, GIF) are allowed");
       return;
     }
-    
+
     if (validImages.length + productImages.length > 10) {
-      toast.error('Maximum 10 images allowed');
+      toast.error("Maximum 10 images allowed");
       return;
     }
-    
+
     setProductImages([...productImages, ...validImages]);
   };
 
@@ -185,7 +194,7 @@ console.log(productData);
   const removeImage = (index) => {
     const newImages = productImages.filter((_, i) => i !== index);
     setProductImages(newImages);
-    
+
     // Adjust current image index if needed
     if (index === currentImageIndex) {
       setCurrentImageIndex(newImages.length > 0 ? 0 : -1);
@@ -197,12 +206,12 @@ console.log(productData);
   const handleSubmit = async (e, pending) => {
     e.preventDefault();
     setLoading(true);
-    
+
     // Validate form
     const validationErrors = validateForm();
-    
+
     if (validationErrors.length > 0) {
-      validationErrors.forEach(error => {
+      validationErrors.forEach((error) => {
         toast.error(error);
       });
       setLoading(false);
@@ -217,7 +226,12 @@ console.log(productData);
     formData.append("price", productData.productPrice);
     formData.append("discount_price", +productData.discountedPrice);
     formData.append("payment_method", "cash");
-    formData.append("stock",  productData.stockStatus === 'out-of-stock' ? "0" : productData.stockQuantity);
+    formData.append(
+      "stock",
+      productData.stockStatus === "out-of-stock"
+        ? "0"
+        : productData.stockQuantity,
+    );
     formData.append("category_id", +productData.productCategory);
     // formData.append("is_out_of_stock", productData.stockStatus === 'in-stock' ? 0 : 1);
     formData.append("is_featured", productData.isBestSeller ? 1 : 0);
@@ -248,14 +262,14 @@ console.log(productData);
     }
 
     try {
-      await Axios.post("admin/products", formData, {
+      await Axios.post("/admin/products", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       }).then((data) => {
         toast.success("Product created successfully!");
         setTimeout(() => {
-          nav('/dashboard/products');
+          nav("/dashboard/products");
         }, 2000);
         setLoading(false);
       });
@@ -268,7 +282,9 @@ console.log(productData);
 
   useEffect(() => {
     Axios.get("/categories").then((data) => {
-      setCategories(data.data.data.data);
+      setCategories(
+        data.data?.data?.data || data.data?.data || data.data || [],
+      );
     });
     Axios.get("/tags").then((data) => {
       console.log(data);
@@ -279,19 +295,19 @@ console.log(productData);
     <div className="flex-1 bg-gray-50 min-h-screen">
       {loading && <ModernLoadingScreen />}
       <DashboardHeader title="Add Products" />
-<Notifcation/>
+      <Notifcation />
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
           <h2 className="text-2xl font-bold text-gray-800">Add New Product</h2>
-          <div className="relative">
+          {/* <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               type="text"
               placeholder="Search product for add"
               className="pl-10 w-80 border-gray-300"
             />
-          </div>
+          </div> */}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -300,11 +316,15 @@ console.log(productData);
             {/* Basic Details */}
             <Card className="border border-gray-200 rounded-xl shadow-sm">
               <CardHeader className="bg-gray-50 border-b">
-                <CardTitle className="text-lg font-semibold text-gray-800">Basic Details</CardTitle>
+                <CardTitle className="text-lg font-semibold text-gray-800">
+                  Basic Details
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 <div>
-                  <Label htmlFor="productName" className="text-gray-700">Product Name *</Label>
+                  <Label htmlFor="productName" className="text-gray-700">
+                    Product Name *
+                  </Label>
                   <Input
                     id="productName"
                     value={productData.productName}
@@ -334,11 +354,15 @@ console.log(productData);
             {/* Pricing */}
             <Card className="border border-gray-200 rounded-xl shadow-sm">
               <CardHeader className="bg-gray-50 border-b">
-                <CardTitle className="text-lg font-semibold text-gray-800">Pricing</CardTitle>
+                <CardTitle className="text-lg font-semibold text-gray-800">
+                  Pricing
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 <div>
-                  <Label htmlFor="productPrice" className="text-gray-700">Product Price *</Label>
+                  <Label htmlFor="productPrice" className="text-gray-700">
+                    Product Price *
+                  </Label>
                   <Input
                     id="productPrice"
                     type="number"
@@ -440,10 +464,14 @@ console.log(productData);
                 <div className="space-y-4">
                   <div className="grid grid-cols-10 gap-4 items-end">
                     <div className="col-span-4">
-                      <Label className="text-gray-700">Variation weight *</Label>
+                      <Label className="text-gray-700">
+                        Variation weight *
+                      </Label>
                     </div>
                     <div className="col-span-4">
-                      <Label className="text-gray-700">Variation Pricing *</Label>
+                      <Label className="text-gray-700">
+                        Variation Pricing *
+                      </Label>
                     </div>
                     <div className="col-span-2"></div>
                   </div>
@@ -506,7 +534,9 @@ console.log(productData);
             {/* Add Attachment */}
             <Card className="border border-gray-200 rounded-xl shadow-sm">
               <CardHeader className="bg-gray-50 border-b">
-                <CardTitle className="text-lg font-semibold text-gray-800">Add attachment</CardTitle>
+                <CardTitle className="text-lg font-semibold text-gray-800">
+                  Add attachment
+                </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
                 <Label
@@ -527,12 +557,14 @@ console.log(productData);
                       const file = e.target.files[0];
                       if (file) {
                         if (
-                          !["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"].some(
-                            (type) => file.type.includes(type)
-                          )
+                          ![
+                            "application/pdf",
+                            "application/msword",
+                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                          ].some((type) => file.type.includes(type))
                         ) {
                           toast.error(
-                            "Invalid file type. Allowed types: PDF, DOC, DOCX"
+                            "Invalid file type. Allowed types: PDF, DOC, DOCX",
                           );
                           return;
                         }
@@ -558,13 +590,15 @@ console.log(productData);
             {/* Inventory */}
             <Card className="border border-gray-200 rounded-xl shadow-sm">
               <CardHeader className="bg-gray-50 border-b">
-                <CardTitle className="text-lg font-semibold text-gray-800">Inventory</CardTitle>
+                <CardTitle className="text-lg font-semibold text-gray-800">
+                  Inventory
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="stockQuantity" className="text-gray-700">
-                      Stock Quantity 
+                      Stock Quantity
                     </Label>
                     <Input
                       id="stockQuantity"
@@ -573,13 +607,15 @@ console.log(productData);
                       onChange={handleChange}
                       placeholder="100"
                       className="mt-1 border-gray-300"
-                      disabled={ productData.stockStatus === 'out-of-stock'}
-                      required={ productData.stockStatus !== 'out-of-stock'}
+                      disabled={productData.stockStatus === "out-of-stock"}
+                      required={productData.stockStatus !== "out-of-stock"}
                       min="0"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="stockStatus" className="text-gray-700">Stock Status *</Label>
+                    <Label htmlFor="stockStatus" className="text-gray-700">
+                      Stock Status *
+                    </Label>
                     <Select
                       value={productData.stockStatus}
                       onValueChange={(value) =>
@@ -587,7 +623,10 @@ console.log(productData);
                       }
                       required
                     >
-                      <SelectTrigger className="mt-1 border-gray-300" id="stockStatus">
+                      <SelectTrigger
+                        className="mt-1 border-gray-300"
+                        id="stockStatus"
+                      >
                         <SelectValue placeholder="Select Status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -667,7 +706,9 @@ console.log(productData);
             {/* Upload Product Images */}
             <Card className="border border-gray-200 rounded-xl shadow-sm">
               <CardHeader className="bg-gray-50 border-b">
-                <CardTitle className="text-lg font-semibold text-gray-800">Upload Product Images *</CardTitle>
+                <CardTitle className="text-lg font-semibold text-gray-800">
+                  Upload Product Images *
+                </CardTitle>
                 <p className="text-sm text-gray-500">
                   Add multiple images (Required)
                 </p>
@@ -679,7 +720,7 @@ console.log(productData);
                     <>
                       <img
                         src={URL.createObjectURL(
-                          productImages[currentImageIndex]
+                          productImages[currentImageIndex],
                         )}
                         alt={`Product Preview ${currentImageIndex + 1}`}
                         className="w-full h-full object-contain"
@@ -764,11 +805,15 @@ console.log(productData);
             {/* Categories */}
             <Card className="border border-gray-200 rounded-xl shadow-sm">
               <CardHeader className="bg-gray-50 border-b">
-                <CardTitle className="text-lg font-semibold text-gray-800">Categories</CardTitle>
+                <CardTitle className="text-lg font-semibold text-gray-800">
+                  Categories
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 <div>
-                  <Label htmlFor="productCategory" className="text-gray-700">Product Categories *</Label>
+                  <Label htmlFor="productCategory" className="text-gray-700">
+                    Product Categories *
+                  </Label>
                   <Select
                     value={productData.productCategory}
                     onValueChange={(value) =>
@@ -776,12 +821,19 @@ console.log(productData);
                     }
                     required
                   >
-                    <SelectTrigger className="mt-1 border-gray-300" id="productCategory">
+                    <SelectTrigger
+                      className="mt-1 border-gray-300"
+                      id="productCategory"
+                    >
                       <SelectValue placeholder="Select your product category" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories?.map((data) => (
-                        <SelectItem placeholder={String(data.name)} key={data.id} value={String(data.id)}>
+                        <SelectItem
+                          placeholder={String(data.name)}
+                          key={data.id}
+                          value={String(data.id)}
+                        >
                           {data.name}
                         </SelectItem>
                       ))}
@@ -790,7 +842,9 @@ console.log(productData);
                 </div>
 
                 <div>
-                  <Label htmlFor="productTag" className="text-gray-700">Product Tag *</Label>
+                  <Label htmlFor="productTag" className="text-gray-700">
+                    Product Tag *
+                  </Label>
                   <Select
                     value={productData.productTag}
                     onValueChange={(value) =>
@@ -798,7 +852,10 @@ console.log(productData);
                     }
                     required
                   >
-                    <SelectTrigger className="mt-1 border-gray-300" id="productTag">
+                    <SelectTrigger
+                      className="mt-1 border-gray-300"
+                      id="productTag"
+                    >
                       <SelectValue placeholder="Select your product tag" />
                     </SelectTrigger>
                     <SelectContent>

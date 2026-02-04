@@ -86,33 +86,39 @@ export default function UpdateProduct() {
 
         // Fetch product data
         const productsRes = await Axios.get(`/products/${id}`);
-        console.log(productsRes);
-        const product =productsRes.data.data
-        setInitialData(productsRes.data.data);
+        console.log("Product Response:", productsRes);
+        const product = productsRes.data?.data || productsRes.data;
+        if (!product) throw new Error("Product data not found");
+
+        setInitialData(product);
         // console.log(product);
         // Set product data
         setProductData({
           productName: product.name?.en || "",
           productDescription: product.description?.en || "",
           productPrice: product.price || "",
-          discountedPrice: +product.discount_price ,
+          discountedPrice: +product.discount_price,
           salesPrice: product.sales_price || "",
           taxIncluded: product.tax_included ? "yes" : "no",
           expirationStart: product.created_at || "",
           expirationEnd: product.expiration_end || "",
-          stockQuantity:  product.stock || "",
-          stockStatus: product.stock === 0 ? 'out_of_stock' : 'in_stock',
+          stockQuantity: product.stock ?? "",
+          stockStatus: product.stock === 0 ? "out_of_stock" : "in_stock",
           // unlimitedStock: product.stock ,
           isBestSeller: product.is_featured || false,
           isNewArrival: product.is_new_arrival || false,
-          productCategory:product.category_id,
+          productCategory: product.category_id,
           productTag: product.tags?.[0] || "",
         });
 
         // Set variations
         setVariations(
           product.sizes?.length
-            ? product.sizes.map((s) => ({ weight: s.name, price: s.price }))
+            ? product.sizes.map((s) => ({
+                id: s.id,
+                weight: s.name,
+                price: s.price,
+              }))
             : [{ weight: "", price: "" }],
         );
 
@@ -132,10 +138,15 @@ export default function UpdateProduct() {
 
         // Fetch categories and tags
         const categoriesRes = await Axios.get("/categories");
-        setCategories(categoriesRes.data.data.data);
+        setCategories(
+          categoriesRes.data?.data?.data ||
+            categoriesRes.data?.data ||
+            categoriesRes.data ||
+            [],
+        );
 
         const tagsRes = await Axios.get("/tags");
-        setTags(tagsRes.data.data || []);
+        setTags(tagsRes.data?.data || tagsRes.data || []);
 
         setLoading(false);
       } catch (err) {
@@ -283,7 +294,12 @@ export default function UpdateProduct() {
     // );
     // formData.append("expiration_start", productData.expirationStart);
     // formData.append("expiration_end", productData.expirationEnd);
-    formData.append("stock", productData.stockStatus === 'out_of_stock' ? 0 :  productData.stockQuantity);
+    formData.append(
+      "stock",
+      productData.stockStatus === "out_of_stock"
+        ? 0
+        : productData.stockQuantity,
+    );
     // formData.append(
     //   "is_out_of_stock",
     //   productData.stockStatus === "out-of-stock" ? "1" : "0",
@@ -314,15 +330,22 @@ export default function UpdateProduct() {
 
     // Variations
     variations.forEach((v, i) => {
+      if (v.id) {
+        formData.append(`sizes[${i}][id]`, v.id);
+      }
       formData.append(`sizes[${i}][name]`, v.weight);
       formData.append(`sizes[${i}][price]`, v.price);
-      formData.append(`sizes[${i}][stock]`, productData.stockQuantity);
+      formData.append(
+        `sizes[${i}][stock]`,
+        productData.stockStatus === "out_of_stock"
+          ? 0
+          : productData.stockQuantity,
+      );
     });
     // formData.append("sizes", JSON.stringify(variations));
 
-
     try {
-      await Axios.post(`admin/products/${id}`, formData, {
+      await Axios.post(`/admin/products/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -335,11 +358,11 @@ export default function UpdateProduct() {
     } catch (error) {
       if (error.response) {
         const { message, errors } = error.response.data;
-    
+
         if (!errors) {
           toast.error(message);
         }
-    
+
         if (errors) {
           Object.values(errors).forEach((fieldErrors) => {
             fieldErrors.forEach((msg) => toast.error(msg));
@@ -348,8 +371,7 @@ export default function UpdateProduct() {
       } else {
         toast.error("Update Failed");
       }
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -668,7 +690,8 @@ export default function UpdateProduct() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="stockQuantity" className="text-gray-700">
-                      Stock Quantity {productData.stockStatus !== 'out_of_stock' && "*"}
+                      Stock Quantity{" "}
+                      {productData.stockStatus !== "out_of_stock" && "*"}
                     </Label>
                     <Input
                       id="stockQuantity"
@@ -677,7 +700,7 @@ export default function UpdateProduct() {
                       onChange={handleChange}
                       placeholder="100"
                       className="mt-1 border-gray-300"
-                      disabled={ productData.stockStatus === 'out_of_stock'}
+                      disabled={productData.stockStatus === "out_of_stock"}
                       min="0"
                     />
                   </div>
@@ -686,7 +709,6 @@ export default function UpdateProduct() {
                       Stock Status *
                     </Label>
                     <Select
-                  
                       value={productData.stockStatus}
                       onValueChange={(value) =>
                         handleSelectChange("stockStatus", value)
@@ -699,11 +721,10 @@ export default function UpdateProduct() {
                         <SelectValue placeholder="Select Status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value='in_stock'>In Stock</SelectItem>
-                        <SelectItem value='out_of_stock'>
+                        <SelectItem value="in_stock">In Stock</SelectItem>
+                        <SelectItem value="out_of_stock">
                           Out of Stock
                         </SelectItem>
-                  
                       </SelectContent>
                     </Select>
                   </div>
@@ -903,18 +924,17 @@ export default function UpdateProduct() {
                     Product Categories *
                   </Label>
                   <select
-                  className="border border-gray-200 rounded shadow-sm px-3 py-2"
-                    value={String(productData?.productCategory )}
+                    className="border border-gray-200 rounded shadow-sm px-3 py-2"
+                    value={String(productData?.productCategory)}
                     onValueChange={(value) =>
-                      handleSelectChange("productCategory",value)
+                      handleSelectChange("productCategory", value)
                     }
                   >
-                
-                      {categories?.map((data) => (
-                        <option  key={data.id} value={data.id}>
-                          {data.name}
-                        </option>
-                      ))}
+                    {categories?.map((data) => (
+                      <option key={data.id} value={data.id}>
+                        {data.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

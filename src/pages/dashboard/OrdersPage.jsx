@@ -58,6 +58,7 @@ export default function OrdersPage() {
     setLoading(true);
     Axios.get(`/admin/orders?page=${currentPage}&per_page=10`)
       .then((res) => {
+        console.log(res);
         const { data } = res;
         setOrders(data.data.orders.data);
         setStats(data.data.stats);

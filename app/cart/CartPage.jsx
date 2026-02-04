@@ -185,7 +185,11 @@ const CartPage = () => {
                     <button
                       className="remove-btn"
                       onClick={() =>
-                        removeItem(item.product.slug, item.product.id, 43)
+                        removeItem(
+                          item.product.slug,
+                          item.product.id,
+                          item.size?.id,
+                        )
                       }
                     >
                       <svg
@@ -240,7 +244,9 @@ const CartPage = () => {
 
                     <div className="item-total">
                       ${" "}
-                      {(item.size ? +item.size?.price - +item.product.discount_price : +item.product.price - +item.product.discount_price) *
+                      {(item.size
+                        ? +item.size?.price - +item.product.discount_price
+                        : +item.product.price - +item.product.discount_price) *
                         item.quantity}
                     </div>
                   </div>
@@ -324,9 +330,11 @@ const CartPage = () => {
                           {/* {product.product.discount_price != 0
                             ? product.product.discount_price
                             : product.size.price} */}
-                            {
-                              +product.size ? +product.size?.price - +product.product.discount_price : +product.product.price - +product.product.discount_price
-                            }
+                          {+product.size
+                            ? +product.size?.price -
+                              +product.product.discount_price
+                            : +product.product.price -
+                              +product.product.discount_price}
                         </span>
                       </div>
                     </div>

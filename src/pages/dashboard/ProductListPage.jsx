@@ -38,8 +38,12 @@ const OrangeLoader = () => (
         <div className="absolute inset-12 rounded-full border-8 border-orange-200 border-l-transparent animate-ping"></div>
       </div>
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-orange-700 mb-2">Loading Products</h2>
-        <p className="text-orange-600 max-w-md mb-6">Fetching your product data, please wait...</p>
+        <h2 className="text-2xl font-bold text-orange-700 mb-2">
+          Loading Products
+        </h2>
+        <p className="text-orange-600 max-w-md mb-6">
+          Fetching your product data, please wait...
+        </p>
         <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
           <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 animate-progress"></div>
         </div>
@@ -58,10 +62,21 @@ export default function ProductListPage() {
   const [total, setTotal] = useState();
   const [loading, setLoading] = useState(true);
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   useEffect(() => {
     setLoading(true);
-    Axios.get(`/products?page=${currentPage}`)
+    Axios.get(`/products?page=${currentPage}&q=${debouncedSearchQuery}`)
       .then((res) => {
         const data = res.data?.data || [];
         console.log(res);
@@ -69,16 +84,16 @@ export default function ProductListPage() {
         setTotal(res.data.total);
         setFilteredProducts(data);
       })
-      .catch(error => toast.error('Failed to load products'))
+      .catch((error) => toast.error("Failed to load products"))
       .finally(() => setLoading(false));
-  }, [currentPage]);
+  }, [currentPage, debouncedSearchQuery]);
 
   useEffect(() => {
     const filtered = products.filter((p) =>
-      p.name?.en?.toLowerCase().includes(searchQuery.toLowerCase())
+      p.name?.en?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()),
     );
     setFilteredProducts(filtered);
-  }, [searchQuery, products]);
+  }, [debouncedSearchQuery, products]);
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
@@ -99,7 +114,7 @@ export default function ProductListPage() {
 
   const handleDeleteProduct = async (id) => {
     try {
-      await Axios.delete(`admin/products/${id}`, { _method: 'DELETE' });
+      await Axios.delete(`/admin/products/${id}`, { _method: "DELETE" });
       setProducts((prev) => prev.filter((p) => p.slug !== id && p.id !== id));
       return true;
     } catch (err) {
@@ -112,7 +127,7 @@ export default function ProductListPage() {
     setBulkLoading(true);
     const ids = Array.from(selectedProducts);
     try {
-      await Promise.all(ids.map(id => handleDeleteProduct(id)));
+      await Promise.all(ids.map((id) => handleDeleteProduct(id)));
       toast.success("Selected products deleted successfully");
     } catch {
       toast.error("Some deletions failed");
@@ -132,18 +147,22 @@ export default function ProductListPage() {
   const getStatusBadge = (status) => {
     if (status === "approved") {
       return (
-        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">Published</Badge>
+        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
+          Published
+        </Badge>
       );
     }
     return (
-      <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-gray-200">Draft</Badge>
+      <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-gray-200">
+        Draft
+      </Badge>
     );
   };
 
   return (
     <div className="flex-1 overflow-auto">
       {(loading || bulkLoading) && <OrangeLoader />}
-      <Notifcation/>
+      <Notifcation />
       <DashboardHeader title="Product List" />
       <div className="md:p-6 p-2 space-y-6">
         <div className="flex items-center justify-between">
@@ -171,7 +190,10 @@ export default function ProductListPage() {
                   />
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Button onClick={handleBulkDelete} className="bg-red-500 text-white border-red-500 hover:bg-red-600">
+                  <Button
+                    onClick={handleBulkDelete}
+                    className="bg-red-500 text-white border-red-500 hover:bg-red-600"
+                  >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete ({selectedProducts.size})
                   </Button>
@@ -184,8 +206,13 @@ export default function ProductListPage() {
                 <div className="bg-orange-100 px-6 py-4">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     <div className="col-span-4 flex items-center space-x-3">
-                      <Checkbox checked={selectAll} onCheckedChange={handleSelectAll} />
-                      <span className="text-sm font-medium text-gray-900">Product name</span>
+                      <Checkbox
+                        checked={selectAll}
+                        onCheckedChange={handleSelectAll}
+                      />
+                      <span className="text-sm font-medium text-gray-900">
+                        Product name
+                      </span>
                     </div>
                     <div className="col-span-2">Category</div>
                     <div className="col-span-1">Stock</div>
@@ -197,33 +224,53 @@ export default function ProductListPage() {
 
                 <div className="divide-y divide-gray-200">
                   {products.length === 0 ? (
-                    <div className="text-center py-10 text-gray-500">No products found</div>
+                    <div className="text-center py-10 text-gray-500">
+                      No products found
+                    </div>
                   ) : (
                     products.map((product) => (
-                      <div key={product.id} className="px-6 py-4 hover:bg-gray-50">
+                      <div
+                        key={product.id}
+                        className="px-6 py-4 hover:bg-gray-50"
+                      >
                         <div className="grid grid-cols-12 gap-4 items-center">
                           <div className="col-span-4 flex items-center space-x-3">
                             <Checkbox
                               checked={selectedProducts.has(product.slug)}
-                              onCheckedChange={(checked) => handleSelectProduct(product.slug, checked)}
+                              onCheckedChange={(checked) =>
+                                handleSelectProduct(product.slug, checked)
+                              }
                             />
                             <div className="w-10 h-10 bg-gray-100 rounded">
-                              <img src={product.images[0].path} className="w-full h-full object-cover rounded" />
+                              <img
+                                src={product.images[0].path}
+                                className="w-full h-full object-cover rounded"
+                              />
                             </div>
-                            <span className="text-sm font-medium text-gray-900">{product.name?.en}</span>
+                            <span className="text-sm font-medium text-gray-900">
+                              {product.name?.en}
+                            </span>
                           </div>
                           <div className="col-span-2">
-                            <span className="text-sm text-gray-600">{product.category?.name}</span>
-                          </div>
-                          <div className="col-span-1">
-                            <span className={`text-sm ${getStockStatusColor(product.stock)}`}>
-                              { product.stock}
+                            <span className="text-sm text-gray-600">
+                              {product.category?.name}
                             </span>
                           </div>
                           <div className="col-span-1">
-                            <span className="text-sm text-gray-600">{product.sizes[0]?.price} $</span>
+                            <span
+                              className={`text-sm ${getStockStatusColor(product.stock)}`}
+                            >
+                              {product.stock}
+                            </span>
                           </div>
-                          <div className="col-span-2">{getStatusBadge(product.status)}</div>
+                          <div className="col-span-1">
+                            <span className="text-sm text-gray-600">
+                              {product.sizes[0]?.price} $
+                            </span>
+                          </div>
+                          <div className="col-span-2">
+                            {getStatusBadge(product.status)}
+                          </div>
                           <div className="col-span-2">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
@@ -233,14 +280,18 @@ export default function ProductListPage() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem asChild>
-                                  <Link to={`/dashboard/products/edit/${product.slug}`}>
+                                  <Link
+                                    to={`/dashboard/products/edit/${product.slug}`}
+                                  >
                                     <Edit className="h-4 w-4 mr-2" />
                                     Edit
                                   </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   className="text-red-600"
-                                  onClick={() => handleDeleteProduct(product.slug)}
+                                  onClick={() =>
+                                    handleDeleteProduct(product.slug)
+                                  }
                                 >
                                   <Trash2 className="h-4 w-4 mr-2" />
                                   Delete
@@ -265,10 +316,14 @@ export default function ProductListPage() {
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 Previous
               </Button>
-              <span className="text-sm">Page {currentPage} of {totalPages}</span>
+              <span className="text-sm">
+                Page {currentPage} of {totalPages}
+              </span>
               <Button
                 variant="outline"
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                onClick={() =>
+                  setCurrentPage(Math.min(totalPages, currentPage + 1))
+                }
                 disabled={currentPage === totalPages}
               >
                 Next
@@ -281,20 +336,38 @@ export default function ProductListPage() {
 
       <style jsx>{`
         @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
         }
         @keyframes spin-reverse {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(-360deg); }
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(-360deg);
+          }
         }
         @keyframes progress {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
         }
         @keyframes ping-slow {
-          0% { transform: scale(0.9); opacity: 0.8; }
-          100% { transform: scale(1.5); opacity: 0; }
+          0% {
+            transform: scale(0.9);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(1.5);
+            opacity: 0;
+          }
         }
         .animate-spin-slow {
           animation: spin-slow 4s linear infinite;
