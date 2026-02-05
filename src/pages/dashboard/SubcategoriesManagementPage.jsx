@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,30 +15,30 @@ import {
 import {
   Search,
   ArrowLeft,
-  ArrowRight,
   MoreHorizontal,
   Plus,
   Edit,
   Trash2,
   Filter,
   X,
-  Layers,
 } from "lucide-react";
-import { Axios, baseURL } from "../../../components/Helpers/Axios";
+import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import Notifcation from "../../../components/Notification";
 import StringSlice from "../../../components/Helpers/StringSlice";
 
 const ITEMS_PER_PAGE = 10;
 
-export default function CategoriesManagementPage() {
+export default function SubcategoriesManagementPage() {
+  const { parentId } = useParams();
   const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState([]);
-  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [parentCategory, setParentCategory] = useState(null);
+  const [filteredSubcategories, setFilteredSubcategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState(new Set());
+  const [selectedSubcategories, setSelectedSubcategories] = useState(new Set());
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
   const [showFilters, setShowFilters] = useState(false);
@@ -46,6 +46,7 @@ export default function CategoriesManagementPage() {
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
   const scrollRef = useRef();
+
   const OrangeLoader = () => (
     <div className="fixed inset-0 z-50 bg-white bg-opacity-90 flex items-center justify-center">
       <div className="flex flex-col items-center">
@@ -58,10 +59,10 @@ export default function CategoriesManagementPage() {
 
         <div className="text-center">
           <h2 className="text-2xl font-bold text-orange-700 mb-2">
-            Loading Categories
+            Loading Subcategories
           </h2>
           <p className="text-orange-600 max-w-md mb-6">
-            Fetching your categories data, please wait...
+            Fetching your subcategories data, please wait...
           </p>
 
           <div className="w-64 h-2 bg-orange-100 rounded-full overflow-hidden">
@@ -72,116 +73,109 @@ export default function CategoriesManagementPage() {
     </div>
   );
 
-  const fetchCategories = useCallback(async () => {
+  const fetchSubcategories = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await Axios.get(`/categories?page=${page}&per_page=1`);
-      const data = Array.isArray(res.data?.data?.data)
-        ? res.data.data.data
-        : [];
-      setCategories(data);
-      console.log(res);
-      setFilteredCategories(data);
-      setPagination({
-        from: res.data.data.from,
-        to: res.data.data.to,
-        total: res.data.data.total,
-        next_page_url: res.data.data.next_page_url,
-        prev_page_url: res.data.data.prev_page_url,
-      });
+      const res = await Axios.get("/categories");
+      console.log(res.data);
+      const allCategories = res.data?.data?.data || res.data?.data || [];
+      const parent = allCategories.find(
+        (c) => c.id == parentId,
+      );
+
+      if (parent) {
+        setParentCategory(parent);
+        const children = parent.children || [];
+        setSubcategories(children);
+        setFilteredSubcategories(children);
+        setPagination({
+          from: 1,
+          to: children.length,
+          total: children.length,
+          next_page_url: null,
+          prev_page_url: null,
+        });
+      } else {
+        setSubcategories([]);
+        setFilteredSubcategories([]);
+        setPagination(null);
+      }
     } catch (err) {
-      toast.error("Failed to load categories. Please try again later.");
-      setCategories([]);
-      setFilteredCategories([]);
+      console.error("Error fetching subcategories:", err);
+      toast.error("Failed to load subcategories. Please try again later.");
+      setSubcategories([]);
+      setFilteredSubcategories([]);
     } finally {
       setLoading(false);
     }
-  }, [page]);
+  }, [parentId]);
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+    fetchSubcategories();
+  }, [fetchSubcategories]);
 
   useEffect(() => {
-    let filtered = [...categories];
+    let filtered = [...subcategories];
 
-    // Apply search filter
     if (searchQuery) {
       filtered = filtered.filter(
         (c) =>
           c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          c.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+          c.slug?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
-    // Apply sorting
     filtered.sort((a, b) => {
       if (a[sortField] < b[sortField]) return sortDirection === "asc" ? -1 : 1;
       if (a[sortField] > b[sortField]) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
 
-    setFilteredCategories(filtered);
+    setFilteredSubcategories(filtered);
     setCurrentPage(1);
-  }, [searchQuery, categories, sortField, sortDirection]);
-
-  const totalPages = Math.ceil(filteredCategories.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentCategories = filteredCategories.slice(
-    startIndex,
-    startIndex + ITEMS_PER_PAGE,
-  );
+  }, [searchQuery, subcategories, sortField, sortDirection]);
 
   const handleSelectAll = (checked) => {
     setSelectAll(checked);
-    setSelectedCategories(
-      checked ? new Set(currentCategories.map((c) => c.slug)) : new Set(),
+    setSelectedSubcategories(
+      checked ? new Set(subcategories.map((c) => c.slug)) : new Set(),
     );
   };
 
-  const handleSelectCategory = (id, checked) => {
-    const newSelected = new Set(selectedCategories);
+  const handleSelectSubcategory = (id, checked) => {
+    const newSelected = new Set(selectedSubcategories);
     checked ? newSelected.add(id) : newSelected.delete(id);
-    setSelectedCategories(newSelected);
+    setSelectedSubcategories(newSelected);
   };
 
-  const handleDeleteCategory = async (id) => {
+  const handleDeleteSubcategory = async (id) => {
     setDeleteLoading(id);
     try {
       await Axios.delete(`/admin/categories/${id}`);
-      toast.success("Category deleted successfully");
-
-      // Update state by removing the deleted category
-      const updated = categories.filter((c) => c.slug !== id);
-      setCategories(updated);
+      toast.success("Subcategory deleted successfully");
+      const updated = subcategories.filter((c) => c.slug !== id);
+      setSubcategories(updated);
     } catch (err) {
-      toast.error("Failed to delete category. Please try again.");
+      toast.error("Failed to delete subcategory. Please try again.");
     } finally {
       setDeleteLoading(null);
     }
   };
 
   const handleBulkDelete = async () => {
-    if (selectedCategories.size === 0) {
-      toast.warning("Please select at least one category to delete");
-      return;
-    }
-
-    const slugs = Array.from(selectedCategories);
+    if (selectedSubcategories.size === 0) return;
+    const slugs = Array.from(selectedSubcategories);
     try {
       for (let slug of slugs) {
         await Axios.delete(`/admin/categories/${slug}`);
       }
-      toast.success(`${slugs.length} categories deleted successfully`);
-
-      // Update state by removing all deleted categories
-      const updated = categories.filter((c) => !slugs.includes(c.slug));
-      setCategories(updated);
-
-      setSelectedCategories(new Set());
+      toast.success(`${slugs.length} subcategories deleted successfully`);
+      const updated = subcategories.filter((c) => !slugs.includes(c.slug));
+      setSubcategories(updated);
+      setSelectedSubcategories(new Set());
       setSelectAll(false);
     } catch (err) {
-      toast.error("Failed to delete categories. Please try again.");
+      toast.error("Failed to delete subcategories. Please try again.");
     }
   };
 
@@ -199,33 +193,42 @@ export default function CategoriesManagementPage() {
     return sortDirection === "asc" ? "↑" : "↓";
   };
 
-  useEffect(() => {
-    scrollRef.current.scrollIntoView({ behavior: "smooth" });
-  }, []);
   return (
     <div className="flex-1 overflow-auto bg-gray-50">
       <Notifcation />
       {loading && <OrangeLoader />}
-      <DashboardHeader title="Category Management" />
+      <DashboardHeader
+        title={`Subcategories: ${parentCategory?.name || parentId}`}
+      />
 
       <div ref={scrollRef} className="p-6 space-y-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              Manage Categories
-            </h2>
-            <p className="text-gray-600 mt-1">
-              Create, edit, and organize your product categories
-            </p>
+          <div className="flex items-center gap-4">
+            <Link to="/dashboard/categories">
+              <Button variant="outline" size="icon">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </Link>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Manage Subcategories
+              </h2>
+              <p className="text-gray-600 mt-1">
+                Parent Category:{" "}
+                <span className="font-semibold text-orange-600">
+                  {parentCategory?.name || parentId}
+                </span>
+              </p>
+            </div>
           </div>
-          <Link to="/dashboard/categories/add">
+          <Link to={`/dashboard/categories/${parentId}/subcategories/add`}>
             <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg">
-              <Plus className="h-4 w-4 mr-2" /> Add New Category
+              <Plus className="h-4 w-4 mr-2" /> Add New Subcategory
             </Button>
           </Link>
         </div>
 
-        <Card className="shadow-lg  border border-gray-200 rounded-xl overflow-hidden">
+        <Card className="shadow-lg border border-gray-200 rounded-xl overflow-hidden">
           <CardContent className="p-0 overflow-auto w-full">
             <div className="p-6 border-b border-gray-200 bg-white">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -233,7 +236,7 @@ export default function CategoriesManagementPage() {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     type="text"
-                    placeholder="Search categories..."
+                    placeholder="Search subcategories..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 bg-gray-50 border-gray-200 rounded-lg"
@@ -253,10 +256,10 @@ export default function CategoriesManagementPage() {
                   <Button
                     onClick={handleBulkDelete}
                     className="bg-red-500 hover:bg-red-600 text-white shadow-md"
-                    disabled={selectedCategories.size === 0}
+                    disabled={selectedSubcategories.size === 0}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Delete ({selectedCategories.size})
+                    Delete ({selectedSubcategories.size})
                   </Button>
                 </div>
               </div>
@@ -278,7 +281,6 @@ export default function CategoriesManagementPage() {
                       Reset
                     </Button>
                   </div>
-
                   <div className="flex flex-wrap gap-2">
                     <Button
                       variant={sortField === "name" ? "secondary" : "outline"}
@@ -298,8 +300,9 @@ export default function CategoriesManagementPage() {
                 </div>
               )}
             </div>
-            <div className="bg-gradient-to-r  from-orange-500 to-orange-600 px-6 py-3">
-              <div className="grid grid-cols-12 gap-4 items-center w-full overflow-auto">
+
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3">
+              <div className="grid grid-cols-12 gap-4 items-center w-full">
                 <div className="col-span-6 flex items-center space-x-3">
                   <Checkbox
                     checked={selectAll}
@@ -307,7 +310,7 @@ export default function CategoriesManagementPage() {
                     className="border-white data-[state=checked]:bg-white data-[state=checked]:text-orange-500"
                   />
                   <span className="text-sm font-medium text-white">
-                    Category name
+                    Subcategory name
                   </span>
                 </div>
                 <div className="col-span-2">
@@ -321,163 +324,125 @@ export default function CategoriesManagementPage() {
                     Created Date {sortIndicator("created_at")}
                   </button>
                 </div>
-                <div className="col-span-1">
-                  <span className="text-sm font-medium text-white">Action</span>
+                <div className="col-span-2">
+                  <span className="text-sm font-medium text-white text-end block">
+                    Action
+                  </span>
                 </div>
               </div>
             </div>
+
             <div className="divide-y divide-gray-200 bg-white">
-              {currentCategories.length === 0 ? (
+              {filteredSubcategories.length === 0 ? (
                 <div className="text-center py-16">
                   <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
                     <X className="h-8 w-8 text-gray-400" />
                   </div>
                   <h3 className="mt-4 text-lg font-medium text-gray-900">
-                    No categories found
+                    No subcategories found
                   </h3>
-                  <p className="mt-1 text-gray-500 max-w-md mx-auto">
-                    {searchQuery
-                      ? "No categories match your search. Try different keywords."
-                      : "You haven't created any categories yet. Get started by adding your first category."}
-                  </p>
                   <Link
-                    to="/dashboard/categories/add"
+                    to={`/dashboard/categories/${parentId}/subcategories/add`}
                     className="mt-4 inline-block"
                   >
-                    <Button className="bg-orange-500 hover:bg-orange-600">
-                      <Plus className="h-4 w-4 mr-2" /> Add Category
+                    <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+                      <Plus className="h-4 w-4 mr-2" /> Add Subcategory
                     </Button>
                   </Link>
                 </div>
               ) : (
-                currentCategories.map((category) => (
+                filteredSubcategories.map((subcategory) => (
                   <div
-                    key={category.id}
+                    key={subcategory.id}
                     className="px-6 py-4 hover:bg-gray-50 transition-colors"
                   >
                     <div className="grid grid-cols-12 gap-4 items-center">
                       <div className="col-span-6 flex items-center space-x-3">
                         <Checkbox
-                          checked={selectedCategories.has(category.slug)}
+                          checked={selectedSubcategories.has(subcategory.slug)}
                           onCheckedChange={(checked) =>
-                            handleSelectCategory(category.slug, checked)
+                            handleSelectSubcategory(subcategory.slug, checked)
                           }
                         />
                         <div className="flex items-center">
-                          <div className="rounded-xl w-10 h-10 flex items-center justify-center mr-3">
+                          <div className="rounded-xl w-10 h-10 flex items-center justify-center mr-3 bg-gray-100 overflow-hidden">
                             <img
-                              src={`${category.image}`}
+                              src={subcategory.image}
                               alt=""
                               className="w-full h-full object-cover"
                             />
                           </div>
                           <span className="text-sm font-medium text-gray-900">
-                            {category.name}
+                            {subcategory.name}
                           </span>
                         </div>
                       </div>
 
                       <div className="col-span-2">
-                        <span className="text-sm text-gray-600 line-clamp-2">
-                          {StringSlice(category.slug, 10) || "No slug"}
+                        <span className="text-sm text-gray-600">
+                          {StringSlice(subcategory.slug, 15)}
                         </span>
                       </div>
 
-                      <div className="col-span-3">
+                      <div className="col-span-2">
                         <span className="text-sm text-gray-600">
-                          {new Date(category.created_at).toLocaleDateString(
+                          {new Date(subcategory.created_at).toLocaleDateString(
                             "en-GB",
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            },
                           )}
                         </span>
                       </div>
 
-                      <div className="col-span-1 flex justify-start">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="hover:bg-gray-200"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            align="end"
-                            className="min-w-[150px]"
+                      <div className="col-span-2 flex justify-end gap-2">
+                        <Link
+                          to={`/dashboard/categories/${parentId}/subcategories/edit/${subcategory.slug}`}
+                        >
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="hover:bg-gray-200"
                           >
-                            <DropdownMenuItem asChild>
-                              <Link
-                                to={`/dashboard/categories/edit/${category.slug}`}
-                                className="flex items-center px-3 py-2 hover:bg-gray-100"
-                              >
-                                <Edit className="h-4 w-4 mr-2 text-gray-600" />
-                                <span>Edit</span>
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                              <Link
-                                to={`/dashboard/categories/${category.id}/subcategories`}
-                                className="flex items-center px-3 py-2 hover:bg-gray-100"
-                              >
-                                <Layers className="h-4 w-4 mr-2 text-orange-600" />
-                                <span>Subcategories</span>
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-red-600 px-3 py-2 hover:bg-red-50 cursor-pointer"
-                              onClick={() =>
-                                handleDeleteCategory(category.slug)
-                              }
-                              disabled={deleteLoading === category.slug}
-                            >
-                              {deleteLoading === category.id ? (
-                                <div className="flex items-center">
-                                  <div className="w-4 h-4 border-t-2 border-r-2 border-red-600 rounded-full animate-spin mr-2"></div>
-                                  Deleting
-                                </div>
-                              ) : (
-                                <>
-                                  <Trash2 className="h-4 w-4 mr-2" /> Delete
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                            <Edit className="h-4 w-4 text-gray-600" />
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="hover:bg-red-100 text-red-600"
+                          onClick={() =>
+                            handleDeleteSubcategory(subcategory.slug)
+                          }
+                          disabled={deleteLoading === subcategory.slug}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
                   </div>
                 ))
               )}
-            </div>{" "}
-            {pagination && categories.length > 0 && (
-              <div className="flex flex-col md:flex-row items-center justify-between mt-6 gap-4">
+            </div>
+
+            {pagination && subcategories.length > 0 && (
+              <div className="flex flex-col md:flex-row items-center justify-between p-6 gap-4 border-t border-gray-100">
                 <p className="text-sm text-gray-700">
                   Showing{" "}
-                  <span className="font-medium">{categories.length}</span> of{" "}
+                  <span className="font-medium">{subcategories.length}</span> of{" "}
                   <span className="font-medium">{pagination.total}</span>{" "}
-                  categories
+                  subcategories
                 </p>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() =>
-                      setPage((prev) => (prev !== 1 ? prev - 1 : prev))
-                    }
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={!pagination.prev_page_url}
                   >
                     Previous
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => setPage((prev) => prev + 1)}
                     size="sm"
+                    onClick={() => setPage((p) => p + 1)}
                     disabled={!pagination.next_page_url}
                   >
                     Next
@@ -498,7 +463,6 @@ export default function CategoriesManagementPage() {
             transform: rotate(360deg);
           }
         }
-
         @keyframes spin-reverse {
           from {
             transform: rotate(0deg);
@@ -507,7 +471,6 @@ export default function CategoriesManagementPage() {
             transform: rotate(-360deg);
           }
         }
-
         @keyframes progress {
           0% {
             transform: translateX(-100%);
@@ -516,7 +479,6 @@ export default function CategoriesManagementPage() {
             transform: translateX(100%);
           }
         }
-
         @keyframes ping-slow {
           0% {
             transform: scale(0.9);
@@ -527,19 +489,15 @@ export default function CategoriesManagementPage() {
             opacity: 0;
           }
         }
-
         .animate-spin-slow {
           animation: spin-slow 4s linear infinite;
         }
-
         .animate-spin-reverse {
           animation: spin-reverse 3s linear infinite;
         }
-
         .animate-progress {
           animation: progress 2s ease-in-out infinite alternate;
         }
-
         .animate-ping-slow {
           animation: ping-slow 1.5s ease-in-out infinite;
         }

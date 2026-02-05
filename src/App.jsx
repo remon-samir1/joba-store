@@ -33,6 +33,9 @@ import AddCategory from "./pages/dashboard/AddCategory";
 import UpdateCategory from "./pages/dashboard/UpdateCategory";
 import { CouponManagement } from "./pages/dashboard/AddCoupon/AddCounpon";
 import UpdateProduct from "./pages/dashboard/UpdateProduct";
+import SubcategoriesManagementPage from "./pages/dashboard/SubcategoriesManagementPage";
+import AddSubcategory from "./pages/dashboard/AddSubcategory";
+import UpdateSubcategory from "./pages/dashboard/UpdateSubcategory";
 
 import { Settings } from "./pages/dashboard/Settings";
 import InvoicesDetails from "./pages/dashboard/InvoicesDetails.jsx";
@@ -65,57 +68,61 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/categories/:id" element={<CategoriesPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
-          <Route  element={<  RequireAuth />} >
-    
-
-          <Route
-            path="/dashboard/*"
-            element={
-              <DashboardLayout>
-                <Routes>
-                  <Route index element={<DashboardPage />} />
-                  <Route path="orders" element={<OrdersPage />} />
-                  <Route path="customers" element={<CustomersPage />} />
-                  <Route path="coupons" element={<CouponsPage />} />
-                  <Route path="coupons/add" element={<CouponManagement />} />
-                  <Route
-                    path="categories"
-                    element={<CategoriesManagementPage />}
-                  />
-                  <Route
-                    path="contacts"
-                    element={<ContactsManagementPage />}
-                  />
-                  <Route
-                    path="blogs"
-                    element={<BlogsManagement />}
-                  />
-                  <Route
-                    path="blogs/edit/:id"
-                    element={<UpdateBlogs />}
-                  />
-                  <Route
-                    path="blogs/add"
-                    element={<AddBlog />}
-                  />
-                  <Route path="categories/add" element={<AddCategory />} />
-                  <Route
-                    path="categories/edit/:id"
-                    element={<UpdateCategory />}
-                  />
-                  <Route path="invoices" element={<InvoicesPage />} />
-                  <Route path="invoices/:id" element={<InvoicesDetails />} />
-                  <Route path="popup-maker" element={<PopupMakerPage />} />
-                  <Route path="products" element={<ProductListPage />} />
-                  <Route path="products/add" element={<AddProductPage />} />
-                  <Route path="products/edit/:id" element={<UpdateProduct />} />
-                  <Route path="reviews" element={<ReviewsPage />} />
-                  <Route path="settings" element={<Settings />} />
-                </Routes>
-              </DashboardLayout>
-            }
+          <Route element={<RequireAuth />}>
+            <Route
+              path="/dashboard/*"
+              element={
+                <DashboardLayout>
+                  <Routes>
+                    <Route index element={<DashboardPage />} />
+                    <Route path="orders" element={<OrdersPage />} />
+                    <Route path="customers" element={<CustomersPage />} />
+                    <Route path="coupons" element={<CouponsPage />} />
+                    <Route path="coupons/add" element={<CouponManagement />} />
+                    <Route
+                      path="categories"
+                      element={<CategoriesManagementPage />}
+                    />
+                    <Route
+                      path="contacts"
+                      element={<ContactsManagementPage />}
+                    />
+                    <Route path="blogs" element={<BlogsManagement />} />
+                    <Route path="blogs/edit/:id" element={<UpdateBlogs />} />
+                    <Route path="blogs/add" element={<AddBlog />} />
+                    <Route path="categories/add" element={<AddCategory />} />
+                    <Route
+                      path="categories/edit/:id"
+                      element={<UpdateCategory />}
+                    />
+                    <Route
+                      path="categories/:parentId/subcategories"
+                      element={<SubcategoriesManagementPage />}
+                    />
+                    <Route
+                      path="categories/:parentId/subcategories/add"
+                      element={<AddSubcategory />}
+                    />
+                    <Route
+                      path="categories/:parentId/subcategories/edit/:id"
+                      element={<UpdateSubcategory />}
+                    />
+                    <Route path="invoices" element={<InvoicesPage />} />
+                    <Route path="invoices/:id" element={<InvoicesDetails />} />
+                    <Route path="popup-maker" element={<PopupMakerPage />} />
+                    <Route path="products" element={<ProductListPage />} />
+                    <Route path="products/add" element={<AddProductPage />} />
+                    <Route
+                      path="products/edit/:id"
+                      element={<UpdateProduct />}
+                    />
+                    <Route path="reviews" element={<ReviewsPage />} />
+                    <Route path="settings" element={<Settings />} />
+                  </Routes>
+                </DashboardLayout>
+              }
             />
-            </Route>
+          </Route>
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/support" element={<SupportPage />} />
           <Route path="*" element={<NotFound />} />
