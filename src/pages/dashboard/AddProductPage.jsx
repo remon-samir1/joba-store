@@ -52,11 +52,12 @@ export default function AddProductPage() {
   const [loading, setLoading] = useState(false);
   const [productData, setProductData] = useState({
     productName: "",
+    productNameAr: "", // Added Arabic name
     productDescription: "",
+    productDescriptionAr: "", // Added Arabic description
     productPrice: "",
     discountedPrice: "",
     salesPrice: "",
-    // taxIncluded: "yes",
     expirationStart: "",
     expirationEnd: "",
     stockQuantity: "",
@@ -67,7 +68,7 @@ export default function AddProductPage() {
     productCategory: "",
     productTag: "",
   });
-  console.log(productData);
+
   const [variations, setVariations] = useState([{ weight: "", price: "" }]);
   const [attachment, setAttachment] = useState(null);
   const [productImages, setProductImages] = useState([]);
@@ -130,15 +131,18 @@ export default function AddProductPage() {
     const errors = [];
 
     // Required fields validation
-    if (!productData.productName.trim()) errors.push("Product Name");
+    if (!productData.productName.trim())
+      errors.push("Product Name (EN) is required");
+    if (!productData.productNameAr.trim())
+      errors.push("Product Name (AR) is required");
     if (!productData.productDescription.trim())
-      errors.push("Product Description");
-    if (!productData.productPrice) errors.push("Product Price");
-    // if (!productData.expirationStart) errors.push('Expiration Start Date');
-    // if (!productData.expirationEnd) errors.push('Expiration End Date');
-    // if (!productData.stockQuantity && !productData.unlimitedStock) errors.push('Stock Quantity');
-    if (!productData.productCategory) errors.push("Product Category");
-    if (!productData.productTag) errors.push("Product Tag");
+      errors.push("Product Description (EN) is required");
+    if (!productData.productDescriptionAr.trim())
+      errors.push("Product Description (AR) is required");
+    if (!productData.productPrice) errors.push("Product Price is required");
+    if (!productData.productCategory)
+      errors.push("Product Category is required");
+    if (!productData.productTag) errors.push("Product Tag is required");
 
     // Product image validation
     if (productImages.length === 0) errors.push("Product Image");
@@ -221,8 +225,10 @@ export default function AddProductPage() {
     const formData = new FormData();
 
     // Basic fields
-    formData.append("name", productData.productName);
-    formData.append("description", productData.productDescription);
+    formData.append("name[en]", productData.productName);
+    formData.append("name[ar]", productData.productNameAr);
+    formData.append("description[en]", productData.productDescription);
+    formData.append("description[ar]", productData.productDescriptionAr);
     formData.append("price", productData.productPrice);
     formData.append("discount_price", +productData.discountedPrice);
     formData.append("payment_method", "cash");
@@ -321,32 +327,73 @@ export default function AddProductPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
-                <div>
-                  <Label htmlFor="productName" className="text-gray-700">
-                    Product Name *
-                  </Label>
-                  <Input
-                    id="productName"
-                    value={productData.productName}
-                    onChange={handleChange}
-                    placeholder="Product name"
-                    className="mt-1 border-gray-300"
-                    required
-                  />
+                <div className="grid grid-cols-1 items-center content-center md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="productName" className="text-gray-700">
+                      Product Name (English) *
+                    </Label>
+                    <Input
+                      id="productName"
+                      value={productData.productName}
+                      onChange={handleChange}
+                      placeholder="Product name in English"
+                      className="mt-1 border-gray-300"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="productNameAr"
+                      className="text-gray-700 text-right block"
+                    >
+                      اسم المنتج (العربية) *
+                    </Label>
+                    <Input
+                      id="productNameAr"
+                      value={productData.productNameAr}
+                      onChange={handleChange}
+                      placeholder="اسم المنتج بالعربية"
+                      className="mt-1 border-gray-300 text-right"
+                      dir="rtl"
+                      required
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="productDescription" className="text-gray-700">
-                    Product Description *
-                  </Label>
-                  <Textarea
-                    id="productDescription"
-                    value={productData.productDescription}
-                    onChange={handleChange}
-                    placeholder="Describe your product here..."
-                    className="mt-1 min-h-32 border-gray-300"
-                    required
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label
+                      htmlFor="productDescription"
+                      className="text-gray-700"
+                    >
+                      Product Description (English) *
+                    </Label>
+                    <Textarea
+                      id="productDescription"
+                      value={productData.productDescription}
+                      onChange={handleChange}
+                      placeholder="Describe your product here in English..."
+                      className="mt-1 min-h-32 border-gray-300"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="productDescriptionAr"
+                      className="text-gray-700 text-right block"
+                    >
+                      وصف المنتج (العربية) *
+                    </Label>
+                    <Textarea
+                      id="productDescriptionAr"
+                      value={productData.productDescriptionAr}
+                      onChange={handleChange}
+                      placeholder="اكتب وصف المنتج بالعربية هنا..."
+                      className="mt-1 min-h-32 border-gray-300 text-right"
+                      dir="rtl"
+                      required
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -828,14 +875,25 @@ export default function AddProductPage() {
                       <SelectValue placeholder="Select your product category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories?.map((data) => (
-                        <SelectItem
-                          placeholder={String(data.name)}
-                          key={data.id}
-                          value={String(data.id)}
-                        >
-                          {data.name}
-                        </SelectItem>
+                      {categories?.map((category) => (
+                        <div key={category.id}>
+                          <SelectItem
+                            value={String(category.id)}
+                            className="font-bold text-gray-900 border-t mt-2 first:mt-0 first:border-0"
+                          >
+                            {category.name}
+                          </SelectItem>
+                          {category.children &&
+                            category.children.map((child) => (
+                              <SelectItem
+                                key={child.id}
+                                value={String(child.id)}
+                                className="pl-8 text-gray-600"
+                              >
+                                {child.name}
+                              </SelectItem>
+                            ))}
+                        </div>
                       ))}
                     </SelectContent>
                   </Select>

@@ -55,7 +55,9 @@ export default function UpdateProduct() {
 
   const [productData, setProductData] = useState({
     productName: "",
+    productNameAr: "", // Added Arabic name
     productDescription: "",
+    productDescriptionAr: "", // Added Arabic description
     productPrice: "",
     discountedPrice: "",
     salesPrice: "",
@@ -95,7 +97,9 @@ export default function UpdateProduct() {
         // Set product data
         setProductData({
           productName: product.name?.en || "",
+          productNameAr: product.name?.ar || "", // Map Arabic name
           productDescription: product.description?.en || "",
+          productDescriptionAr: product.description?.ar || "", // Map Arabic description
           productPrice: product.price || "",
           discountedPrice: +product.discount_price,
           salesPrice: product.sales_price || "",
@@ -282,8 +286,10 @@ export default function UpdateProduct() {
     formData.append("_method", "PUT");
 
     // Basic fields
-    formData.append("name", productData.productName);
-    formData.append("description", productData.productDescription);
+    formData.append("name[en]", productData.productName);
+    formData.append("name[ar]", productData.productNameAr);
+    formData.append("description[en]", productData.productDescription);
+    formData.append("description[ar]", productData.productDescriptionAr);
     formData.append("price", productData.productPrice);
 
     formData.append("discount_price", productData.discountedPrice);
@@ -408,32 +414,73 @@ export default function UpdateProduct() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
-                <div>
-                  <Label htmlFor="productName" className="text-gray-700">
-                    Product Name *
-                  </Label>
-                  <Input
-                    id="productName"
-                    value={productData.productName}
-                    onChange={handleChange}
-                    placeholder="Product name"
-                    className="mt-1 border-gray-300"
-                    required
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="productName" className="text-gray-700">
+                      Product Name (English) *
+                    </Label>
+                    <Input
+                      id="productName"
+                      value={productData.productName}
+                      onChange={handleChange}
+                      placeholder="Product name in English"
+                      className="mt-1 border-gray-300"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="productNameAr"
+                      className="text-gray-700 text-right block"
+                    >
+                      اسم المنتج (العربية) *
+                    </Label>
+                    <Input
+                      id="productNameAr"
+                      value={productData.productNameAr}
+                      onChange={handleChange}
+                      placeholder="اسم المنتج بالعربية"
+                      className="mt-1 border-gray-300 text-right"
+                      dir="rtl"
+                      required
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="productDescription" className="text-gray-700">
-                    Product Description *
-                  </Label>
-                  <Textarea
-                    id="productDescription"
-                    value={productData.productDescription}
-                    onChange={handleChange}
-                    placeholder="Describe your product here..."
-                    className="mt-1 min-h-32 border-gray-300"
-                    required
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label
+                      htmlFor="productDescription"
+                      className="text-gray-700"
+                    >
+                      Product Description (English) *
+                    </Label>
+                    <Textarea
+                      id="productDescription"
+                      value={productData.productDescription}
+                      onChange={handleChange}
+                      placeholder="Describe your product here in English..."
+                      className="mt-1 min-h-32 border-gray-300"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="productDescriptionAr"
+                      className="text-gray-700 text-right block"
+                    >
+                      وصف المنتج (العربية) *
+                    </Label>
+                    <Textarea
+                      id="productDescriptionAr"
+                      value={productData.productDescriptionAr}
+                      onChange={handleChange}
+                      placeholder="اكتب وصف المنتج بالعربية هنا..."
+                      className="mt-1 min-h-32 border-gray-300 text-right"
+                      dir="rtl"
+                      required
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -926,14 +973,22 @@ export default function UpdateProduct() {
                   <select
                     className="border border-gray-200 rounded shadow-sm px-3 py-2"
                     value={String(productData?.productCategory)}
-                    onValueChange={(value) =>
-                      handleSelectChange("productCategory", value)
+                    onChange={(e) =>
+                      handleSelectChange("productCategory", e.target.value)
                     }
                   >
-                    {categories?.map((data) => (
-                      <option key={data.id} value={data.id}>
-                        {data.name}
-                      </option>
+                    {categories?.map((category) => (
+                      <React.Fragment key={category.id}>
+                        <option value={category.id} className="font-bold">
+                          {category.name}
+                        </option>
+                        {category.children &&
+                          category.children.map((child) => (
+                            <option key={child.id} value={child.id}>
+                              &nbsp;&nbsp;&nbsp;{child.name}
+                            </option>
+                          ))}
+                      </React.Fragment>
                     ))}
                   </select>
                 </div>

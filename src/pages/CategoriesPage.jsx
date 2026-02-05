@@ -277,10 +277,10 @@ export default function CategoriesPage() {
                       <div className="absolute bottom-6 left-6 right-6 text-white">
                         <div className="text-center mb-6">
                           <h3 className="text-2xl font-bold mb-2">
-                            {product.name?.en}
+                            {i18n.language === "ar" ? product.name?.ar || product.name?.en : product.name?.en}
                           </h3>
                           <p className="text-sm opacity-90 mb-4">
-                            {StringSlice(product.description?.en, 100)}
+                            {StringSlice(i18n.language === "ar" ? product.description?.ar || product.description?.en : product.description?.en, 100)}
                           </p>
                           <div className="flex items-center justify-center gap-2 mb-4">
                             <span className="text-primary font-medium">
