@@ -688,7 +688,7 @@ function NewProducts() {
                 <div key={index} className="w-64 sm:w-72 flex-shrink-0">
                   <Link to={`/products/${product?.slug}`}>
                     <ProductCard
-                    discount_price={product?.discount_price}
+                      discount_price={product?.discount_price}
                       setIsWishlisted={setIsWishlisted}
                       isWishlisted={isWishlisted}
                       sizes={product?.sizes[0]?.price}
@@ -697,7 +697,11 @@ function NewProducts() {
                       id={product.id}
                       images={product?.images}
                       is_favorite={product.is_favorite}
-                      name={product.name.en}
+                      name={
+                        i18n.language === "ar"
+                          ? product.name?.ar || product.name?.en
+                          : product.name?.en
+                      }
                       price={product.price}
                       originalPrice={product.price}
                       image={product.images[0]?.path}
@@ -839,16 +843,23 @@ const {t , i18n} = useTranslation()
         )}
 
         {!loading && !error && products.length > 0 && (
-          <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div
+            ref={gridRef}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+          >
             {products?.map((product, index) => (
               <Link key={index} to={`/products/${product?.slug}`}>
                 <ProductCard
-                discount_price={product?.discount_price}
+                  discount_price={product?.discount_price}
                   handleAddToWishlist={handleAddToWishlist}
                   slug={product.slug}
                   id={product.id}
                   is_favorite={product.is_favorite}
-                  name={product.name.en}
+                  name={
+                    i18n.language === "ar"
+                      ? product.name?.ar || product.name?.en
+                      : product.name?.en
+                  }
                   price={product.price}
                   sizes={product?.sizes[0]?.price}
                   originalPrice={product.price}

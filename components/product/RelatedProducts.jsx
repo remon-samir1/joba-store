@@ -147,7 +147,11 @@ export function RelatedProducts({ slug }) {
                     <div className="relative h-full w-full bg-gradient-to-b from-transparent to-black/40">
                       <img
                         src={product.images[0]?.path}
-                        alt={product.name.en}
+                        alt={
+                          i18n.language === "ar"
+                            ? product.name?.ar || product.name?.en
+                            : product.name?.en
+                        }
                         className="w-full h-full object-cover"
                       />
 
@@ -176,7 +180,9 @@ export function RelatedProducts({ slug }) {
 
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent text-white">
                         <h3 className="text-lg font-bold mb-1 line-clamp-1">
-                          {product.name.en}
+                          {i18n.language === "ar"
+                            ? product.name?.ar || product.name?.en
+                            : product.name?.en}
                         </h3>
                         <div className="flex items-center gap-2">
                           <span className="text-primary font-bold">

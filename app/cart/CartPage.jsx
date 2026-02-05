@@ -210,11 +210,19 @@ const CartPage = () => {
                     <div className="product-image">
                       <img
                         src={item.product.images[0]?.path}
-                        alt={item.product.name.en}
+                        alt={
+                          i18n.language === "ar"
+                            ? item.product.name?.ar || item.product.name?.en
+                            : item.product.name?.en
+                        }
                       />
                     </div>
 
-                    <div className="product-name">{item.product.name.en}</div>
+                    <div className="product-name">
+                      {i18n.language === "ar"
+                        ? item.product.name?.ar || item.product.name?.en
+                        : item.product.name?.en}
+                    </div>
                     {/* <div className="product-name">{item.product.size?.name}</div> */}
 
                     <div className="quantity-controls">
@@ -305,7 +313,11 @@ const CartPage = () => {
                 <div className="product-image-container">
                   <img
                     src={product.product.images[0].path}
-                    alt={product.product.name.en}
+                    alt={
+                      i18n.language === "ar"
+                        ? product.product.name?.ar || product.product.name?.en
+                        : product.product.name?.en
+                    }
                   />
                   {/* <div className="sale-badge">SALE</div>
                   <button className="heart-btn">
@@ -322,7 +334,9 @@ const CartPage = () => {
                   <div className="product-overlay">
                     <div className="product-info">
                       <h3 className="product-title">
-                        {product.product.name.en}
+                        {i18n.language === "ar"
+                          ? product.product.name?.ar || product.product.name?.en
+                          : product.product.name?.en}
                       </h3>
                       <div className="product-pricing">
                         <span className="current-price">

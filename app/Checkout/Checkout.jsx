@@ -459,7 +459,10 @@ const CheckoutPage = () => {
                     {cart?.map((item, idx) => (
                       <div style={styles.totalsRow} key={idx}>
                         <span>
-                          {item.product.name.en} × {item.quantity}
+                          {i18n.language === "ar"
+                            ? item.product.name?.ar || item.product.name?.en
+                            : item.product.name?.en}{" "}
+                          × {item.quantity}
                         </span>
                         <span>
                           {(item.size.price - +item.product.discount_price) *

@@ -34,6 +34,7 @@ import { useEffect, useState } from "react";
 import { Axios } from "../../../components/Helpers/Axios";
 import Notifcation from "../../../components/Notification";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const StarRating = ({ rating, size = "sm" }) => {
   return (
@@ -63,6 +64,7 @@ export default function ReviewsPage() {
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
   const [statusUpdating, setStatusUpdating] = useState(null);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -347,7 +349,12 @@ export default function ReviewsPage() {
                         </div>
                       </TableCell>
                       <TableCell className="font-medium">
-                        {review.product?.name.en || "N/A"}
+                        {(
+                          i18n.language === "ar"
+                            ? review.product?.name?.ar ||
+                              review.product?.name?.en
+                            : review.product?.name?.en
+                        ) || "N/A"}
                       </TableCell>
                       <TableCell>
                         <StarRating rating={review.rating} />

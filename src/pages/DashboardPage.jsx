@@ -28,7 +28,7 @@ import { useEffect, useState } from "react";
 import { Axios } from "../../components/Helpers/Axios";
 import { Link } from "react-router-dom";
 import StringSlice from "../../components/Helpers/StringSlice";
-
+import { useTranslation } from "react-i18next";
 
 export default function Dashboard() {
   function formatDate(dateString) {
@@ -49,6 +49,7 @@ export default function Dashboard() {
   const [data, setData] = useState([]);
   const [productsData, setProductsData] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
+  const { i18n } = useTranslation();
   useEffect(() => {
     Axios.get("/admin/dashboard").then((data) => {
       setData(data.data.data);
@@ -370,9 +371,18 @@ export default function Dashboard() {
                     ></img>
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm font-medium">{product.name.en}</div>
+                    <div className="text-sm font-medium">
+                      {i18n.language === "ar"
+                        ? product.name?.ar || product.name?.en
+                        : product.name?.en}
+                    </div>
                     <div className="text-xs text-gray-500">
-                      {StringSlice(product.description.en , 25)}
+                      {StringSlice(
+                        i18n.language === "ar"
+                          ? product.description?.ar || product.description?.en
+                          : product.description?.en,
+                        25,
+                      )}
                     </div>
                   </div>
                   <div className="text-sm font-medium text-orange-500">
@@ -419,7 +429,11 @@ export default function Dashboard() {
                           className="w-6 h-6 bg-orange-200 rounded"
                         ></img>
                       </div>
-                      <span className="text-sm">{product.name.en}</span>
+                      <span className="text-sm">
+                        {i18n.language === "ar"
+                          ? product.name?.ar || product.name?.en
+                          : product.name?.en}
+                      </span>
                     </div>
                     <span className="text-gray-400">›</span>
                   </div>
@@ -513,7 +527,11 @@ export default function Dashboard() {
                           className="w-8 h-8 bg-orange-200 rounded"
                         ></img>
                       </div>
-                      <span className="font-medium">{product.name.en}</span>
+                      <span className="font-medium">
+                        {i18n.language === "ar"
+                          ? product.name?.ar || product.name?.en
+                          : product.name?.en}
+                      </span>
                     </TableCell>
                     <TableCell className="font-medium">
                       {product.total_sold}

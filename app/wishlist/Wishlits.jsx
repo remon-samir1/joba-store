@@ -67,12 +67,20 @@ const WishlistPage = () => {
                     <div className="card-image-container">
                       <img
                         src={item.images[0]?.path}
-                        alt={item.name.en}
+                        alt={
+                          i18n.language === "ar"
+                            ? item.name?.ar || item.name?.en
+                            : item.name?.en
+                        }
                         className="card-image"
                       />
                       <div className="card-overlay">
                         <div className="card-content">
-                          <h3 className="product-title">{item.name.en}</h3>
+                          <h3 className="product-title">
+                            {i18n.language === "ar"
+                              ? item.name?.ar || item.name?.en
+                              : item.name?.en}
+                          </h3>
                           {/* <p className="product-category">{item.category.name}</p> */}
                           <div className="product-pricing">
                             <span className="current-price">

@@ -13,12 +13,14 @@ import Loading from "../../../components/Loading/Loading.jsx";
 import SeoHelmet from "../../../src/components/SeoHelmet/SeoHelmet.jsx";
 import { Axios } from "../../../components/Helpers/Axios.js";
 import { Footer } from "../../../src/components/Footer.jsx";
+import { useTranslation } from "react-i18next";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const [selectedSize, setSelectedSize] = useState("");
 
   const [product, setProduct] = useState(null);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     Axios.get(`/products/${id}`)
@@ -40,8 +42,16 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-background">
       <SeoHelmet
-        title={product?.name.en}
-        description={product?.description?.en}
+        title={
+          i18n.language === "ar"
+            ? product?.name?.ar || product?.name?.en
+            : product?.name?.en
+        }
+        description={
+          i18n.language === "ar"
+            ? product?.description?.ar || product?.description?.en
+            : product?.description?.en
+        }
       />
       <Header />
 
@@ -58,7 +68,11 @@ export default function ProductDetailPage() {
             <div className="flex-1">
               <ProductDetails
                 inStock={product?.stock}
-                name={product?.name?.en}
+                name={
+                  i18n.language === "ar"
+                    ? product?.name?.ar || product?.name?.en
+                    : product?.name?.en
+                }
                 productData={product}
                 price={product?.price}
                 discount={product.discount_price}
@@ -69,7 +83,11 @@ export default function ProductDetailPage() {
                 slug={product?.slug}
                 id={id}
                 sizes={product?.sizes}
-                description={product?.description?.en}
+                description={
+                  i18n.language === "ar"
+                    ? product?.description?.ar || product?.description?.en
+                    : product?.description?.en
+                }
                 category={product?.category.name}
                 tags={product?.tags || []}
               />

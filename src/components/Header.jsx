@@ -239,7 +239,9 @@ export function Header() {
                           <div className="flex items-center gap-3">
                             <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
                             <span className="text-gray-700">
-                              {suggestion.name.en}
+                              {i18n.language === "ar"
+                                ? suggestion.name?.ar || suggestion.name?.en
+                                : suggestion.name?.en}
                             </span>
                           </div>
                           {suggestion.name.ar && (
@@ -355,7 +357,9 @@ export function Header() {
                       <div className="flex items-center gap-3">
                         <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
                         <span className="text-gray-700">
-                          {suggestion.name.en}
+                          {i18n.language === "ar"
+                            ? suggestion.name?.ar || suggestion.name?.en
+                            : suggestion.name?.en}
                         </span>
                       </div>
                       {suggestion.name.ar && (
