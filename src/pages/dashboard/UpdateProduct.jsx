@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
 import {
   Card,
@@ -31,6 +31,8 @@ import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import Notifcation from "../../../components/Notification";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 // Modern loading screen
 const ModernLoadingScreen = () => (
@@ -80,6 +82,35 @@ export default function UpdateProduct() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
+
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ color: [] }, { background: [] }],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image", "video"],
+        ["clean"],
+      ],
+    }),
+    [],
+  );
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+    "bullet",
+    "color",
+    "background",
+    "link",
+    "image",
+    "video",
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -167,6 +198,14 @@ export default function UpdateProduct() {
   const handleChange = (e) => {
     const { id, value } = e.target;
     setProductData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleDescriptionChange = (value) => {
+    setProductData((prev) => ({ ...prev, productDescription: value }));
+  };
+
+  const handleDescriptionArChange = (value) => {
+    setProductData((prev) => ({ ...prev, productDescriptionAr: value }));
   };
 
   // Handler for Checkboxes
@@ -414,7 +453,7 @@ export default function UpdateProduct() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <Label htmlFor="productName" className="text-gray-700">
                       Product Name (English) *
@@ -447,7 +486,7 @@ export default function UpdateProduct() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <Label
                       htmlFor="productDescription"
@@ -455,14 +494,17 @@ export default function UpdateProduct() {
                     >
                       Product Description (English) *
                     </Label>
-                    <Textarea
-                      id="productDescription"
-                      value={productData.productDescription}
-                      onChange={handleChange}
-                      placeholder="Describe your product here in English..."
-                      className="mt-1 min-h-32 border-gray-300"
-                      required
-                    />
+                    <div className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden">
+                      <ReactQuill
+                        theme="snow"
+                        value={productData.productDescription}
+                        onChange={handleDescriptionChange}
+                        placeholder="Describe your product here in English..."
+                        modules={modules}
+                        formats={formats}
+                        className="h-[300px]"
+                      />
+                    </div>
                   </div>
                   <div>
                     <Label
@@ -471,15 +513,17 @@ export default function UpdateProduct() {
                     >
                       وصف المنتج (العربية) *
                     </Label>
-                    <Textarea
-                      id="productDescriptionAr"
-                      value={productData.productDescriptionAr}
-                      onChange={handleChange}
-                      placeholder="اكتب وصف المنتج بالعربية هنا..."
-                      className="mt-1 min-h-32 border-gray-300 text-right"
-                      dir="rtl"
-                      required
-                    />
+                    <div className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden" dir="rtl">
+                      <ReactQuill
+                        theme="snow"
+                        value={productData.productDescriptionAr}
+                        onChange={handleDescriptionArChange}
+                        placeholder="اكتب وصف المنتج بالعربية هنا..."
+                        modules={modules}
+                        formats={formats}
+                        className="h-[300px]"
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -1021,6 +1065,113 @@ export default function UpdateProduct() {
           </div>
         </div>
       </form>
+
+      {/* Custom Styles for Quill Editor */}
+      <style jsx global>{`
+        .custom-quill-container {
+          width: 100%;
+          border-radius: 0.75rem;
+          overflow: hidden;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-quill-container .ql-container {
+          border: none !important;
+          font-size: 16px;
+          min-height: 300px;
+          font-family:
+            "Inter",
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            Oxygen,
+            Ubuntu,
+            Cantarell,
+            sans-serif;
+        }
+
+        .custom-quill-container .ql-editor {
+          min-height: 300px;
+          overflow-y: auto;
+          padding: 24px;
+          word-wrap: break-word;
+          white-space: pre-wrap;
+          word-break: break-word;
+          line-height: 1.7;
+          color: #334155;
+        }
+
+        .custom-quill-container .ql-editor p {
+          margin-bottom: 1.2rem;
+          font-size: 17px;
+        }
+
+        .custom-quill-container .ql-editor h1,
+        .custom-quill-container .ql-editor h2,
+        .custom-quill-container .ql-editor h3 {
+          margin-top: 1.5rem;
+          margin-bottom: 1rem;
+          font-weight: 700;
+          color: #1e293b;
+        }
+
+        .custom-quill-container .ql-editor h1 {
+          font-size: 2rem;
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 0.5rem;
+        }
+
+        .custom-quill-container .ql-editor h2 {
+          font-size: 1.75rem;
+        }
+
+        .custom-quill-container .ql-editor h3 {
+          font-size: 1.5rem;
+        }
+
+        .custom-quill-container .ql-toolbar {
+          border: none !important;
+          border-bottom: 1px solid #e2e8f0 !important;
+          background-color: #f8fafc;
+          padding: 12px 16px;
+          position: sticky;
+          top: 0;
+          z-index: 10;
+        }
+
+        .custom-quill-container .ql-toolbar button {
+          margin-right: 8px;
+          border-radius: 6px;
+          transition: all 0.2s;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .custom-quill-container .ql-toolbar button:hover {
+          background-color: #e2e8f0;
+        }
+
+        .custom-quill-container .ql-toolbar button.ql-active {
+          background-color: #dbeafe;
+        }
+
+        .custom-quill-container .ql-toolbar .ql-picker {
+          border-radius: 6px;
+          height: 36px;
+        }
+
+        /* Ensure text wraps properly */
+        .ql-editor * {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
+      `}</style>
     </div>
   );
 }

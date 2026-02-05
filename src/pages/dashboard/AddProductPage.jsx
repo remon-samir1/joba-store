@@ -327,7 +327,7 @@ export default function AddProductPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
-                <div className="grid grid-cols-1 items-center content-center md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <Label htmlFor="productName" className="text-gray-700">
                       Product Name (English) *
@@ -360,7 +360,7 @@ export default function AddProductPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <Label
                       htmlFor="productDescription"
