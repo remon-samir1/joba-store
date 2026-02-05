@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
 import {
   Card,
@@ -31,6 +31,8 @@ import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Notifcation from "../../../components/Notification";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 // Modern Loading Screen Component
 const ModernLoadingScreen = () => (
@@ -76,6 +78,35 @@ export default function AddProductPage() {
   const [categories, setCategories] = useState([]);
   const nav = useNavigate();
 
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ color: [] }, { background: [] }],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image", "video"],
+        ["clean"],
+      ],
+    }),
+    [],
+  );
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+    "bullet",
+    "color",
+    "background",
+    "link",
+    "image",
+    "video",
+  ];
+
   // Generic handler for text inputs and textareas
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -83,6 +114,14 @@ export default function AddProductPage() {
       ...prevData,
       [id]: value,
     }));
+  };
+
+  const handleDescriptionChange = (value) => {
+    setProductData((prev) => ({ ...prev, productDescription: value }));
+  };
+
+  const handleDescriptionArChange = (value) => {
+    setProductData((prev) => ({ ...prev, productDescriptionAr: value }));
   };
 
   // Handler for Checkboxes
@@ -299,6 +338,36 @@ export default function AddProductPage() {
 
   return (
     <div className="flex-1 bg-gray-50 min-h-screen">
+      <style>{`
+        .custom-quill-container .ql-editor h3 {
+          font-size: 1.5rem;
+        }
+
+        .custom-quill-container .ql-editor ul,
+        .custom-quill-container .ql-editor ol {
+          padding-left: 1.5rem;
+          margin-bottom: 1.2rem;
+        }
+
+        .custom-quill-container .ql-editor[dir="rtl"] ul,
+        .custom-quill-container .ql-editor[dir="rtl"] ol {
+          padding-left: 0;
+          padding-right: 1.5rem;
+        }
+
+        .custom-quill-container .ql-editor li {
+          margin-bottom: 0.5rem;
+          position: relative;
+        }
+
+        .custom-quill-container .ql-editor ul li {
+          list-style-type: disc;
+        }
+
+        .custom-quill-container .ql-editor ol li {
+          list-style-type: decimal;
+        }
+      `}</style>
       {loading && <ModernLoadingScreen />}
       <DashboardHeader title="Add Products" />
       <Notifcation />
@@ -368,14 +437,17 @@ export default function AddProductPage() {
                     >
                       Product Description (English) *
                     </Label>
-                    <Textarea
-                      id="productDescription"
-                      value={productData.productDescription}
-                      onChange={handleChange}
-                      placeholder="Describe your product here in English..."
-                      className="mt-1 min-h-32 border-gray-300"
-                      required
-                    />
+                    <div className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden">
+                      <ReactQuill
+                        theme="snow"
+                        value={productData.productDescription}
+                        onChange={handleDescriptionChange}
+                        placeholder="Describe your product here in English..."
+                        modules={modules}
+                        formats={formats}
+                        className="h-[300px]"
+                      />
+                    </div>
                   </div>
                   <div>
                     <Label
@@ -384,15 +456,17 @@ export default function AddProductPage() {
                     >
                       وصف المنتج (العربية) *
                     </Label>
-                    <Textarea
-                      id="productDescriptionAr"
-                      value={productData.productDescriptionAr}
-                      onChange={handleChange}
-                      placeholder="اكتب وصف المنتج بالعربية هنا..."
-                      className="mt-1 min-h-32 border-gray-300 text-right"
-                      dir="rtl"
-                      required
-                    />
+                    <div className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden" dir="rtl">
+                      <ReactQuill
+                        theme="snow"
+                        value={productData.productDescriptionAr}
+                        onChange={handleDescriptionArChange}
+                        placeholder="اكتب وصف المنتج بالعربية هنا..."
+                        modules={modules}
+                        formats={formats}
+                        className="h-[300px]"
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>

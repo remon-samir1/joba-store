@@ -279,9 +279,12 @@ export default function CategoriesPage() {
                           <h3 className="text-2xl font-bold mb-2">
                             {i18n.language === "ar" ? product.name?.ar || product.name?.en : product.name?.en}
                           </h3>
-                          <p className="text-sm opacity-90 mb-4">
-                            {StringSlice(i18n.language === "ar" ? product.description?.ar || product.description?.en : product.description?.en, 100)}
-                          </p>
+                          <div 
+                            className="text-sm opacity-90 mb-4 line-clamp-3"
+                            dangerouslySetInnerHTML={{
+                              __html: i18n.language === "ar" ? product.description?.ar || product.description?.en : product.description?.en
+                            }}
+                          />
                           <div className="flex items-center justify-center gap-2 mb-4">
                             <span className="text-primary font-medium">
                               $

@@ -1130,6 +1130,31 @@ export default function UpdateProduct() {
           font-size: 1.5rem;
         }
 
+        .custom-quill-container .ql-editor ul,
+        .custom-quill-container .ql-editor ol {
+          padding-left: 1.5rem;
+          margin-bottom: 1.2rem;
+        }
+
+        .custom-quill-container .ql-editor[dir="rtl"] ul,
+        .custom-quill-container .ql-editor[dir="rtl"] ol {
+          padding-left: 0;
+          padding-right: 1.5rem;
+        }
+
+        .custom-quill-container .ql-editor li {
+          margin-bottom: 0.5rem;
+          position: relative;
+        }
+
+        .custom-quill-container .ql-editor ul li {
+          list-style-type: disc;
+        }
+
+        .custom-quill-container .ql-editor ol li {
+          list-style-type: decimal;
+        }
+
         .custom-quill-container .ql-toolbar {
           border: none !important;
           border-bottom: 1px solid #e2e8f0 !important;

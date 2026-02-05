@@ -232,19 +232,47 @@ console.log(productData.id);
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">
            {t("Description")} 
         </h2>
-        <p className="text-gray-600 leading-relaxed whitespace-pre">
-{description.length > 200 ? (
-  <>
-    {isExpanded ? description : `${description.substring(0, 200)}...`}
-    <button
-      className="text-primary underline ml-1"
-      onClick={() => setIsExpanded(!isExpanded)}
-    >
-      {isExpanded ? t("Read less") : t("Read more")}
-    </button>
-  </>
-) : description}
-        </p>
+        <div className="text-gray-600 leading-relaxed product-description">
+          {description.length > 200 ? (
+            <>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: isExpanded
+                    ? description
+                    : `${description.substring(0, 200)}...`,
+                }}
+              />
+              <button
+                className="text-primary underline mt-1"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? t("Read less") : t("Read more")}
+              </button>
+            </>
+          ) : (
+            <div dangerouslySetInnerHTML={{ __html: description }} />
+          )}
+          <style>{`
+            .product-description ul {
+              list-style-type: disc;
+              padding-left: 1.5rem;
+              margin-bottom: 1rem;
+            }
+            .product-description ol {
+              list-style-type: decimal;
+              padding-left: 1.5rem;
+              margin-bottom: 1rem;
+            }
+            .product-description li {
+              margin-bottom: 0.5rem;
+            }
+            [dir="rtl"] .product-description ul,
+            [dir="rtl"] .product-description ol {
+              padding-right: 1.5rem;
+              padding-left: 0;
+            }
+          `}</style>
+        </div>
       </div>
       <div className="flex flex-wrap  sm:flex-row gap-3 mt-8 sm:gap-4">
         <Button
