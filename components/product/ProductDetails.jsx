@@ -39,6 +39,7 @@ export function ProductDetails({
   const [showModal, setShowModal] = useState(false);
   const [showDocModal, setShowDocModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   console.log(productData.reviews);
   const [sizePrice, setSizePrice] = useState(sizes[0].price);
@@ -167,14 +168,7 @@ console.log(productData.id);
         </div>
       </div>
 
-      <div className="w-92 overflow-hidden">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-          {t("Description")}
-        </h2>
-        <p className="text-gray-600 leading-relaxed whitespace-pre">
-          {description}
-        </p>
-      </div>
+    
 
       <div className="space-y-6 mt-6">
         <div className="flex gap-11">
@@ -188,6 +182,9 @@ console.log(productData.id);
           <span className="font-semibold text-gray-900 min-w-fit">{t("Tags")}</span>
           <span className="text-gray-600">: {tags?.join(", ") || "N/A"}</span>
         </div>
+
+  
+
 
         <div className="flex items-center gap-12">
           <span className="font-semibold text-gray-900">{t("Quantity")}</span>
@@ -231,7 +228,24 @@ console.log(productData.id);
           </Button>
         ))}
       </div>
-
+      <div className="w-92 overflow-hidden mt-4">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+           {t("Description")} 
+        </h2>
+        <p className="text-gray-600 leading-relaxed whitespace-pre">
+{description.length > 200 ? (
+  <>
+    {isExpanded ? description : `${description.substring(0, 200)}...`}
+    <button
+      className="text-primary underline ml-1"
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
+      {isExpanded ? t("Read less") : t("Read more")}
+    </button>
+  </>
+) : description}
+        </p>
+      </div>
       <div className="flex flex-wrap  sm:flex-row gap-3 mt-8 sm:gap-4">
         <Button
           onClick={handleAddToCart}
