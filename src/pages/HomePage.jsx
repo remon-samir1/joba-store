@@ -489,11 +489,11 @@ const {t , i18n} = useTranslation()
             </p>
             <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
               <span className="text-primary font-medium text-sm sm:text-base">
-                ${ +sizes - +discount_price}
+                {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(+sizes - +discount_price)}
               </span>
               {originalPrice  && (
                 <span className="text-white/70 line-through text-sm sm:text-base">
-                  {discount_price != 0 ?  `$ ${sizes}`: '' }
+                  {discount_price != 0 ? new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(+sizes) : '' }
                 </span>
               )}
             </div>
@@ -546,7 +546,7 @@ const {t , i18n} = useTranslation()
               </button>
               <div className="text-right">
                 <span className="text-base sm:text-lg font-medium">
-                  $ {price}
+                  {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(price)}
                 </span>
               </div>
             </div>

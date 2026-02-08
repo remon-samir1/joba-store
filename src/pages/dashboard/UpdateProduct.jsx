@@ -76,7 +76,9 @@ export default function UpdateProduct() {
   });
 
   const { id } = useParams();
-  const [variations, setVariations] = useState([{ weight: "", price: "" }]);
+  const [variations, setVariations] = useState([
+    { weight: "", price: "", stock: "" },
+  ]);
   const [attachment, setAttachment] = useState(null);
   const [productImages, setProductImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -153,8 +155,9 @@ export default function UpdateProduct() {
                 id: s.id,
                 weight: s.name,
                 price: s.price,
+                stock: s.stock || 0, // Map stock
               }))
-            : [{ weight: "", price: "" }],
+            : [{ weight: "", price: "", stock: "" }],
         );
 
         // Set images
@@ -231,7 +234,7 @@ export default function UpdateProduct() {
   };
 
   const addVariation = () => {
-    setVariations([...variations, { weight: "", price: "" }]);
+    setVariations([...variations, { weight: "", price: "", stock: "" }]);
   };
 
   const removeVariation = (index) => {
@@ -302,6 +305,14 @@ export default function UpdateProduct() {
         errors.push(`Variation ${index + 1} weight is required`);
       if (!variation.price)
         errors.push(`Variation ${index + 1} price is required`);
+      // We might want to validate stock if stockStatus is in_stock
+      if (
+        productData.stockStatus !== "out_of_stock" &&
+        variation.stock === ""
+      ) {
+        // Optional: validation for variation stock
+        // errors.push(`Variation ${index + 1} stock is required`);
+      }
     });
 
     // Expiration date validation
@@ -382,9 +393,7 @@ export default function UpdateProduct() {
       formData.append(`sizes[${i}][price]`, v.price);
       formData.append(
         `sizes[${i}][stock]`,
-        productData.stockStatus === "out_of_stock"
-          ? 0
-          : productData.stockQuantity,
+        productData.stockStatus === "out_of_stock" ? 0 : v.stock || 0, // Use variation stock
       );
     });
     // formData.append("sizes", JSON.stringify(variations));
@@ -394,6 +403,8 @@ export default function UpdateProduct() {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+      }).then((res) => {
+        console.log(res);
       });
 
       toast.success("Product updated successfully");
@@ -513,7 +524,10 @@ export default function UpdateProduct() {
                     >
                       وصف المنتج (العربية) *
                     </Label>
-                    <div className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden" dir="rtl">
+                    <div
+                      className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden"
+                      dir="rtl"
+                    >
                       <ReactQuill
                         theme="snow"
                         value={productData.productDescriptionAr}
@@ -546,7 +560,7 @@ export default function UpdateProduct() {
                     type="number"
                     value={productData.productPrice}
                     onChange={handleChange}
-                    placeholder="Price in $"
+                    placeholder="Price in EGP"
                     className="mt-1 border-gray-300"
                     required
                     min="0"
@@ -559,7 +573,7 @@ export default function UpdateProduct() {
                       Discounted Price (Optional)
                     </Label>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-sm text-gray-500">$</span>
+                      <span className="text-sm text-gray-500">EGP</span>
                       <Input
                         id="discountedPrice"
                         type="text"
@@ -642,17 +656,20 @@ export default function UpdateProduct() {
                 {/* Variation weight and pricing */}
                 <div className="space-y-4">
                   <div className="grid grid-cols-10 gap-4 items-end">
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <Label className="text-gray-700">
                         Variation weight *
                       </Label>
                     </div>
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <Label className="text-gray-700">
                         Variation Pricing *
                       </Label>
                     </div>
-                    <div className="col-span-2"></div>
+                    <div className="col-span-3">
+                      <Label className="text-gray-700">Stock</Label>
+                    </div>
+                    <div className="col-span-1"></div>
                   </div>
 
                   {variations.map((variation, index) => (
@@ -660,7 +677,7 @@ export default function UpdateProduct() {
                       key={index}
                       className="grid grid-cols-10 gap-4 items-center"
                     >
-                      <div className="col-span-4">
+                      <div className="col-span-3">
                         <Input
                           name="weight"
                           placeholder="e.g., 10kg"
@@ -670,11 +687,11 @@ export default function UpdateProduct() {
                           required
                         />
                       </div>
-                      <div className="col-span-4">
+                      <div className="col-span-3">
                         <Input
                           name="price"
                           type="number"
-                          placeholder="e.g.,350$"
+                          placeholder="e.g., 350 EGP"
                           value={variation.price}
                           onChange={(e) => handleVariationChange(index, e)}
                           className="border-gray-300"
@@ -682,7 +699,18 @@ export default function UpdateProduct() {
                           min="0"
                         />
                       </div>
-                      <div className="col-span-2">
+                      <div className="col-span-3">
+                        <Input
+                          name="stock" // Added stock input
+                          type="number"
+                          placeholder="e.g., 50"
+                          value={variation.stock}
+                          onChange={(e) => handleVariationChange(index, e)}
+                          className="border-gray-300"
+                          min="0"
+                        />
+                      </div>
+                      <div className="col-span-1">
                         {variations.length > 1 && (
                           <Button
                             variant="ghost"
@@ -771,7 +799,7 @@ export default function UpdateProduct() {
             </Card>
 
             {/* Inventory */}
-            <Card className="border border-gray-200 rounded-xl shadow-sm">
+            {/* <Card className="border border-gray-200 rounded-xl shadow-sm">
               <CardHeader className="bg-gray-50 border-b">
                 <CardTitle className="text-lg font-semibold text-gray-800">
                   Inventory
@@ -819,7 +847,7 @@ export default function UpdateProduct() {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
+                </div> */}
 
                 {/* <div className="flex items-center space-x-2">
                   <Switch
@@ -863,8 +891,8 @@ export default function UpdateProduct() {
                     </Label>
                   </div>
                 </div> */}
-              </CardContent>
-            </Card>
+              {/* </CardContent>
+            </Card> */}
 
             {/* Action Buttons */}
             <div className="flex space-x-4">
@@ -1128,31 +1156,6 @@ export default function UpdateProduct() {
 
         .custom-quill-container .ql-editor h3 {
           font-size: 1.5rem;
-        }
-
-        .custom-quill-container .ql-editor ul,
-        .custom-quill-container .ql-editor ol {
-          padding-left: 1.5rem;
-          margin-bottom: 1.2rem;
-        }
-
-        .custom-quill-container .ql-editor[dir="rtl"] ul,
-        .custom-quill-container .ql-editor[dir="rtl"] ol {
-          padding-left: 0;
-          padding-right: 1.5rem;
-        }
-
-        .custom-quill-container .ql-editor li {
-          margin-bottom: 0.5rem;
-          position: relative;
-        }
-
-        .custom-quill-container .ql-editor ul li {
-          list-style-type: disc;
-        }
-
-        .custom-quill-container .ql-editor ol li {
-          list-style-type: decimal;
         }
 
         .custom-quill-container .ql-toolbar {

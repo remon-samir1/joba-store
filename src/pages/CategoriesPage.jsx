@@ -287,14 +287,13 @@ export default function CategoriesPage() {
                           />
                           <div className="flex items-center justify-center gap-2 mb-4">
                             <span className="text-primary font-medium">
-                              $
-                              {
-                                 
-                                 product.sizes[0]?.price - +product.discount_price}
+                              {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(
+                                (product.sizes[0]?.price || 0) - +product.discount_price
+                              )}
                             </span>
                             <span className="text-white/70 line-through text-sm sm:text-base">
                               {product.discount_price != 0
-                                ? `$ ${product.sizes[0]?.price}`
+                                ? new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(product.sizes[0]?.price || 0)
                                 : ""}
                             </span>
                           </div>

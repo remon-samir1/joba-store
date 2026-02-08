@@ -25,8 +25,10 @@ const CartPage = () => {
   const cartRef = useRef(null);
 
   // GSAP animation for cart items
+  const hasAnimated = useRef(false);
+
   useEffect(() => {
-    if (cart.length > 0 && !isLoading) {
+    if (cart.length > 0 && !isLoading && !hasAnimated.current) {
       gsap.from(".cart-item", {
         duration: 0.6,
         opacity: 0,
@@ -34,6 +36,7 @@ const CartPage = () => {
         stagger: 0.1,
         ease: "back.out(1.7)",
       });
+      hasAnimated.current = true;
     }
   }, [cart, isLoading]);
 
@@ -251,7 +254,7 @@ const CartPage = () => {
                     </div>
 
                     <div className="item-total">
-                      ${" "}
+                      EGP{" "}
                       {(item.size
                         ? +item.size?.price - +item.product.discount_price
                         : +item.product.price - +item.product.discount_price) *
@@ -271,14 +274,21 @@ const CartPage = () => {
             <div className="totals-row">
               <span className="totals-label ">{t("Subtotal")}</span>
               <span className="totals-value">
-                $ {discountValue?.subtotal?.toFixed(2)}
+                {new Intl.NumberFormat("en-EG", {
+                  style: "currency",
+                  currency: "EGP",
+                }).format(Number(discountValue?.subtotal ?? 0))}
               </span>
             </div>
             {discount !== "" && (
               <div className="totals-row">
                 <span className="totals-label">{t("Discount")}</span>
                 <span className="totals-value">
-                  - $ {discountValue?.discount?.toFixed(2)}
+                  -{" "}
+                  {new Intl.NumberFormat("en-EG", {
+                    style: "currency",
+                    currency: "EGP",
+                  }).format(Number(discountValue?.discount ?? 0))}
                 </span>
               </div>
             )}
@@ -289,7 +299,10 @@ const CartPage = () => {
             <div className="totals-row total-row">
               <span className="totals-label">{t("Total")}</span>
               <span className="totals-value">
-                $ {discountValue?.total?.toFixed(2)}
+                {new Intl.NumberFormat("en-EG", {
+                  style: "currency",
+                  currency: "EGP",
+                }).format(Number(discountValue?.total ?? 0))}
               </span>
             </div>
             <Link to="/checkout" className="checkout-btn">
@@ -340,7 +353,7 @@ const CartPage = () => {
                       </h3>
                       <div className="product-pricing">
                         <span className="current-price">
-                          ${" "}
+                          EGP{" "}
                           {/* {product.product.discount_price != 0
                             ? product.product.discount_price
                             : product.size.price} */}

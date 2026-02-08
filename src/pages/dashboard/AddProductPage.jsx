@@ -71,7 +71,9 @@ export default function AddProductPage() {
     productTag: "",
   });
 
-  const [variations, setVariations] = useState([{ weight: "", price: "" }]);
+  const [variations, setVariations] = useState([
+    { weight: "", price: "", stock: "" },
+  ]);
   const [attachment, setAttachment] = useState(null);
   const [productImages, setProductImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -156,7 +158,7 @@ export default function AddProductPage() {
   };
 
   const addVariation = () => {
-    setVariations([...variations, { weight: "", price: "" }]);
+    setVariations([...variations, { weight: "", price: "", stock: "" }]);
   };
 
   const removeVariation = (index) => {
@@ -298,7 +300,10 @@ export default function AddProductPage() {
     variations.forEach((v, i) => {
       formData.append(`sizes[${i}][name]`, v.weight);
       formData.append(`sizes[${i}][price]`, v.price);
-      formData.append(`sizes[${i}][stock]`, productData.stockQuantity);
+      formData.append(
+        `sizes[${i}][stock]`,
+        productData.stockStatus === "out_of_stock" ? 0 : v.stock || 0,
+      );
     });
 
     // Tags
@@ -456,7 +461,10 @@ export default function AddProductPage() {
                     >
                       وصف المنتج (العربية) *
                     </Label>
-                    <div className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden" dir="rtl">
+                    <div
+                      className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden"
+                      dir="rtl"
+                    >
                       <ReactQuill
                         theme="snow"
                         value={productData.productDescriptionAr}
@@ -489,7 +497,7 @@ export default function AddProductPage() {
                     type="number"
                     value={productData.productPrice}
                     onChange={handleChange}
-                    placeholder="Price in $"
+                    placeholder="Price in EGP"
                     className="mt-1 border-gray-300"
                     required
                     min="0"
@@ -502,7 +510,7 @@ export default function AddProductPage() {
                       Discounted Price (Optional)
                     </Label>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-sm text-gray-500">$</span>
+                      <span className="text-sm text-gray-500">EGP</span>
                       <Input
                         id="discountedPrice"
                         type="number"
@@ -584,17 +592,20 @@ export default function AddProductPage() {
                 {/* Variation weight and pricing */}
                 <div className="space-y-4">
                   <div className="grid grid-cols-10 gap-4 items-end">
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <Label className="text-gray-700">
                         Variation weight *
                       </Label>
                     </div>
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <Label className="text-gray-700">
                         Variation Pricing *
                       </Label>
                     </div>
-                    <div className="col-span-2"></div>
+                    <div className="col-span-3">
+                      <Label className="text-gray-700">Stock</Label>
+                    </div>
+                    <div className="col-span-1"></div>
                   </div>
 
                   {variations.map((variation, index) => (
@@ -602,7 +613,7 @@ export default function AddProductPage() {
                       key={index}
                       className="grid grid-cols-10 gap-4 items-center"
                     >
-                      <div className="col-span-4">
+                      <div className="col-span-3">
                         <Input
                           name="weight"
                           placeholder="e.g., 10kg"
@@ -612,11 +623,11 @@ export default function AddProductPage() {
                           required
                         />
                       </div>
-                      <div className="col-span-4">
+                      <div className="col-span-3">
                         <Input
                           name="price"
                           type="number"
-                          placeholder="e.g., $ 350"
+                          placeholder="e.g., 350 EGP"
                           value={variation.price}
                           onChange={(e) => handleVariationChange(index, e)}
                           className="border-gray-300"
@@ -624,7 +635,18 @@ export default function AddProductPage() {
                           min="0"
                         />
                       </div>
-                      <div className="col-span-2">
+                      <div className="col-span-3">
+                        <Input
+                          name="stock"
+                          type="number"
+                          placeholder="e.g., 50"
+                          value={variation.stock}
+                          onChange={(e) => handleVariationChange(index, e)}
+                          className="border-gray-300"
+                          min="0"
+                        />
+                      </div>
+                      <div className="col-span-1">
                         {variations.length > 1 && (
                           <Button
                             variant="ghost"
@@ -708,101 +730,7 @@ export default function AddProductPage() {
               </CardContent>
             </Card>
 
-            {/* Inventory */}
-            <Card className="border border-gray-200 rounded-xl shadow-sm">
-              <CardHeader className="bg-gray-50 border-b">
-                <CardTitle className="text-lg font-semibold text-gray-800">
-                  Inventory
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 pt-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="stockQuantity" className="text-gray-700">
-                      Stock Quantity
-                    </Label>
-                    <Input
-                      id="stockQuantity"
-                      type="number"
-                      value={productData.stockQuantity}
-                      onChange={handleChange}
-                      placeholder="100"
-                      className="mt-1 border-gray-300"
-                      disabled={productData.stockStatus === "out-of-stock"}
-                      required={productData.stockStatus !== "out-of-stock"}
-                      min="0"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="stockStatus" className="text-gray-700">
-                      Stock Status *
-                    </Label>
-                    <Select
-                      value={productData.stockStatus}
-                      onValueChange={(value) =>
-                        handleSelectChange("stockStatus", value)
-                      }
-                      required
-                    >
-                      <SelectTrigger
-                        className="mt-1 border-gray-300"
-                        id="stockStatus"
-                      >
-                        <SelectValue placeholder="Select Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="in-stock">In Stock</SelectItem>
-                        <SelectItem value="out-of-stock">
-                          Out of Stock
-                        </SelectItem>
-                        {/* <SelectItem value="low-stock">Low Stock</SelectItem> */}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* <div className="flex items-center space-x-2">
-                  <Switch
-                    id="unlimitedStock"
-                    checked={productData.unlimitedStock}
-                    onCheckedChange={(checked) =>
-                      handleSwitchChange("unlimitedStock", checked)
-                    }
-                    className="data-[state=checked]:bg-orange-500"
-                  />
-                  <Label htmlFor="unlimitedStock" className="text-gray-700">Unlimited Stock</Label>
-                </div> */}
-
-                {/* <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="isBestSeller"
-                      checked={productData.isBestSeller}
-                      onCheckedChange={(checked) =>
-                        handleCheckedChange("isBestSeller", checked)
-                      }
-                      className="border-gray-300 data-[state=checked]:bg-orange-500"
-                    />
-                    <Label htmlFor="isBestSeller" className="text-gray-700">
-                      Highlight this product in a best seller section.
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="isNewArrival"
-                      checked={productData.isNewArrival}
-                      onCheckedChange={(checked) =>
-                        handleCheckedChange("isNewArrival", checked)
-                      }
-                      className="border-gray-300 data-[state=checked]:bg-orange-500"
-                    />
-                    <Label htmlFor="isNewArrival" className="text-gray-700">
-                      Highlight this product in a new arrivals section.
-                    </Label>
-                  </div>
-                </div> */}
-              </CardContent>
-            </Card>
+            {/* Inventory section removed as it is now handled per variation */}
 
             {/* Action Buttons */}
             <div className="flex space-x-4">

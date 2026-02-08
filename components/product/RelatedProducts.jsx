@@ -186,14 +186,17 @@ export function RelatedProducts({ slug }) {
                         </h3>
                         <div className="flex items-center gap-2">
                           <span className="text-primary font-bold">
-                          ${  product.sizes[0]?.price - +product.discount_price }
-
+                            {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(
+                              (product.sizes[0]?.price || 0) - +product.discount_price
+                            )}
                           </span>
                           {product.price && (
-                              <span className="original-price text-gray-800">
-                              {product.discount_price ? product.sizes[0]?.price : '' }
-                              </span>
-                            )}
+                            <span className="original-price text-gray-800">
+                              {product.discount_price
+                                ? new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(product.sizes[0]?.price || 0)
+                                : ""}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

@@ -265,7 +265,7 @@ export default function ProductListPage() {
                           </div>
                           <div className="col-span-1">
                             <span className="text-sm text-gray-600">
-                              {product.sizes[0]?.price} $
+                              {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(product.sizes[0]?.price || 0)}
                             </span>
                           </div>
                           <div className="col-span-2">

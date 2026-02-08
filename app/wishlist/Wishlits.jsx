@@ -84,11 +84,15 @@ const WishlistPage = () => {
                           {/* <p className="product-category">{item.category.name}</p> */}
                           <div className="product-pricing">
                             <span className="current-price">
-                            ${  item.sizes[0]?.price - +item.discount_price}
+                              {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(
+                                (item.sizes[0]?.price || 0) - +item.discount_price
+                              )}
                             </span>
                             {item.price && (
                               <span className="original-price">
-                              {item.discount_price & item.sizes[0]?.price ?  `$ ${item.sizes[0]?.price}`: '' }
+                                {item.discount_price && item.sizes[0]?.price
+                                  ? new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(item.sizes[0]?.price || 0)
+                                  : ""}
                               </span>
                             )}
                           </div>

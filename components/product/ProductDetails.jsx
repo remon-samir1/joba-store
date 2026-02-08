@@ -42,10 +42,10 @@ export function ProductDetails({
   const [isExpanded, setIsExpanded] = useState(false);
 
   console.log(productData.reviews);
-  const [sizePrice, setSizePrice] = useState(sizes[0].price);
+  const [sizePrice, setSizePrice] = useState(sizes[0]?.price || 0);
+  const [currentStock, setCurrentStock] = useState(sizes[0]?.stock || 0);
   const cartcontext = useContext(CartCh);
   const change = cartcontext.setCartChange;
-  console.log(sizePrice);
   const handleQuantityChange = (change) => {
     const newQuantity = quantity + change;
     if (newQuantity >= 1) {
@@ -56,7 +56,7 @@ export function ProductDetails({
   const handleAddToCart = async () => {
     const data = {
       product_size_id: selectedSize,
-      quantity :quantity,
+      quantity: quantity,
       total_price: price * quantity,
     };
     const formdData = new FormData();
@@ -81,7 +81,7 @@ export function ProductDetails({
       // alert("Failed to add to cart. Please try again.");
     }
   };
-const {t , i18n} = useTranslation()
+  const { t, i18n } = useTranslation();
   const handleAddToWishlist = async () => {
     try {
       const response = await Axios.post(`/wishlist/${slug}`);
@@ -106,16 +106,15 @@ const {t , i18n} = useTranslation()
     ratings.length > 0
       ? (ratings.reduce((sum, r) => sum + r, 0) / ratings.length).toFixed(1)
       : 0;
-console.log(productData.id);
+  console.log(productData.id);
   return (
     <div className={`${!showDocModal && " "}w-full `}>
       {/* <Notifcation /> */}
-
       <div className="space-y-6">
         <div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">{name}</h1>
           <div className="text-3xl font-semibold text-primary mb-6">
-            $ {+sizePrice - +discount}
+            EGP {+sizePrice - +discount}
           </div>
 
           <div className="flex items-center gap-2 mb-6">
@@ -138,38 +137,36 @@ console.log(productData.id);
                 </div>
                 <span className="text-sm text-gray-600">
                   {averageRating} ({productData.reviews.length} {t("Review")}
-                  {/* {productData.reviews.length !== 1 ? "s" : ""} */}
-                  )
+                  {/* {productData.reviews.length !== 1 ? "s" : ""} */})
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-            <div className="flex items-center gap-2">
-              <Info className="h-6 w-6 text-primary" />
-              <span className="text-gray-900">
-
-
-
-                {inStock ? i18n.language ==="ar"? new Intl.NumberFormat('ar-EG').format(inStock) + t(" in stock") : inStock + t(" in stock") : t("Out of stock")}
-              </span>
-            </div>
+          <div className="flex items-center gap-2">
+            <Info className="h-6 w-6 text-primary" />
+            <span className="text-gray-900">
+              {currentStock > 0
+                ? i18n.language === "ar"
+                  ? new Intl.NumberFormat("ar-EG").format(currentStock) +
+                    t(" in stock")
+                  : currentStock + t(" in stock")
+                : t("Out of stock")}
+            </span>
           </div>
 
-          {!inStock && (
+          {currentStock === 0 && (
             <button
               onClick={() => setShowModal(true)}
-              className="bg-primary block hover:bg-primary/90 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors mb-4 w-full sm:w-auto"
+              className="bg-primary block hover:bg-primary/90 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold transition-colors mb-4 w-full sm:w-auto mt-4"
             >
               {t("Request Now")}
             </button>
           )}
-        </div>
-      </div>
-
-    
-
+        </div>{" "}
+        {/* Closes the div containing name, price, rating, stock, and request button */}
+      </div>{" "}
+      {/* Closes the top section container */}
       <div className="space-y-6 mt-6">
         <div className="flex gap-11">
           <span className="font-semibold text-gray-900 min-w-fit">
@@ -179,12 +176,11 @@ console.log(productData.id);
         </div>
 
         <div className="flex gap-11 ">
-          <span className="font-semibold text-gray-900 min-w-fit">{t("Tags")}</span>
+          <span className="font-semibold text-gray-900 min-w-fit">
+            {t("Tags")}
+          </span>
           <span className="text-gray-600">: {tags?.join(", ") || "N/A"}</span>
         </div>
-
-  
-
 
         <div className="flex items-center gap-12">
           <span className="font-semibold text-gray-900">{t("Quantity")}</span>
@@ -208,7 +204,6 @@ console.log(productData.id);
           </div>
         </div>
       </div>
-
       <div className="flex flex-wrap gap-2 sm:gap-4 mt-8">
         {sizes.map((size) => (
           <Button
@@ -217,6 +212,7 @@ console.log(productData.id);
             onClick={() => {
               setSizePrice(size.price);
               setSelectedSize(size.id);
+              setCurrentStock(size.stock || 0);
             }}
             className={`border-gray-900 text-gray-900 hover:bg-primary/50 px-4 py-2 ${
               selectedSize === size.id
@@ -230,7 +226,7 @@ console.log(productData.id);
       </div>
       <div className="w-92 overflow-hidden mt-4">
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-           {t("Description")} 
+          {t("Description")}
         </h2>
         <div className="text-gray-600 leading-relaxed product-description">
           {description.length > 200 ? (
@@ -301,13 +297,11 @@ console.log(productData.id);
           <Paperclip className="h-5 w-5" />
         </Button>
       </div>
-
       <OrderRequestModal
         id={productData.id}
         isOpen={showModal}
         onClose={() => setShowModal(false)}
       />
-
       {showDocModal && (
         <div className="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50 p-4">
           <div

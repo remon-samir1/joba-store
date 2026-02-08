@@ -465,16 +465,18 @@ const CheckoutPage = () => {
                           × {item.quantity}
                         </span>
                         <span>
-                          {(item.size.price - +item.product.discount_price) *
-                            item.quantity}{" "}
-                          $
+                          {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP" }).format(
+                            (item.size.price - +item.product.discount_price) * item.quantity
+                          )}
                         </span>
                       </div>
                     ))}
                     {discountValue !== 0 && (
                       <div className="totals-row">
                         <span className="totals-label">{t("Discount")}</span>
-                        <span className="totals-value">{couponType === "percentage" ? "%" : "$"} {discountValue}</span>
+                        <span className="totals-value">
+                          {couponType === "percentage" ? "%" : "EGP"} {discountValue}
+                        </span>
                       </div>
                     )}
                     <div
@@ -482,7 +484,7 @@ const CheckoutPage = () => {
                       style={{ ...styles.totalsRow, fontWeight: 600 }}
                     >
                       <span className="totals-label">{t("Total")}</span>
-                      <span>$ {total}</span>
+                      <span>{new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP" }).format(Number(total ?? 0))}</span>
                     </div>
                   </div>
                   <div className="coupon-section">

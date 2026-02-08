@@ -10,7 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import juba from '../assets/juba.svg'
+import juba from "../assets/juba.svg";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { Axios } from "../../components/Helpers/Axios";
 import CartContext, { CartCh } from "../../Context/CartContext";
 
@@ -79,7 +79,9 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language === 'ar' ? "AR" : 'EN');
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    i18n.language === "ar" ? "AR" : "EN",
+  );
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -91,7 +93,7 @@ export function Header() {
     const variations = new Set([query]);
     variations.add(convertByKeyboardMap(query, arabicToEnglishMap));
     variations.add(convertByKeyboardMap(query, englishToArabicMap));
-    return Array.from(variations).filter(Boolean).join(' ');
+    return Array.from(variations).filter(Boolean).join(" ");
   };
 
   const fetchSuggestions = async () => {
@@ -102,9 +104,9 @@ export function Header() {
     }
     setIsLoadingSuggestions(true);
     try {
-      const searchVariations =searchQuery;
-      const response = await Axios.get('/products', {
-        params: { q: searchVariations.trim() }
+      const searchVariations = searchQuery;
+      const response = await Axios.get("/products", {
+        params: { q: searchVariations.trim() },
       });
       setSuggestions(response.data.data.slice(0, 5));
     } catch (error) {
@@ -127,12 +129,12 @@ export function Header() {
         !searchContainerRef.current.contains(event.target)
       ) {
         // Only hide suggestions if search is empty
-        if (searchQuery.trim() === '') {
+        if (searchQuery.trim() === "") {
           setShowSuggestions(false);
         }
       }
     };
-    
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -161,15 +163,20 @@ export function Header() {
     { code: "en", name: "English", flag: "EN" },
     { code: "ar", name: "العربية", flag: "AR" },
   ];
-  const handelChangeLanguegae =(value)=>{
+  const handelChangeLanguegae = (value) => {
     i18n.changeLanguage(value);
-    document.documentElement.setAttribute("dir" , value === 'ar' ? 'rtl' : 'ltr')
-  }
+    document.documentElement.setAttribute(
+      "dir",
+      value === "ar" ? "rtl" : "ltr",
+    );
+  };
 
-  useEffect(()=>{
-    document.documentElement.setAttribute("dir" , i18n.language === 'ar' ? 'rtl' : 'ltr')
-
-  },[i18n.language])
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      "dir",
+      i18n.language === "ar" ? "rtl" : "ltr",
+    );
+  }, [i18n.language]);
   const [cart, setCart] = useState(0);
   const cartcontext = useContext(CartCh);
   const change = cartcontext.cartChange;
@@ -223,7 +230,7 @@ export function Header() {
                   )}
                 </div>
 
-                {(showSuggestions || searchQuery !== '') && (
+                {(showSuggestions || searchQuery !== "") && (
                   <div className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 z-50">
                     {isLoadingSuggestions ? (
                       <div className="px-4 py-3 flex justify-center">
@@ -253,10 +260,12 @@ export function Header() {
                           )}
                         </div>
                       ))
-                    ) : suggestions.length === 0 &&   (
-                      <div className="px-4 py-3 text-gray-500">
-                        {t('No results found')}
-                      </div>
+                    ) : (
+                      suggestions.length === 0 && (
+                        <div className="px-4 py-3 text-gray-500">
+                          {t("No results found")}
+                        </div>
+                      )
                     )}
                   </div>
                 )}
@@ -274,9 +283,10 @@ export function Header() {
                   {languages.map((lang) => (
                     <DropdownMenuItem
                       key={lang.code}
-                      onClick={() =>{
-                        handelChangeLanguegae(lang.code)
-                        setSelectedLanguage(lang.flag)}}
+                      onClick={() => {
+                        handelChangeLanguegae(lang.code);
+                        setSelectedLanguage(lang.flag);
+                      }}
                       className="flex items-center gap-3 cursor-pointer"
                     >
                       <span className="text-lg">{lang.flag}</span>
@@ -405,7 +415,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-              {t("Home")}
+                {t("Home")}
               </Link>
               <Link
                 to="/categories"
@@ -415,7 +425,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-              {t("Categories")}
+                {t("Categories")}
               </Link>
               <Link
                 to="/about"
@@ -425,7 +435,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-              {t("About")}
+                {t("About")}
               </Link>
               <Link
                 to="/blog"
@@ -435,7 +445,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-          {t("Blog")}
+                {t("Blog")}
               </Link>
               <Link
                 to="/contact"
@@ -455,7 +465,7 @@ export function Header() {
                     : "text-white hover:text-gray-200"
                 }`}
               >
-              {t("Dashboard")}
+                {t("Dashboard")}
               </Link>
             </nav>
 
@@ -465,7 +475,7 @@ export function Header() {
                   to="/help"
                   className="px-2 lg:px-4 py-2 text-white hover:text-gray-200 font-semibold text-sm lg:text-base"
                 >
-                {t("help")}
+                  {t("help")}
                 </Link>
                 <div className="w-px h-6 bg-white/30 mx-2"></div>
                 <Link
@@ -491,7 +501,7 @@ export function Header() {
                     <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-gray-900 text-white rounded-full w-5 sm:w-6 h-5 sm:h-6 flex items-center justify-center text-xs font-medium">
                       {cart > 99 ? "99+" : cart}
                     </div>
-                  )} 
+                  )}
                 </Link>
               </div>
             </div>
@@ -511,7 +521,7 @@ export function Header() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <div className="w-36 h-20 shrink-0 ">
-                <img src={juba} className="w-full h-full object-cover " />
+                  <img src={juba} className="w-full h-full object-cover " />
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -520,7 +530,7 @@ export function Header() {
                   <X className="h-6 w-6" />
                 </button>
               </div>
-              <DropdownMenu className='mb-4'>
+              <DropdownMenu className="mb-4">
                 <DropdownMenuTrigger className="flex outline-none items-center gap-1 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
                   <span className="text-base xl:text-lg font-medium text-gray-900">
                     {selectedLanguage}
@@ -532,9 +542,10 @@ export function Header() {
                   {languages.map((lang) => (
                     <DropdownMenuItem
                       key={lang.code}
-                      onClick={() =>{
-                        handelChangeLanguegae(lang.code)
-                        setSelectedLanguage(lang.flag)}}
+                      onClick={() => {
+                        handelChangeLanguegae(lang.code);
+                        setSelectedLanguage(lang.flag);
+                      }}
                       className="flex items-center gap-3 cursor-pointer"
                     >
                       <span className="text-lg">{lang.flag}</span>
@@ -559,7 +570,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-              {t("Home")}
+                  {t("Home")}
                 </Link>
                 <Link
                   to="/categories"
@@ -570,7 +581,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                {t("Categories")}
+                  {t("Categories")}
                 </Link>
                 <Link
                   to="/about"
@@ -581,7 +592,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-              {t("About")}
+                  {t("About")}
                 </Link>
                 <Link
                   to="/blog"
@@ -592,7 +603,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-              {t("Blog")}
+                  {t("Blog")}
                 </Link>
                 <Link
                   to="/contact"
@@ -603,7 +614,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                {t("Contact us")}
+                  {t("Contact us")}
                 </Link>
                 <Link
                   to="/help"
@@ -636,7 +647,7 @@ export function Header() {
                       : "text-gray-700 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
-                {t("Dashboard")}
+                  {t("Dashboard")}
                 </Link>
               </nav>
 
@@ -655,7 +666,9 @@ export function Header() {
                   className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:text-primary hover:bg-gray-50 rounded transition-colors"
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  <span>{t("Cart")} ({cart})</span>
+                  <span>
+                    {t("Cart")} ({cart})
+                  </span>
                 </Link>
               </div>
             </div>
