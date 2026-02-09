@@ -237,10 +237,20 @@ export default function UpdateProduct() {
     setVariations([...variations, { weight: "", price: "", stock: "" }]);
   };
 
-  const removeVariation = (index) => {
-    const values = [...variations];
-    values.splice(index, 1);
-    setVariations(values);
+  const removeVariation = async (index) => {
+    try {
+      const variation = variations[index];
+      if (variation.id) {
+        await Axios.delete(`products/size/${variation.id}`);
+        toast.success("Size deleted successfully");
+      }
+      const values = [...variations];
+      values.splice(index, 1);
+      setVariations(values);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete size");
+    }
   };
 
   // Handlers for image uploads
@@ -260,6 +270,7 @@ export default function UpdateProduct() {
 
     const newImages = validImages.map((file) => ({ file, isExisting: false }));
     setProductImages([...productImages, ...newImages]);
+    e.target.value = "";
   };
 
   // Remove an image
@@ -713,6 +724,7 @@ export default function UpdateProduct() {
                       <div className="col-span-1">
                         {variations.length > 1 && (
                           <Button
+                            type="button"
                             variant="ghost"
                             size="icon"
                             onClick={() => removeVariation(index)}
@@ -849,7 +861,7 @@ export default function UpdateProduct() {
                   </div>
                 </div> */}
 
-                {/* <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
                   <Switch
                     id="unlimitedStock"
                     checked={productData.unlimitedStock}
@@ -863,7 +875,7 @@ export default function UpdateProduct() {
                   </Label>
                 </div> */}
 
-                {/* <div className="space-y-2">
+            {/* <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="isBestSeller"
@@ -891,7 +903,7 @@ export default function UpdateProduct() {
                     </Label>
                   </div>
                 </div> */}
-              {/* </CardContent>
+            {/* </CardContent>
             </Card> */}
 
             {/* Action Buttons */}
@@ -939,7 +951,7 @@ export default function UpdateProduct() {
                       ) : (
                         <img
                           src={URL.createObjectURL(
-                            productImages[currentImageIndex].files,
+                            productImages[currentImageIndex].file,
                           )}
                           alt={`Product Preview ${currentImageIndex + 1}`}
                           className="w-full h-full object-contain"
