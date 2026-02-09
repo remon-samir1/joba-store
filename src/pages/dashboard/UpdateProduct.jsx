@@ -84,6 +84,7 @@ export default function UpdateProduct() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
+  const [deletedImageIds, setDeletedImageIds] = useState([]);
 
   const modules = useMemo(
     () => ({
@@ -275,6 +276,10 @@ export default function UpdateProduct() {
 
   // Remove an image
   const removeImage = (index) => {
+    const property = productImages[index];
+    if (property.isExisting) {
+      setDeletedImageIds([...deletedImageIds, property.url.id]);
+    }
     const newImages = [...productImages];
     newImages.splice(index, 1);
     setProductImages(newImages);
@@ -406,6 +411,11 @@ export default function UpdateProduct() {
         `sizes[${i}][stock]`,
         productData.stockStatus === "out_of_stock" ? 0 : v.stock || 0, // Use variation stock
       );
+    });
+
+    // Deleted Images
+    deletedImageIds.forEach((id) => {
+      formData.append("deleted_images[]", id);
     });
     // formData.append("sizes", JSON.stringify(variations));
 
@@ -940,7 +950,8 @@ export default function UpdateProduct() {
               <CardContent className="space-y-4 pt-4">
                 {/* Main Image Preview */}
                 <div className="relative w-full h-64 rounded-lg border border-dashed border-gray-300 overflow-hidden bg-gray-100">
-                  {productImages.length > 0 ? (
+                  {productImages.length > 0 &&
+                  productImages[currentImageIndex] ? (
                     <>
                       {productImages[currentImageIndex].isExisting ? (
                         <img
