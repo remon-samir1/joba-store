@@ -84,7 +84,6 @@ export default function UpdateProduct() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
-  const [deletedImageIds, setDeletedImageIds] = useState([]);
 
   const modules = useMemo(
     () => ({
@@ -275,10 +274,17 @@ export default function UpdateProduct() {
   };
 
   // Remove an image
-  const removeImage = (index) => {
+  const removeImage = async (index) => {
     const property = productImages[index];
     if (property.isExisting) {
-      setDeletedImageIds([...deletedImageIds, property.url.id]);
+      try {
+        await Axios.delete(`/admin/products/image/${property.url.id}`);
+        toast.success("Image deleted successfully");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete image");
+        return;
+      }
     }
     const newImages = [...productImages];
     newImages.splice(index, 1);
@@ -404,6 +410,8 @@ export default function UpdateProduct() {
     variations.forEach((v, i) => {
       if (v.id) {
         formData.append(`sizes[${i}][id]`, v.id);
+      } else {
+        formData.append(`sizes[${i}][id]`, ""); // Send empty string for new sizes
       }
       formData.append(`sizes[${i}][name]`, v.weight);
       formData.append(`sizes[${i}][price]`, v.price);
@@ -414,9 +422,7 @@ export default function UpdateProduct() {
     });
 
     // Deleted Images
-    deletedImageIds.forEach((id) => {
-      formData.append("deleted_images[]", id);
-    });
+
     // formData.append("sizes", JSON.stringify(variations));
 
     try {
@@ -919,7 +925,11 @@ export default function UpdateProduct() {
             {/* Action Buttons */}
             <div className="flex space-x-4">
               <Button
-                onClick={(e) => handleSubmit(e, true)}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSubmit(e, true);
+                }}
                 variant="outline"
                 className="flex-1 bg-gray-500 text-white hover:bg-gray-600 border-none"
               >
@@ -969,10 +979,15 @@ export default function UpdateProduct() {
                         />
                       )}
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                        onClick={() => removeImage(currentImageIndex)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          removeImage(currentImageIndex);
+                        }}
                       >
                         <X className="w-5 h-5" />
                       </Button>
@@ -1011,10 +1026,12 @@ export default function UpdateProduct() {
                         />
                       )}
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                         onClick={(e) => {
+                          e.preventDefault();
                           e.stopPropagation();
                           removeImage(index);
                         }}
