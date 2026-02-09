@@ -241,7 +241,7 @@ export default function UpdateProduct() {
     try {
       const variation = variations[index];
       if (variation.id) {
-        await Axios.delete(`products/size/${variation.id}`);
+        await Axios.delete(`/admin/products/size/${variation.id}`);
         toast.success("Size deleted successfully");
       }
       const values = [...variations];
