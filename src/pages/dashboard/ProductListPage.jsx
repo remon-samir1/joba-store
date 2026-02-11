@@ -228,80 +228,91 @@ export default function ProductListPage() {
                       No products found
                     </div>
                   ) : (
-                    products.map((product) => (
-                      <div
-                        key={product.id}
-                        className="px-6 py-4 hover:bg-gray-50"
-                      >
-                        <div className="grid grid-cols-12 gap-4 items-center">
-                          <div className="col-span-4 flex items-center space-x-3">
-                            <Checkbox
-                              checked={selectedProducts.has(product.slug)}
-                              onCheckedChange={(checked) =>
-                                handleSelectProduct(product.slug, checked)
-                              }
-                            />
-                            <div className="w-10 h-10 bg-gray-100 rounded">
-                              <img
-                                src={product.images[0].path}
-                                className="w-full h-full object-cover rounded"
+                    products.map((product) => {
+                      const totalStock =
+                        product.sizes?.reduce(
+                          (sum, s) => sum + (Number(s.stock) || 0),
+                          0,
+                        ) || 0;
+                      return (
+                        <div
+                          key={product.id}
+                          className="px-6 py-4 hover:bg-gray-50"
+                        >
+                          <div className="grid grid-cols-12 gap-4 items-center">
+                            <div className="col-span-4 flex items-center space-x-3">
+                              <Checkbox
+                                checked={selectedProducts.has(product.slug)}
+                                onCheckedChange={(checked) =>
+                                  handleSelectProduct(product.slug, checked)
+                                }
                               />
+                              <div className="w-10 h-10 bg-gray-100 rounded">
+                                <img
+                                  src={product.images[0].path}
+                                  className="w-full h-full object-cover rounded"
+                                />
+                              </div>
+                              <span className="text-sm font-medium text-gray-900">
+                                {product.name?.en}
+                              </span>
                             </div>
-                            <span className="text-sm font-medium text-gray-900">
-                              {product.name?.en}
-                            </span>
-                          </div>
-                          <div className="col-span-2">
-                            <span className="text-sm text-gray-600">
-                              {product.category?.name}
-                            </span>
-                          </div>
-                          <div className="col-span-1">
-                            <span
-                              className={`text-sm ${getStockStatusColor(product.stock)}`}
-                            >
-                              {product.stock}
-                            </span>
-                          </div>
-                          <div className="col-span-1">
-                            <span className="text-sm text-gray-600">
-                              {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(product.sizes[0]?.price || 0)}
-                            </span>
-                          </div>
-                          <div className="col-span-2">
-                            {getStatusBadge(product.status)}
-                          </div>
-                          <div className="col-span-2">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem asChild>
-                                  <Link
-                                    to={`/dashboard/products/edit/${product.slug}`}
+                            <div className="col-span-2">
+                              <span className="text-sm text-gray-600">
+                                {product.category?.name}
+                              </span>
+                            </div>
+                            <div className="col-span-1">
+                              <span
+                                className={`text-sm ${getStockStatusColor(totalStock)}`}
+                              >
+                                {totalStock}
+                              </span>
+                            </div>
+                            <div className="col-span-1">
+                              <span className="text-sm text-gray-600">
+                                {new Intl.NumberFormat("en-EG", {
+                                  style: "currency",
+                                  currency: "EGP",
+                                  minimumFractionDigits: 0,
+                                }).format(product.sizes[0]?.price || 0)}
+                              </span>
+                            </div>
+                            <div className="col-span-2">
+                              {getStatusBadge(product.status)}
+                            </div>
+                            <div className="col-span-2">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem asChild>
+                                    <Link
+                                      to={`/dashboard/products/edit/${product.slug}`}
+                                    >
+                                      <Edit className="h-4 w-4 mr-2" />
+                                      Edit
+                                    </Link>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="text-red-600"
+                                    onClick={() =>
+                                      handleDeleteProduct(product.slug)
+                                    }
                                   >
-                                    <Edit className="h-4 w-4 mr-2" />
-                                    Edit
-                                  </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="text-red-600"
-                                  onClick={() =>
-                                    handleDeleteProduct(product.slug)
-                                  }
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
               </div>
