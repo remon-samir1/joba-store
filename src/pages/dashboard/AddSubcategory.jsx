@@ -52,9 +52,22 @@ const AddSubcategory = () => {
 
     try {
       // Resolve numerical parent ID from ID if necessary
-      const res = await Axios.get("/categories");
-      const allCategories = res.data?.data?.data || res.data?.data || [];
-      const parent = allCategories.find((c) => c.id == parentId);
+      let parent = null;
+      let currentPage = 1;
+      let lastPage = 1;
+
+      while (!parent && currentPage <= lastPage) {
+        const res = await Axios.get(`/categories?page=${currentPage}`);
+        const data = res.data?.data || res.data;
+        const allCategories = data?.data || (Array.isArray(data) ? data : []);
+        lastPage = data?.last_page || 1;
+
+        parent = allCategories.find((c) => c.id == parentId);
+        if (parent) break;
+        currentPage++;
+        if (currentPage > 20) break;
+      }
+
       const actualParentId = parent ? parent.id : parentId;
 
       const formData = new FormData();

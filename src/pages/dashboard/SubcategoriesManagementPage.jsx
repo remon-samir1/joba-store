@@ -76,12 +76,26 @@ export default function SubcategoriesManagementPage() {
   const fetchSubcategories = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await Axios.get("/categories");
-      console.log(res.data);
-      const allCategories = res.data?.data?.data || res.data?.data || [];
-      const parent = allCategories.find(
-        (c) => c.id == parentId,
-      );
+      // First, try to fetch the specific category if an ID endpoint exists or search all pages
+      let parent = null;
+      let currentPage = 1;
+      let lastPage = 1;
+
+      // Loop to find the parent category across pages if necessary
+      // Note: In a production environment, a direct /categories/{id} endpoint would be preferred
+      while (!parent && currentPage <= lastPage) {
+        const res = await Axios.get(`/categories?page=${currentPage}`);
+        const data = res.data?.data || res.data;
+        const allCategories = data?.data || (Array.isArray(data) ? data : []);
+        lastPage = data?.last_page || 1;
+
+        parent = allCategories.find((c) => c.id == parentId);
+        if (parent) break;
+        currentPage++;
+
+        // Safety break to prevent infinite loops if something goes wrong with pagination data
+        if (currentPage > 20) break;
+      }
 
       if (parent) {
         setParentCategory(parent);

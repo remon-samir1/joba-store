@@ -26,15 +26,25 @@ const UpdateCategory = () => {
   const nav = useNavigate();
 
   useEffect(() => {
-    setLoading(true);
-    Axios.get("/categories")
-      .then((res) => {
-        setLoading(false);
-        // Consolidating data access logic - assuming res.data.data.data is the correct array
-        const categories = res.data.data?.data || res.data.data || [];
-        const category = categories.find(
-          (cat) => cat.slug == id || cat.id == id,
-        );
+    const fetchCategory = async () => {
+      setLoading(true);
+      try {
+        let category = null;
+        let currentPage = 1;
+        let lastPage = 1;
+
+        while (!category && currentPage <= lastPage) {
+          const res = await Axios.get(`/categories?page=${currentPage}`);
+          const data = res.data?.data || res.data;
+          const categories = data?.data || (Array.isArray(data) ? data : []);
+          lastPage = data?.last_page || 1;
+
+          category = categories.find((cat) => cat.slug == id || cat.id == id);
+          if (category) break;
+          currentPage++;
+          if (currentPage > 20) break;
+        }
+
         if (category) {
           setCategoryData({
             name: category.name || "",
@@ -42,12 +52,15 @@ const UpdateCategory = () => {
             image: category.image || "",
           });
         }
-      })
-      .catch((err) => {
-        setLoading(false);
+      } catch (err) {
         console.error("Failed to fetch category:", err);
         toast.error("Error loading category data");
-      });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategory();
   }, [id]);
 
   const handleChange = (e) => {
