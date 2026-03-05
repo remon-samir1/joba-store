@@ -205,7 +205,7 @@ export default function ProductListPage() {
               <div className="min-w-[800px]">
                 <div className="bg-orange-100 px-6 py-4">
                   <div className="grid grid-cols-12 gap-4 items-center">
-                    <div className="col-span-4 flex items-center space-x-3">
+                    <div className="col-span-3 flex items-center space-x-3">
                       <Checkbox
                         checked={selectAll}
                         onCheckedChange={handleSelectAll}
@@ -215,9 +215,10 @@ export default function ProductListPage() {
                       </span>
                     </div>
                     <div className="col-span-2">Category</div>
+                    <div className="col-span-2">Subcategory</div>
                     <div className="col-span-1">Stock</div>
                     <div className="col-span-1">Price</div>
-                    <div className="col-span-2">Status</div>
+                    <div className="col-span-1">Status</div>
                     <div className="col-span-2">Action</div>
                   </div>
                 </div>
@@ -240,7 +241,7 @@ export default function ProductListPage() {
                           className="px-6 py-4 hover:bg-gray-50"
                         >
                           <div className="grid grid-cols-12 gap-4 items-center">
-                            <div className="col-span-4 flex items-center space-x-3">
+                            <div className="col-span-3 flex items-center space-x-3">
                               <Checkbox
                                 checked={selectedProducts.has(product.slug)}
                                 onCheckedChange={(checked) =>
@@ -253,13 +254,21 @@ export default function ProductListPage() {
                                   className="w-full h-full object-cover rounded"
                                 />
                               </div>
-                              <span className="text-sm font-medium text-gray-900">
+                              <span className="text-sm font-medium text-gray-900 line-clamp-1">
                                 {product.name?.en}
                               </span>
                             </div>
                             <div className="col-span-2">
                               <span className="text-sm text-gray-600">
-                                {product.category?.name}
+                                {product.category?.parent?.name ||
+                                  product.category?.name}
+                              </span>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-sm text-gray-600">
+                                {product.category?.parent
+                                  ? product.category?.name
+                                  : "-"}
                               </span>
                             </div>
                             <div className="col-span-1">
@@ -278,7 +287,7 @@ export default function ProductListPage() {
                                 }).format(product.sizes[0]?.price || 0)}
                               </span>
                             </div>
-                            <div className="col-span-2">
+                            <div className="col-span-1">
                               {getStatusBadge(product.status)}
                             </div>
                             <div className="col-span-2">

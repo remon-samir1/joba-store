@@ -78,6 +78,11 @@ export default function AddProductPage() {
   const [productImages, setProductImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [categories, setCategories] = useState([]);
+  const [categoriesPage, setCategoriesPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [hasMoreCategories, setHasMoreCategories] = useState(false);
+  const [hasPrevCategories, setHasPrevCategories] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(false);
   const nav = useNavigate();
 
   const modules = useMemo(
@@ -144,6 +149,7 @@ export default function AddProductPage() {
 
   // Handler for Select components
   const handleSelectChange = (id, value) => {
+    if (value === "pagination-control") return;
     setProductData((prevData) => ({
       ...prevData,
       [id]: value,
@@ -330,16 +336,51 @@ export default function AddProductPage() {
     }
   };
 
+  const fetchCategories = async (page = 1) => {
+    setLoadingCategories(true);
+    try {
+      const response = await Axios.get(`/categories?page=${page}`);
+      const newData =
+        response.data?.data?.data || response.data?.data || response.data || [];
+      const pagination = response.data?.data || response.data;
+
+      setCategories(newData);
+      setHasMoreCategories(!!pagination?.next_page_url);
+      setHasPrevCategories(!!pagination?.prev_page_url);
+      setTotalPages(pagination?.last_page || 1);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
   useEffect(() => {
-    Axios.get("/categories").then((data) => {
-      setCategories(
-        data.data?.data?.data || data.data?.data || data.data || [],
-      );
-    });
+    fetchCategories(1);
     Axios.get("/tags").then((data) => {
       console.log(data);
     });
   }, []);
+
+  const handleNextPage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (hasMoreCategories) {
+      const nextPage = categoriesPage + 1;
+      setCategoriesPage(nextPage);
+      fetchCategories(nextPage);
+    }
+  };
+
+  const handlePrevPage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (hasPrevCategories) {
+      const prevPage = categoriesPage - 1;
+      setCategoriesPage(prevPage);
+      fetchCategories(prevPage);
+    }
+  };
 
   return (
     <div className="flex-1 bg-gray-50 min-h-screen">
@@ -864,24 +905,20 @@ export default function AddProductPage() {
                     Product Categories *
                   </Label>
                   <Select
-                    value={productData.productCategory}
                     onValueChange={(value) =>
                       handleSelectChange("productCategory", value)
                     }
-                    required
+                    value={productData.productCategory.toString()}
                   >
-                    <SelectTrigger
-                      className="mt-1 border-gray-300"
-                      id="productCategory"
-                    >
-                      <SelectValue placeholder="Select your product category" />
+                    <SelectTrigger className="w-full border-gray-300">
+                      <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories?.map((category) => (
+                      {categories.map((category) => (
                         <div key={category.id}>
                           <SelectItem
-                            value={String(category.id)}
-                            className="font-bold text-gray-900 border-t mt-2 first:mt-0 first:border-0"
+                            value={category.id.toString()}
+                            className="font-bold text-gray-900 border-t first:border-0"
                           >
                             {category.name}
                           </SelectItem>
@@ -889,7 +926,7 @@ export default function AddProductPage() {
                             category.children.map((child) => (
                               <SelectItem
                                 key={child.id}
-                                value={String(child.id)}
+                                value={child.id.toString()}
                                 className="pl-8 text-gray-600"
                               >
                                 {child.name}
@@ -897,6 +934,33 @@ export default function AddProductPage() {
                             ))}
                         </div>
                       ))}
+                      {(hasMoreCategories || hasPrevCategories) && (
+                        <div className="p-2 flex items-center justify-between border-t border-gray-100 bg-gray-50">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-orange-600 hover:text-orange-700 disabled:opacity-30"
+                            onClick={handlePrevPage}
+                            disabled={!hasPrevCategories || loadingCategories}
+                          >
+                            Prev
+                          </Button>
+                          <span className="text-xs text-gray-500">
+                            Page {categoriesPage} / {totalPages}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-orange-600 hover:text-orange-700 disabled:opacity-30"
+                            onClick={handleNextPage}
+                            disabled={!hasMoreCategories || loadingCategories}
+                          >
+                            Next
+                          </Button>
+                        </div>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
