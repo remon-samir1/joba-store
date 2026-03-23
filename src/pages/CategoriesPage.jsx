@@ -24,7 +24,7 @@ export default function CategoriesPage() {
   const slugFromUrl = decodeURIComponent(location.pathname.split("/").pop());
 
   const [categories, setCategories] = useState([]);
-  const [categoryTabs, setCategoryTabs] = useState(["All"]);
+  const [categoryTabs, setCategoryTabs] = useState([]);
   const [sidebarCategories, setSidebarCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
@@ -35,7 +35,24 @@ export default function CategoriesPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [wishlist, setWishlist] = useState([]);
   const [openCategory, setOpenCategory] = useState(null);
-  console.log(activeCategory);
+  const [catPage, setCatPage] = useState(1);
+  const [hasNextCats, setHasNextCats] = useState(false);
+  const [isMoreLoading, setIsMoreLoading] = useState(false);
+
+  const resetCategories = () => {
+    setIsLoadingCategories(true);
+    Axios.get("/categories?page=1")
+      .then((res) => {
+        const apiCategories = res.data.data.data;
+        setCategories(apiCategories);
+        setCategoryTabs(apiCategories);
+        setSidebarCategories(apiCategories);
+        setHasNextCats(res.data.data.current_page < res.data.data.last_page);
+        setCatPage(1);
+      })
+      .finally(() => setIsLoadingCategories(false));
+  };
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get("q");
@@ -43,6 +60,25 @@ export default function CategoriesPage() {
     if (q) setSearchQuery(q);
     setCurrentPage(page);
   }, [location.search]);
+
+  const getPageNumbers = () => {
+    const total = Math.ceil(totalPages / 10);
+    const current = currentPage;
+    const pages = [];
+
+    if (total <= 5) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+    } else {
+      if (current <= 3) {
+        pages.push(1, 2, 3, 4, "...", total);
+      } else if (current >= total - 2) {
+        pages.push(1, "...", total - 3, total - 2, total - 1, total);
+      } else {
+        pages.push(1, "...", current - 1, current, current + 1, "...", total);
+      }
+    }
+    return pages;
+  };
 
   const toggleCategory = (categoryName) => {
     setOpenCategory((prev) => (prev === categoryName ? null : categoryName));
@@ -76,26 +112,45 @@ export default function CategoriesPage() {
   };
 
   useEffect(() => {
-    Axios.get("/categories")
+    setIsLoadingCategories(true);
+    Axios.get("/categories?page=1")
       .then((res) => {
         const apiCategories = res.data.data.data;
-        const categoryNames = apiCategories.map((cat) => cat.id);
         setCategories(apiCategories);
-        setCategoryTabs([...apiCategories]);
+        setCategoryTabs(apiCategories);
         setSidebarCategories(apiCategories);
+        setHasNextCats(res.data.data.current_page < res.data.data.last_page);
+        setCatPage(1);
+
         if (slugFromUrl) {
           const matchedCategory = apiCategories.find(
             (cat) => cat.slug.toLowerCase() == slugFromUrl.toLowerCase(),
           );
-          console.log(slugFromUrl);
-          console.log(matchedCategory);
-          setActiveCategory(matchedCategory.id || "All");
+          if (matchedCategory) {
+            setActiveCategory(matchedCategory.id || "All");
+          }
         } else {
           setActiveCategory("All");
         }
       })
       .finally(() => setIsLoadingCategories(false));
   }, [slugFromUrl]);
+
+  const loadMoreCategories = () => {
+    if (isMoreLoading || !hasNextCats) return;
+    setIsMoreLoading(true);
+    const nextPage = catPage + 1;
+    Axios.get(`/categories?page=${nextPage}`)
+      .then((res) => {
+        const newCategories = res.data.data.data;
+        setCategories((prev) => [...prev, ...newCategories]);
+        setCategoryTabs((prev) => [...prev, ...newCategories]);
+        setSidebarCategories((prev) => [...prev, ...newCategories]);
+        setCatPage(nextPage);
+        setHasNextCats(res.data.data.current_page < res.data.data.last_page);
+      })
+      .finally(() => setIsMoreLoading(false));
+  };
 
   useEffect(() => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -132,7 +187,7 @@ export default function CategoriesPage() {
       <Notification />
       <Header />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="relative w-full sm:w-1/2">
             <input
@@ -154,11 +209,10 @@ export default function CategoriesPage() {
             onClick={() => {
               setActiveCategory("All");
             }}
-            className={`pb-2 border-b-4 transition-colors ${
-              activeCategory === "All"
-                ? "text-primary border-primary font-medium"
-                : "text-gray-500 border-transparent hover:text-foreground"
-            }`}
+            className={`pb-2 border-b-4 transition-colors ${activeCategory === "All"
+              ? "text-primary border-primary font-medium"
+              : "text-gray-500 border-transparent hover:text-foreground"
+              }`}
           >
             All
           </button>
@@ -169,11 +223,10 @@ export default function CategoriesPage() {
                 setActiveCategory(category.id);
                 setCurrentPage(1);
               }}
-              className={`pb-2 border-b-4 transition-colors ${
-                activeCategory === category.id
-                  ? "text-primary border-primary font-medium"
-                  : "text-gray-500 border-transparent hover:text-foreground"
-              }`}
+              className={`pb-2 border-b-4 transition-colors ${activeCategory === category.id
+                ? "text-primary border-primary font-medium"
+                : "text-gray-500 border-transparent hover:text-foreground"
+                }`}
             >
               {category.name}
             </button>
@@ -207,15 +260,16 @@ export default function CategoriesPage() {
 
                     {openCategory === category.name &&
                       category.children?.length > 0 && (
-                        <div className="ml-4 mt-1 space-y-1">
+                        <div className="ml-4 mt-1 space-y-1 border-l border-gray-100">
                           {category.children?.map((child, index) => (
                             <div
                               key={index}
-                              onClick={() => {
-                                setActiveCategory(child.name);
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveCategory(child.id);
                                 setCurrentPage(1);
                               }}
-                              className="text-sm text-muted-foreground cursor-pointer hover:text-foreground"
+                              className={`text-sm py-1 pl-3 cursor-pointer transition-colors ${activeCategory === child.id ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
                             >
                               {child.name}
                             </div>
@@ -225,22 +279,43 @@ export default function CategoriesPage() {
                   </div>
                 ))}
               </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-2 mt-6">
+                {hasNextCats && (
+                  <button
+                    onClick={loadMoreCategories}
+                    disabled={isMoreLoading}
+                    className="text-primary font-medium hover:underline flex items-center gap-2 text-sm"
+                  >
+                    {isMoreLoading ? t("Loading...") : t("Show More")}
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                )}
+                {catPage > 1 && (
+                  <button
+                    onClick={resetCategories}
+                    className="text-muted-foreground font-medium hover:underline flex items-center gap-2 text-sm"
+                  >
+                    {t("Show Less")}
+                    <ChevronDown className="h-4 w-4 rotate-180" />
+                  </button>
+                )}
+              </div>
             </div>
           </aside>
 
-          <main className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
+          <main className="flex-1 min-w-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {isLoadingProducts ? (
                 Array(9)
                   .fill(0)
                   .map((_, i) => (
                     <div
                       key={i}
-                      className="w-full h-[408px] bg-gray-200 rounded-lg animate-pulse"
+                      className="aspect-[3/4] bg-gray-200 rounded-lg animate-pulse"
                     ></div>
                   ))
               ) : products?.length === 0 ? (
-                <div className="w-full flex text-2xl font-semibold flex-1 justify-center text-gray-700  p-8">
+                <div className="col-span-full flex text-2xl font-semibold justify-center text-gray-700 p-8">
                   {t("No Products")}
                 </div>
               ) : (
@@ -248,9 +323,9 @@ export default function CategoriesPage() {
                   <Link
                     to={`/products/${product.slug}`}
                     key={product.id}
-                    className="relative group"
+                    className="group block"
                   >
-                    <div className="relative w-full h-[408px] rounded-lg overflow-hidden">
+                    <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
                       <img
                         src={product.images[0].path}
                         alt={product.name?.en}
@@ -279,8 +354,8 @@ export default function CategoriesPage() {
                           <h3 className="text-2xl font-bold mb-2">
                             {i18n.language === "ar" ? product.name?.ar || product.name?.en : product.name?.en}
                           </h3>
-                          <div 
-                            className="text-sm opacity-90 mb-4 line-clamp-3"
+                          <div
+                            className="text-sm opacity-90 mb-4 line-clamp-3 text-white"
                             dangerouslySetInnerHTML={{
                               __html: i18n.language === "ar" ? product.description?.ar || product.description?.en : product.description?.en
                             }}
@@ -310,31 +385,29 @@ export default function CategoriesPage() {
               )}
             </div>
 
-            <div className="flex justify-center items-center gap-4 mt-8">
+            <div className="flex flex-wrap justify-center items-center gap-2 mt-12 mb-8">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className={`px-4 py-2 rounded border ${
-                  currentPage === 1
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-white text-black hover:bg-gray-100"
-                }`}
+                className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded border transition-colors ${currentPage === 1
+                  ? "bg-gray-50 text-gray-300 cursor-not-allowed border-gray-100"
+                  : "bg-white text-black hover:bg-gray-100 border-gray-200"
+                  }`}
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
 
-              {Array.from(
-                { length: Math.ceil(totalPages / 10) },
-                (_, index) => index + 1,
-              ).map((page) => (
+              {getPageNumbers().map((page, index) => (
                 <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`px-4 py-2 rounded border ${
-                    currentPage === page
-                      ? "bg-primary text-white"
-                      : "bg-white hover:bg-gray-100"
-                  }`}
+                  key={index}
+                  onClick={() => typeof page === "number" && setCurrentPage(page)}
+                  disabled={typeof page !== "number"}
+                  className={`min-w-[32px] sm:min-w-[40px] h-8 sm:h-10 px-2 sm:px-3 flex items-center justify-center rounded border transition-colors text-xs sm:text-sm ${currentPage === page
+                    ? "bg-primary text-white border-primary font-medium"
+                    : page === "..."
+                      ? "bg-transparent text-gray-400 border-transparent cursor-default"
+                      : "bg-white text-gray-600 hover:bg-gray-50 border-gray-200 hover:text-primary hover:border-primary/30"
+                    }`}
                 >
                   {page}
                 </button>
@@ -346,12 +419,11 @@ export default function CategoriesPage() {
                     Math.min(prev + 1, Math.ceil(totalPages / 10)),
                   )
                 }
-                disabled={currentPage === totalPages / 10}
-                className={`px-4 py-2 rounded border ${
-                  currentPage === totalPages
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-white text-black hover:bg-gray-100"
-                }`}
+                disabled={currentPage >= Math.ceil(totalPages / 10)}
+                className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded border transition-colors ${currentPage >= Math.ceil(totalPages / 10)
+                  ? "bg-gray-50 text-gray-300 cursor-not-allowed border-gray-100"
+                  : "bg-white text-black hover:bg-gray-100 border-gray-200"
+                  }`}
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
