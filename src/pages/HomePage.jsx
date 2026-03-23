@@ -25,39 +25,39 @@ import { useTranslation } from "react-i18next";
 gsap.registerPlugin(ScrollTrigger);
 
 function Hero() {
-const { t , i18n} = useTranslation()
-const heroSlides = [
-  {
-    id: 1,
-    title: t("Sort out Your Spring Look"),
-    subtitle:
-      t("We will help to develop every smallest thing into a big one for your company."),
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/b75262aa522b68f50318332a046e2f24447b13ba?width=2880",
-    buttonText: t("SHOP NOW"),
-    buttonLink: "/categories",
-  },
-  {
-    id: 2,
-    title: t("Discover Natural Wellness"),
-    subtitle:
-      t("Premium natural health products and supplements designed to support your wellness journey with proven results."),
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/e93acb395af83e4dfe38743a56243625c349d4cd?width=2880",
-    buttonText: t("EXPLORE NOW"),
-    buttonLink: "/categories",
-  },
-  {
-    id: 3,
-    title: t("Pure Essential Oils"),
-    subtitle:
-      t("Experience the therapeutic power of nature with our premium collection of pure, therapeutic-grade essential oils."),
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/cadd4badf0dd90d25f5e7f4b5a15251a6a065f26?width=2880",
-    buttonText: t("SHOP NOW"),
-    buttonLink: "/categories",
-  },
-];
+  const { t, i18n } = useTranslation()
+  const heroSlides = [
+    {
+      id: 1,
+      title: t("Sort out Your Spring Look"),
+      subtitle:
+        t("We will help to develop every smallest thing into a big one for your company."),
+      image:
+        "https://cdn.builder.io/api/v1/image/assets/TEMP/b75262aa522b68f50318332a046e2f24447b13ba?width=2880",
+      buttonText: t("SHOP NOW"),
+      buttonLink: "/categories",
+    },
+    {
+      id: 2,
+      title: t("Discover Natural Wellness"),
+      subtitle:
+        t("Premium natural health products and supplements designed to support your wellness journey with proven results."),
+      image:
+        "https://cdn.builder.io/api/v1/image/assets/TEMP/e93acb395af83e4dfe38743a56243625c349d4cd?width=2880",
+      buttonText: t("EXPLORE NOW"),
+      buttonLink: "/categories",
+    },
+    {
+      id: 3,
+      title: t("Pure Essential Oils"),
+      subtitle:
+        t("Experience the therapeutic power of nature with our premium collection of pure, therapeutic-grade essential oils."),
+      image:
+        "https://cdn.builder.io/api/v1/image/assets/TEMP/cadd4badf0dd90d25f5e7f4b5a15251a6a065f26?width=2880",
+      buttonText: t("SHOP NOW"),
+      buttonLink: "/categories",
+    },
+  ];
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const heroRef = useRef();
@@ -102,13 +102,12 @@ const heroSlides = [
       {heroSlides.map((slide, index) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
-            index === currentSlide
+          className={`absolute inset-0 transition-transform duration-500 ease-in-out ${index === currentSlide
               ? "translate-x-0"
               : index < currentSlide
-              ? "-translate-x-full"
-              : "translate-x-full"
-          }`}
+                ? "-translate-x-full"
+                : "translate-x-full"
+            }`}
         >
           <div className="absolute inset-0">
             <img
@@ -158,9 +157,8 @@ const heroSlides = [
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 hover:scale-125 ${
-              index === currentSlide ? "bg-white" : "bg-white/50"
-            }`}
+            className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 hover:scale-125 ${index === currentSlide ? "bg-white" : "bg-white/50"
+              }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
@@ -176,18 +174,16 @@ function SkeletonLoader({ type = "card", count = 4 }) {
         {Array.from({ length: count }).map((_, index) => (
           <div
             key={index}
-            className={`relative overflow-hidden rounded-lg bg-gray-200 animate-pulse ${
-              index === 0
+            className={`relative overflow-hidden rounded-lg bg-gray-200 animate-pulse ${index === 0
                 ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full"
                 : "h-48 sm:h-56 lg:h-full"
-            }`}
+              }`}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
             <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-4 sm:left-6 lg:left-8">
               <div
-                className={`h-6 bg-gray-300 rounded ${
-                  index === 0 ? "w-3/4 mb-4" : "w-1/2"
-                }`}
+                className={`h-6 bg-gray-300 rounded ${index === 0 ? "w-3/4 mb-4" : "w-1/2"
+                  }`}
               ></div>
               {index === 0 && (
                 <>
@@ -236,7 +232,7 @@ function SkeletonLoader({ type = "card", count = 4 }) {
   );
 }
 function EmptyState({ message, icon: Icon = ShoppingCart }) {
-const {t , i18n} = useTranslation()
+  const { t, i18n } = useTranslation()
 
   return (
     <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-lg">
@@ -312,7 +308,7 @@ function Categories() {
 
     fetchCategories();
   }, []);
-const {t , i18n} = useTranslation()
+  const { t, i18n } = useTranslation()
   return (
     <section ref={categoriesRef} className="py-12 sm:py-16 lg:py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -346,12 +342,11 @@ const {t , i18n} = useTranslation()
               <Link
                 to={`/categories/${category.slug}`}
                 key={category.id}
-                className={`relative overflow-hidden rounded-lg group cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-xl
-                  ${
-                    index === 0
-                      ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full":
-                      index === 1 ? 'lg:col-span-2':
-                       "h-48 sm:h-56 lg:h-full"
+                className={`relative overflow-hidden rounded-lg group cursor-pointer transition-all duration-500 hover:shadow-lg
+                  ${index === 0
+                    ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full" :
+                    index === 1 ? 'lg:col-span-2' :
+                      "h-48 sm:h-56 lg:h-full"
                   }`}
               >
                 <img
@@ -362,11 +357,10 @@ const {t , i18n} = useTranslation()
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent group-hover:from-black/70 transition-all duration-300"></div>
                 <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-4 sm:left-6 lg:left-8 text-white transform group-hover:translate-y-[-5px] transition-transform duration-300">
                   <h3
-                    className={`font-bold leading-tight ${
-                      index === 0
+                    className={`font-bold leading-tight ${index === 0
                         ? "text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-2 sm:mb-4 lg:mb-6"
                         : "text-lg sm:text-xl"
-                    }`}
+                      }`}
                   >
                     {category.name}
                   </h3>
@@ -408,7 +402,7 @@ function ProductCard({
   variant = "overlay",
 }) {
   const cardRef = useRef();
-const {t , i18n} = useTranslation()
+  const { t, i18n } = useTranslation()
   useGSAP(() => {
     const handleHover = (e) => {
       // gsap.to(e.currentTarget, {
@@ -417,7 +411,7 @@ const {t , i18n} = useTranslation()
       //   duration: 0.3,
       //   ease: "power2.out"
       // });
-      
+
       // gsap.to(e.currentTarget.querySelector('img'), {
       //   scale: 1.1,
       //   duration: 0.3,
@@ -432,7 +426,7 @@ const {t , i18n} = useTranslation()
       //   duration: 0.3,
       //   ease: "power2.out"
       // });
-      
+
       // gsap.to(e.currentTarget.querySelector('img'), {
       //   scale: 1,
       //   duration: 0.3,
@@ -491,13 +485,13 @@ const {t , i18n} = useTranslation()
               <span className="text-primary font-medium text-sm sm:text-base">
                 {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(+sizes - +discount_price)}
               </span>
-              {originalPrice  && (
+              {originalPrice && (
                 <span className="text-white/70 line-through text-sm sm:text-base">
-                  {discount_price != 0 ? new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(+sizes) : '' }
+                  {discount_price != 0 ? new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(+sizes) : ''}
                 </span>
               )}
             </div>
-            
+
             <div className="w-8 sm:w-10 h-0.5 bg-white mx-auto"></div>
           </div>
           <button className="w-full bg-primary text-white py-2.5 sm:py-3 rounded flex items-center justify-center gap-2 font-medium hover:bg-primary/90 transition-all duration-300 text-sm sm:text-base hover:scale-105 transform">
@@ -564,7 +558,7 @@ function NewProducts() {
   const sectionRef = useRef();
   const headerRef = useRef();
   const productsRef = useRef();
-  const {t , i18n} = useTranslation()
+  const { t, i18n } = useTranslation()
 
   useGSAP(() => {
     if (!loading && products.length > 0) {
@@ -732,9 +726,9 @@ function BestSeller() {
     if (!loading && products.length > 0) {
       gsap.fromTo(headerRef.current,
         { scale: 0.8, opacity: 0 },
-        { 
-          scale: 1, 
-          opacity: 1, 
+        {
+          scale: 1,
+          opacity: 1,
           duration: 1,
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -747,9 +741,9 @@ function BestSeller() {
 
       gsap.fromTo(gridRef.current.children,
         { y: 50, opacity: 0, scale: 0.9 },
-        { 
-          y: 0, 
-          opacity: 1, 
+        {
+          y: 0,
+          opacity: 1,
           scale: 1,
           duration: 0.6,
           stagger: 0.1,
@@ -781,7 +775,7 @@ function BestSeller() {
 
     fetchBestSellers();
   }, []);
-const {t , i18n} = useTranslation()
+  const { t, i18n } = useTranslation()
   const handleAddToWishlist = async (e, slug, is_favorite) => {
     e.stopPropagation();
     e.preventDefault();
@@ -914,7 +908,7 @@ function DiscountSection() {
     //   }
     // );
   }, []);
-const {t , i18n} = useTranslation()
+  const { t, i18n } = useTranslation()
   return (
     <section ref={sectionRef} className="h-64 sm:h-80 lg:h-[496px] bg-gray-200 relative overflow-hidden">
       <div className="absolute inset-0">
