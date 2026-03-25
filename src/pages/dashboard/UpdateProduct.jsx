@@ -573,7 +573,7 @@ export default function UpdateProduct() {
                     >
                       Product Description (English) *
                     </Label>
-                    <div className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden">
+                    <div className="mt-1 custom-quill-container rounded-xl border border-gray-300">
                       <ReactQuill
                         theme="snow"
                         value={productData.productDescription}
@@ -581,7 +581,6 @@ export default function UpdateProduct() {
                         placeholder="Describe your product here in English..."
                         modules={modules}
                         formats={formats}
-                        className="h-[300px]"
                       />
                     </div>
                   </div>
@@ -593,7 +592,7 @@ export default function UpdateProduct() {
                       وصف المنتج (العربية) *
                     </Label>
                     <div
-                      className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden"
+                      className="mt-1 custom-quill-container rounded-xl border border-gray-300"
                       dir="rtl"
                     >
                       <ReactQuill
@@ -603,7 +602,6 @@ export default function UpdateProduct() {
                         placeholder="اكتب وصف المنتج بالعربية هنا..."
                         modules={modules}
                         formats={formats}
-                        className="h-[300px]"
                       />
                     </div>
                   </div>
@@ -1214,14 +1212,15 @@ export default function UpdateProduct() {
         .custom-quill-container {
           width: 100%;
           border-radius: 0.75rem;
-          overflow: hidden;
+          overflow: visible !important;
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .custom-quill-container .ql-container {
           border: none !important;
           font-size: 16px;
-          min-height: 300px;
+          max-height: 400px;
+          overflow-y: auto;
           font-family:
             "Inter",
             -apple-system,
@@ -1235,8 +1234,7 @@ export default function UpdateProduct() {
         }
 
         .custom-quill-container .ql-editor {
-          min-height: 300px;
-          overflow-y: auto;
+          min-height: 200px;
           padding: 24px;
           word-wrap: break-word;
           white-space: pre-wrap;

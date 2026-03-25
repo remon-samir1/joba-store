@@ -385,8 +385,45 @@ export default function AddProductPage() {
   return (
     <div className="flex-1 bg-gray-50 min-h-screen">
       <style>{`
+        .custom-quill-container {
+          width: 100%;
+          border-radius: 0.75rem;
+          overflow: visible !important; /* Changed from hidden to allow sticky to work */
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-quill-container .ql-toolbar {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background-color: #f8fafc;
+          border-top-left-radius: 0.75rem;
+          border-top-right-radius: 0.75rem;
+          border-bottom: 1px solid #e2e8f0 !important;
+          border-left: none !important;
+          border-right: none !important;
+          border-top: none !important;
+        }
+
+        .custom-quill-container .ql-container {
+          border: none !important;
+          font-size: 16px;
+          max-height: 400px; /* Prevent it from being too tall */
+          overflow-y: auto;
+          font-family: inherit;
+        }
+
+        .custom-quill-container .ql-editor {
+          min-height: 200px;
+          padding: 1.5rem;
+          line-height: 1.6;
+          color: #374151;
+        }
+
         .custom-quill-container .ql-editor h3 {
           font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
         }
 
         .custom-quill-container .ql-editor ul,
@@ -483,7 +520,7 @@ export default function AddProductPage() {
                     >
                       Product Description (English) *
                     </Label>
-                    <div className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden">
+                    <div className="mt-1 custom-quill-container rounded-xl border border-gray-300">
                       <ReactQuill
                         theme="snow"
                         value={productData.productDescription}
@@ -491,7 +528,6 @@ export default function AddProductPage() {
                         placeholder="Describe your product here in English..."
                         modules={modules}
                         formats={formats}
-                        className="h-[300px]"
                       />
                     </div>
                   </div>
@@ -503,7 +539,7 @@ export default function AddProductPage() {
                       وصف المنتج (العربية) *
                     </Label>
                     <div
-                      className="mt-1 custom-quill-container rounded-xl border border-gray-300 overflow-hidden"
+                      className="mt-1 custom-quill-container rounded-xl border border-gray-300"
                       dir="rtl"
                     >
                       <ReactQuill
@@ -513,7 +549,6 @@ export default function AddProductPage() {
                         placeholder="اكتب وصف المنتج بالعربية هنا..."
                         modules={modules}
                         formats={formats}
-                        className="h-[300px]"
                       />
                     </div>
                   </div>
