@@ -872,11 +872,10 @@ export default function AddProductPage() {
                   {productImages.map((img, index) => (
                     <div
                       key={index}
-                      className={`relative cursor-pointer border-2 rounded ${
-                        index === currentImageIndex
+                      className={`relative cursor-pointer border-2 rounded ${index === currentImageIndex
                           ? "border-orange-500"
                           : "border-transparent"
-                      }`}
+                        }`}
                       onClick={() => setCurrentImageIndex(index)}
                     >
                       <img

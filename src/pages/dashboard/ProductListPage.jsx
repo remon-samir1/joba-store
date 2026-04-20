@@ -63,6 +63,23 @@ export default function ProductListPage() {
   const [loading, setLoading] = useState(true);
   const [bulkLoading, setBulkLoading] = useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const [allCategories, setAllCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await Axios.get("/categories");
+        // The API seems to return paginated data, let's try to get as many as possible
+        // or just use the first page if it's enough for now. 
+        // Based on AddProductPage, it's response.data?.data?.data or response.data?.data
+        const data = res.data?.data?.data || res.data?.data || res.data || [];
+        setAllCategories(data);
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -79,7 +96,6 @@ export default function ProductListPage() {
     Axios.get(`/products?page=${currentPage}&q=${debouncedSearchQuery}`)
       .then((res) => {
         const data = res.data?.data || [];
-        console.log(res);
         setProducts(data);
         setTotal(res.data.total);
         setFilteredProducts(data);
@@ -94,6 +110,11 @@ export default function ProductListPage() {
     );
     setFilteredProducts(filtered);
   }, [debouncedSearchQuery, products]);
+
+  const getCategoryName = (categoryId) => {
+    const category = allCategories.find((c) => c.id === categoryId);
+    return category?.name || "-";
+  };
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
@@ -260,13 +281,14 @@ export default function ProductListPage() {
                             </div>
                             <div className="col-span-2">
                               <span className="text-sm text-gray-600">
-                                {product.category?.parent?.name ||
-                                  product.category?.name}
+                                {product.category?.parent_id
+                                  ? getCategoryName(product.category.parent_id)
+                                  : product.category?.name || "-"}
                               </span>
                             </div>
                             <div className="col-span-2">
                               <span className="text-sm text-gray-600">
-                                {product.category?.parent
+                                {product.category?.parent_id
                                   ? product.category?.name
                                   : "-"}
                               </span>
