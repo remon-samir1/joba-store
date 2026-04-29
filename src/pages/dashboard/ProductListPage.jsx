@@ -68,7 +68,7 @@ export default function ProductListPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await Axios.get("/categories");
+        const res = await Axios.get("/categories?per_page=10000");
         // The API seems to return paginated data, let's try to get as many as possible
         // or just use the first page if it's enough for now. 
         // Based on AddProductPage, it's response.data?.data?.data or response.data?.data
