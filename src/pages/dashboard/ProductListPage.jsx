@@ -68,12 +68,23 @@ export default function ProductListPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await Axios.get("/categories?per_page=10000");
-        // The API seems to return paginated data, let's try to get as many as possible
-        // or just use the first page if it's enough for now. 
-        // Based on AddProductPage, it's response.data?.data?.data or response.data?.data
-        const data = res.data?.data?.data || res.data?.data || res.data || [];
-        setAllCategories(data);
+        const allCats = [];
+        let page = 1;
+        let hasMore = true;
+
+        while (hasMore) {
+          const res = await Axios.get(`/categories?per_page=100&page=${page}`);
+          const data = res.data?.data?.data || res.data?.data || res.data || [];
+          const meta = res.data?.meta || res.data?.data?.meta;
+
+          allCats.push(...data);
+
+          const lastPage = meta?.last_page || 1;
+          hasMore = page < lastPage;
+          page++;
+        }
+
+        setAllCategories(allCats);
       } catch (error) {
         console.error("Failed to fetch categories", error);
       }
