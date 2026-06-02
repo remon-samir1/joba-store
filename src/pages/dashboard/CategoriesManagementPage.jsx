@@ -75,7 +75,7 @@ export default function CategoriesManagementPage() {
   const fetchCategories = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await Axios.get(`/categories?page=${page}&per_page=1`);
+      const res = await Axios.get(`/categories?page=${page}&per_page=4`);
       const data = Array.isArray(res.data?.data?.data)
         ? res.data.data.data
         : [];

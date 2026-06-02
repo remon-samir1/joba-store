@@ -62,7 +62,7 @@ export default function CategoriesPage() {
   }, [location.search]);
 
   const getPageNumbers = () => {
-    const total = Math.ceil(totalPages / 10);
+    const total = totalPages
     const current = currentPage;
     const pages = [];
 
@@ -153,23 +153,28 @@ export default function CategoriesPage() {
   };
 
   useEffect(() => {
-    scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    scrollRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+
     setIsLoadingProducts(true);
-    let url = `/products?q=${encodeURIComponent(searchQuery.trim())}`;
+
+    let url = `/products?page=${currentPage}&q=${encodeURIComponent(
+      searchQuery.trim()
+    )}`;
+
     if (activeCategory && activeCategory !== "All") {
       url += `&category=${encodeURIComponent(activeCategory)}`;
     }
-    // if (searchQuery.trim()) {
-    //   url += `&q=${encodeURIComponent(searchQuery.trim())}`;
-    // }
+
     Axios.get(url)
       .then((res) => {
-        console.log();
-        console.log(res);
         const responseData = res.data.data;
+
         setProducts(responseData);
 
-        setTotalPages(res.data.total);
+        // لو الـ API بيرجع last_page
+        setTotalPages(res.data.last_page);
       })
       .finally(() => setIsLoadingProducts(false));
   }, [currentPage, activeCategory, searchQuery]);
@@ -416,7 +421,7 @@ export default function CategoriesPage() {
               <button
                 onClick={() =>
                   setCurrentPage((prev) =>
-                    Math.min(prev + 1, Math.ceil(totalPages / 10)),
+                    Math.min(prev + 1, totalPages)
                   )
                 }
                 disabled={currentPage >= Math.ceil(totalPages / 10)}
