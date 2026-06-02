@@ -9,7 +9,7 @@ import { Footer } from "../../src/components/Footer";
 import { useTranslation } from "react-i18next";
 const WishlistPage = () => {
   const [wishlist, setWishlist] = useState([]);
-  const {t , i18n}=useTranslation()
+  const { t, i18n } = useTranslation()
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
@@ -35,7 +35,7 @@ const WishlistPage = () => {
       // toast.error("Failed to add to wishlist. Please try again.");
       setLoading(false);
 
-    } 
+    }
   };
 
   return (
@@ -85,12 +85,12 @@ const WishlistPage = () => {
                           <div className="product-pricing">
                             <span className="current-price">
                               {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(
-                                (item.sizes[0]?.price || 0) - +item.discount_price
+                                (item.sizes[0]?.price || 0) - +item.sizes[0]?.discount
                               )}
                             </span>
                             {item.price && (
                               <span className="original-price">
-                                {item.discount_price && item.sizes[0]?.price
+                                {item.sizes[0]?.discount && item.sizes[0]?.price
                                   ? new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(item.sizes[0]?.price || 0)
                                   : ""}
                               </span>
@@ -133,7 +133,7 @@ const WishlistPage = () => {
             <div className="empty-wishlist">
               <p>{t("Your wishlist is empty")}</p>
               <Link to="/categories" className="continue-shopping-btn">
-              {t("Continue shopping")}
+                {t("Continue shopping")}
               </Link>
             </div>
           )}
@@ -141,7 +141,7 @@ const WishlistPage = () => {
       </main>
 
       {/* Footer */}
-<Footer/>
+      <Footer />
     </div>
   );
 };

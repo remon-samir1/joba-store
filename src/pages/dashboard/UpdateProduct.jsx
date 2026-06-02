@@ -157,12 +157,13 @@ export default function UpdateProduct() {
         setVariations(
           product.sizes?.length
             ? product.sizes.map((s) => ({
-                id: s.id,
-                weight: s.name,
-                price: s.price,
-                stock: s.stock || 0, // Map stock
-              }))
-            : [{ weight: "", price: "", stock: "" }],
+              id: s.id,
+              weight: s.name,
+              price: s.price,
+              discount: s.discount || "",
+              stock: s.stock || 0, // Map stock
+            }))
+            : [{ weight: "", price: "", discount: "", stock: "" }],
         );
 
         // Set images
@@ -275,7 +276,7 @@ export default function UpdateProduct() {
   };
 
   const addVariation = () => {
-    setVariations([...variations, { weight: "", price: "", stock: "" }]);
+    setVariations([...variations, { weight: "", price: "", discount: "", stock: "" }]);
   };
 
   const removeVariation = async (index) => {
@@ -456,6 +457,7 @@ export default function UpdateProduct() {
       }
       formData.append(`sizes[${i}][name]`, v.weight);
       formData.append(`sizes[${i}][price]`, v.price);
+      formData.append(`sizes[${i}][discount]`, v.discount || 0);
       formData.append(
         `sizes[${i}][stock]`,
         productData.stockStatus === "out_of_stock" ? 0 : v.stock || 0, // Use variation stock
@@ -634,7 +636,7 @@ export default function UpdateProduct() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                  {/* <div>
                     <Label htmlFor="discountedPrice" className="text-gray-700">
                       Discounted Price (Optional)
                     </Label>
@@ -648,8 +650,8 @@ export default function UpdateProduct() {
                         placeholder="Discounted price"
                         className="flex-1 border-gray-300"
                         min="0"
-                      />
-                      {/* <span className="text-sm text-gray-500">Sales</span>
+                      /> */}
+                  {/* <span className="text-sm text-gray-500">Sales</span>
                       <Input
                         id="salesPrice"
                         type="text"
@@ -659,8 +661,8 @@ export default function UpdateProduct() {
                         className="flex-1 border-gray-300"
                         min="0"
                       /> */}
-                    </div>
-                  </div>
+                  {/* </div> */}
+                  {/* </div> */}
 
                   {/* <div>
                     <Label className="text-gray-700">Tax Included *</Label>
@@ -721,15 +723,20 @@ export default function UpdateProduct() {
 
                 {/* Variation weight and pricing */}
                 <div className="space-y-4">
-                  <div className="grid grid-cols-10 gap-4 items-end">
+                  <div className="grid grid-cols-12 gap-4 items-end">
                     <div className="col-span-3">
                       <Label className="text-gray-700">
                         Variation weight *
                       </Label>
                     </div>
-                    <div className="col-span-3">
+                    <div className="col-span-2">
                       <Label className="text-gray-700">
                         Variation Pricing *
+                      </Label>
+                    </div>
+                    <div className="col-span-3">
+                      <Label className="text-gray-700">
+                        Discount (Optional)
                       </Label>
                     </div>
                     <div className="col-span-3">
@@ -741,7 +748,7 @@ export default function UpdateProduct() {
                   {variations.map((variation, index) => (
                     <div
                       key={index}
-                      className="grid grid-cols-10 gap-4 items-center"
+                      className="grid grid-cols-12 gap-4 items-center"
                     >
                       <div className="col-span-3">
                         <Input
@@ -753,7 +760,7 @@ export default function UpdateProduct() {
                           required
                         />
                       </div>
-                      <div className="col-span-3">
+                      <div className="col-span-2">
                         <Input
                           name="price"
                           type="number"
@@ -762,6 +769,17 @@ export default function UpdateProduct() {
                           onChange={(e) => handleVariationChange(index, e)}
                           className="border-gray-300"
                           required
+                          min="0"
+                        />
+                      </div>
+                      <div className="col-span-3">
+                        <Input
+                          name="discount"
+                          type="number"
+                          placeholder="Discount Price"
+                          value={variation.discount}
+                          onChange={(e) => handleVariationChange(index, e)}
+                          className="border-gray-300"
                           min="0"
                         />
                       </div>
@@ -1000,7 +1018,7 @@ export default function UpdateProduct() {
                 {/* Main Image Preview */}
                 <div className="relative w-full h-64 rounded-lg border border-dashed border-gray-300 overflow-hidden bg-gray-100">
                   {productImages.length > 0 &&
-                  productImages[currentImageIndex] ? (
+                    productImages[currentImageIndex] ? (
                     <>
                       {productImages[currentImageIndex].isExisting ? (
                         <img
@@ -1009,13 +1027,15 @@ export default function UpdateProduct() {
                           className="w-full h-full object-contain"
                         />
                       ) : (
-                        <img
-                          src={URL.createObjectURL(
-                            productImages[currentImageIndex].file,
-                          )}
-                          alt={`Product Preview ${currentImageIndex + 1}`}
-                          className="w-full h-full object-contain"
-                        />
+                        productImages[currentImageIndex]?.file instanceof File && (
+                          <img
+                            src={URL.createObjectURL(
+                              productImages[currentImageIndex].file,
+                            )}
+                            alt={`Product Preview ${currentImageIndex + 1}`}
+                            className="w-full h-full object-contain"
+                          />
+                        )
                       )}
                       <Button
                         type="button"
@@ -1044,11 +1064,10 @@ export default function UpdateProduct() {
                   {productImages.map((img, index) => (
                     <div
                       key={index}
-                      className={`relative cursor-pointer border-2 rounded ${
-                        index === currentImageIndex
+                      className={`relative cursor-pointer border-2 rounded ${index === currentImageIndex
                           ? "border-orange-500"
                           : "border-transparent"
-                      }`}
+                        }`}
                       onClick={() => setCurrentImageIndex(index)}
                     >
                       {img.isExisting ? (
@@ -1058,11 +1077,13 @@ export default function UpdateProduct() {
                           className="w-16 h-16 object-cover rounded"
                         />
                       ) : (
-                        <img
-                          src={URL.createObjectURL(img.file)}
-                          alt={`Thumbnail ${index + 1}`}
-                          className="w-16 h-16 object-cover rounded"
-                        />
+                        img.file instanceof File && (
+                          <img
+                            src={URL.createObjectURL(img.file)}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        )
                       )}
                       <Button
                         type="button"

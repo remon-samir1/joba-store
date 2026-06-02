@@ -62,10 +62,7 @@ const CartPage = () => {
   const subtotal = cart?.reduce(
     (sum, item) =>
       sum +
-      (item.product.discount_price != 0
-        ? +item.product.discount_price + +item.size?.price
-        : +item.product.price + +item.size.price) *
-        item.quantity,
+      (+item.size?.price - +(item.size?.discount || 0)) * item.quantity,
     0,
   );
   const total = subtotal - discountValue;
@@ -212,7 +209,7 @@ const CartPage = () => {
 
                     <div className="product-image">
                       <img
-                        src={item.product.images[0]?.path}
+                        src={item.product.images?.[0]?.path}
                         alt={
                           i18n.language === "ar"
                             ? item.product.name?.ar || item.product.name?.en
@@ -255,9 +252,7 @@ const CartPage = () => {
 
                     <div className="item-total">
                       EGP{" "}
-                      {(item.size
-                        ? +item.size?.price - +item.product.discount_price
-                        : +item.product.price - +item.product.discount_price) *
+                      {(+item.size?.price - +(item.size?.discount || 0)) *
                         item.quantity}
                     </div>
                   </div>
@@ -325,7 +320,7 @@ const CartPage = () => {
               >
                 <div className="product-image-container">
                   <img
-                    src={product.product.images[0].path}
+                    src={product.product.images?.[0]?.path}
                     alt={
                       i18n.language === "ar"
                         ? product.product.name?.ar || product.product.name?.en
@@ -354,14 +349,8 @@ const CartPage = () => {
                       <div className="product-pricing">
                         <span className="current-price">
                           EGP{" "}
-                          {/* {product.product.discount_price != 0
-                            ? product.product.discount_price
-                            : product.size.price} */}
-                          {+product.size
-                            ? +product.size?.price -
-                              +product.product.discount_price
-                            : +product.product.price -
-                              +product.product.discount_price}
+                          {+product.product.sizes?.[0]?.price -
+                            +(product.product.sizes?.[0]?.discount || 0)}
                         </span>
                       </div>
                     </div>

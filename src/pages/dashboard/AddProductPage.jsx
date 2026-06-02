@@ -72,7 +72,7 @@ export default function AddProductPage() {
   });
 
   const [variations, setVariations] = useState([
-    { weight: "", price: "", stock: "" },
+    { weight: "", price: "", discount: "", stock: "" },
   ]);
   const [attachment, setAttachment] = useState(null);
   const [productImages, setProductImages] = useState([]);
@@ -164,7 +164,7 @@ export default function AddProductPage() {
   };
 
   const addVariation = () => {
-    setVariations([...variations, { weight: "", price: "", stock: "" }]);
+    setVariations([...variations, { weight: "", price: "", discount: "", stock: "" }]);
   };
 
   const removeVariation = (index) => {
@@ -306,6 +306,7 @@ export default function AddProductPage() {
     variations.forEach((v, i) => {
       formData.append(`sizes[${i}][name]`, v.weight);
       formData.append(`sizes[${i}][price]`, v.price);
+      formData.append(`sizes[${i}][discount]`, v.discount || 0);
       formData.append(
         `sizes[${i}][stock]`,
         productData.stockStatus === "out_of_stock" ? 0 : v.stock || 0,
@@ -581,7 +582,7 @@ export default function AddProductPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                  {/* <div>
                     <Label htmlFor="discountedPrice" className="text-gray-700">
                       Discounted Price (Optional)
                     </Label>
@@ -595,8 +596,8 @@ export default function AddProductPage() {
                         placeholder="Discounted price"
                         className="flex-1 border-gray-300"
                         min="0"
-                      />
-                      {/* <span className="text-sm text-gray-500">Sales</span>
+                      /> */}
+                  {/* <span className="text-sm text-gray-500">Sales</span>
                       <Input
                         id="salesPrice"
                         type="number"
@@ -606,8 +607,8 @@ export default function AddProductPage() {
                         className="flex-1 border-gray-300"
                         min="0"
                       /> */}
-                    </div>
-                  </div>
+                  {/* </div>
+                  </div> */}
 
                   {/* <div>
                     <Label className="text-gray-700">Tax Included *</Label>
@@ -667,15 +668,20 @@ export default function AddProductPage() {
 
                 {/* Variation weight and pricing */}
                 <div className="space-y-4">
-                  <div className="grid grid-cols-10 gap-4 items-end">
+                  <div className="grid grid-cols-12 gap-4 items-end">
                     <div className="col-span-3">
                       <Label className="text-gray-700">
                         Variation weight *
                       </Label>
                     </div>
+                    <div className="col-span-2">
+                      <Label className="text-gray-700">
+                        Price *
+                      </Label>
+                    </div>
                     <div className="col-span-3">
                       <Label className="text-gray-700">
-                        Variation Pricing *
+                        Discount (Optional)
                       </Label>
                     </div>
                     <div className="col-span-3">
@@ -687,7 +693,7 @@ export default function AddProductPage() {
                   {variations.map((variation, index) => (
                     <div
                       key={index}
-                      className="grid grid-cols-10 gap-4 items-center"
+                      className="grid grid-cols-12 gap-4 items-center"
                     >
                       <div className="col-span-3">
                         <Input
@@ -699,15 +705,26 @@ export default function AddProductPage() {
                           required
                         />
                       </div>
-                      <div className="col-span-3">
+                      <div className="col-span-2">
                         <Input
                           name="price"
                           type="number"
-                          placeholder="e.g., 350 EGP"
+                          placeholder="EGP"
                           value={variation.price}
                           onChange={(e) => handleVariationChange(index, e)}
                           className="border-gray-300"
                           required
+                          min="0"
+                        />
+                      </div>
+                      <div className="col-span-3">
+                        <Input
+                          name="discount"
+                          type="number"
+                          placeholder="Discount Price"
+                          value={variation.discount}
+                          onChange={(e) => handleVariationChange(index, e)}
+                          className="border-gray-300"
                           min="0"
                         />
                       </div>
@@ -725,6 +742,7 @@ export default function AddProductPage() {
                       <div className="col-span-1">
                         {variations.length > 1 && (
                           <Button
+                            type="button"
                             variant="ghost"
                             size="icon"
                             onClick={() => removeVariation(index)}
@@ -747,6 +765,7 @@ export default function AddProductPage() {
                     Add new variation
                   </Button>
                 </div>
+
               </CardContent>
             </Card>
 
@@ -811,6 +830,7 @@ export default function AddProductPage() {
             {/* Action Buttons */}
             <div className="flex space-x-4">
               <Button
+                type="button"
                 onClick={(e) => handleSubmit(e, true)}
                 variant="outline"
                 className="flex-1 bg-gray-500 text-white hover:bg-gray-600 border-none"
@@ -841,7 +861,7 @@ export default function AddProductPage() {
               <CardContent className="space-y-4 pt-4">
                 {/* Main Image Preview */}
                 <div className="relative w-full h-64 rounded-lg border border-dashed border-gray-300 overflow-hidden bg-gray-100">
-                  {productImages.length > 0 ? (
+                  {productImages.length > 0 && productImages[currentImageIndex] ? (
                     <>
                       <img
                         src={URL.createObjectURL(
@@ -851,6 +871,7 @@ export default function AddProductPage() {
                         className="w-full h-full object-contain"
                       />
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
@@ -873,17 +894,18 @@ export default function AddProductPage() {
                     <div
                       key={index}
                       className={`relative cursor-pointer border-2 rounded ${index === currentImageIndex
-                          ? "border-orange-500"
-                          : "border-transparent"
+                        ? "border-orange-500"
+                        : "border-transparent"
                         }`}
                       onClick={() => setCurrentImageIndex(index)}
                     >
                       <img
-                        src={URL.createObjectURL(img)}
+                        src={img instanceof File ? URL.createObjectURL(img) : ""}
                         alt={`Thumbnail ${index + 1}`}
                         className="w-16 h-16 object-cover rounded"
                       />
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"

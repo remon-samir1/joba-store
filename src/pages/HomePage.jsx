@@ -103,10 +103,10 @@ function Hero() {
         <div
           key={slide.id}
           className={`absolute inset-0 transition-transform duration-500 ease-in-out ${index === currentSlide
-              ? "translate-x-0"
-              : index < currentSlide
-                ? "-translate-x-full"
-                : "translate-x-full"
+            ? "translate-x-0"
+            : index < currentSlide
+              ? "-translate-x-full"
+              : "translate-x-full"
             }`}
         >
           <div className="absolute inset-0">
@@ -175,8 +175,8 @@ function SkeletonLoader({ type = "card", count = 4 }) {
           <div
             key={index}
             className={`relative overflow-hidden rounded-lg bg-gray-200 animate-pulse ${index === 0
-                ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full"
-                : "h-48 sm:h-56 lg:h-full"
+              ? "sm:col-span-2 lg:col-span-2 lg:row-span-2 h-64 sm:h-80 lg:h-full"
+              : "h-48 sm:h-56 lg:h-full"
               }`}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -358,8 +358,8 @@ function Categories() {
                 <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-4 sm:left-6 lg:left-8 text-white transform group-hover:translate-y-[-5px] transition-transform duration-300">
                   <h3
                     className={`font-bold leading-tight ${index === 0
-                        ? "text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-2 sm:mb-4 lg:mb-6"
-                        : "text-lg sm:text-xl"
+                      ? "text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-2 sm:mb-4 lg:mb-6"
+                      : "text-lg sm:text-xl"
                       }`}
                   >
                     {category.name}
@@ -487,7 +487,7 @@ function ProductCard({
               </span>
               {originalPrice && (
                 <span className="text-white/70 line-through text-sm sm:text-base">
-                  {discount_price != 0 ? new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(+sizes) : ''}
+                  {discount_price != null ? new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP", minimumFractionDigits: 0 }).format(+sizes) : ''}
                 </span>
               )}
             </div>
@@ -682,7 +682,7 @@ function NewProducts() {
                 <div key={index} className="w-64 sm:w-72 flex-shrink-0">
                   <Link to={`/products/${product?.slug}`}>
                     <ProductCard
-                      discount_price={product?.discount_price}
+                      discount_price={product?.sizes[0]?.discount}
                       setIsWishlisted={setIsWishlisted}
                       isWishlisted={isWishlisted}
                       sizes={product?.sizes[0]?.price}
@@ -844,7 +844,7 @@ function BestSeller() {
             {products?.map((product, index) => (
               <Link key={index} to={`/products/${product?.slug}`}>
                 <ProductCard
-                  discount_price={product?.discount_price}
+                  discount_price={product?.sizes[0]?.discount}
                   handleAddToWishlist={handleAddToWishlist}
                   slug={product.slug}
                   id={product.id}

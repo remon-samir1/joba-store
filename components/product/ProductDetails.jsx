@@ -43,6 +43,7 @@ export function ProductDetails({
 
   console.log(productData.reviews);
   const [sizePrice, setSizePrice] = useState(sizes[0]?.price || 0);
+  const [sizeDiscount, setSizeDiscount] = useState(sizes[0]?.discount || 0);
   const [currentStock, setCurrentStock] = useState(sizes[0]?.stock || 0);
   const cartcontext = useContext(CartCh);
   const change = cartcontext.setCartChange;
@@ -54,14 +55,14 @@ export function ProductDetails({
   };
 
   const handleAddToCart = async () => {
+    const currentPrice = +sizePrice - +sizeDiscount;
+    const totalPrice = currentPrice * quantity;
+
     const data = {
       product_size_id: selectedSize,
       quantity: quantity,
-      total_price: price * quantity,
+      total_price: totalPrice,
     };
-    const formdData = new FormData();
-    formdData.append("product_size_id", selectedSize);
-    formdData.append("total_price", price * quantity);
     console.log(selectedSize);
     try {
       if (!selectedSize) {
@@ -113,8 +114,15 @@ export function ProductDetails({
       <div className="space-y-6">
         <div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">{name}</h1>
-          <div className="text-3xl font-semibold text-primary mb-6">
-            EGP {+sizePrice - +discount}
+          <div className="flex items-baseline gap-4 mb-6">
+            <div className="text-3xl font-semibold text-primary">
+              EGP {+sizePrice - +sizeDiscount}
+            </div>
+            {+sizeDiscount > 0 && (
+              <div className="text-xl text-gray-400 line-through">
+                EGP {sizePrice}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2 mb-6">
@@ -124,11 +132,10 @@ export function ProductDetails({
                   {[1, 2, 3, 4, 5].map((star) => (
                     <svg
                       key={star}
-                      className={`h-4 w-4 ${
-                        star <= Math.round(averageRating)
+                      className={`h-4 w-4 ${star <= Math.round(averageRating)
                           ? "text-yellow-400 fill-current"
                           : "text-gray-300 fill-current"
-                      }`}
+                        }`}
                       viewBox="0 0 20 20"
                     >
                       <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
@@ -149,7 +156,7 @@ export function ProductDetails({
               {currentStock > 0
                 ? i18n.language === "ar"
                   ? new Intl.NumberFormat("ar-EG").format(currentStock) +
-                    t(" in stock")
+                  t(" in stock")
                   : currentStock + t(" in stock")
                 : t("Out of stock")}
             </span>
@@ -211,14 +218,14 @@ export function ProductDetails({
             variant="outline"
             onClick={() => {
               setSizePrice(size.price);
+              setSizeDiscount(size.discount || 0);
               setSelectedSize(size.id);
               setCurrentStock(size.stock || 0);
             }}
-            className={`border-gray-900 text-gray-900 hover:bg-primary/50 px-4 py-2 ${
-              selectedSize === size.id
+            className={`border-gray-900 text-gray-900 hover:bg-primary/50 px-4 py-2 ${selectedSize === size.id
                 ? "bg-primary text-white hover:shadow-md"
                 : ""
-            }`}
+              }`}
           >
             {size.name}
           </Button>
