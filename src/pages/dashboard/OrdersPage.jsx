@@ -30,14 +30,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Search,
-  Download,
-  MoreHorizontal,
-  Trash2,
   ArrowLeft,
   ArrowRight,
+  Download,
+  MoreHorizontal,
+  Search,
+  Trash2,
+  Eye,
 } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../components/ui/dialog";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -87,16 +95,28 @@ export default function OrdersPage() {
 
   const handleExport = () => {
     if (!filteredOrders.length) return;
-    const data = filteredOrders.map((order) => ({
-      "Order ID": order.order_number,
-      Customer: order.customer?.name,
-      Email: order.user?.email,
-      Product: order.items[0]?.product?.name?.en,
-      Date: new Date(order.created_at).toLocaleString("en-GB"),
-      Status: order.status,
-      Payment: order.payment_status,
-      Amount: order.total,
-    }));
+    const data = filteredOrders.map((order) => {
+      const productList = order.items
+        .map((item) => {
+          const productName = item.product?.name?.en || "Product Deleted";
+          const sizeName = item.product_size?.size
+            ? ` (${item.product_size.size})`
+            : "";
+          return `${productName}${sizeName} x${item.quantity}`;
+        })
+        .join(", ");
+
+      return {
+        "Order ID": order.order_number,
+        Customer: order.customer?.name,
+        Email: order.user?.email,
+        Products: productList,
+        Date: new Date(order.created_at).toLocaleString("en-GB"),
+        Status: order.status,
+        Payment: order.payment_status,
+        Amount: order.total,
+      };
+    });
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
@@ -254,7 +274,72 @@ export default function OrdersPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {order.items.length !== 0 ? order.items[0].product?.name?.en : "Product Deleted"}
+                        <div className="flex flex-col gap-1">
+                          <div className="max-w-[200px] truncate font-medium">
+                            {order.items.length !== 0
+                              ? order.items[0].product?.name?.en
+                              : "Product Deleted"}
+                          </div>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="link"
+                                size="sm"
+                                className="h-auto p-0 text-orange-600 justify-start"
+                              >
+                                <Eye className="h-3 w-3 mr-1" />
+                                {order.items.length > 1
+                                  ? `View all ${order.items.length} items`
+                                  : "View details"}
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                              <DialogHeader>
+                                <DialogTitle>
+                                  Order Items (Order #{order.order_number})
+                                </DialogTitle>
+                              </DialogHeader>
+                              <div className="mt-4">
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead>Product</TableHead>
+                                      <TableHead>Size</TableHead>
+                                      <TableHead className="text-center">
+                                        Quantity
+                                      </TableHead>
+                                      <TableHead className="text-right">
+                                        Price
+                                      </TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {order.items.map((item, idx) => (
+                                      <TableRow key={idx}>
+                                        <TableCell className="font-medium">
+                                          {item.product?.name?.en ||
+                                            "Product Deleted"}
+                                        </TableCell>
+                                        <TableCell>
+                                          {item.product_size?.size || "N/A"}
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          {item.quantity}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          ${item.price}
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                                <div className="mt-4 flex justify-end font-bold text-lg">
+                                  Total: ${order.total}
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
                       </TableCell>
                       <TableCell>{new Date(order.created_at).toLocaleString("en-GB")}</TableCell>
                       <TableCell>
