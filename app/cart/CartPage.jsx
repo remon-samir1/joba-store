@@ -20,7 +20,7 @@ const CartPage = () => {
   const [discount, setDiscount] = useState("");
   const change = cartcontext.setCartChange;
   const changeState = cartcontext.cartChange;
-  const [discountValue, setDiscountValue] = useState(0);
+  const [discountValue, setDiscountValue] = useState(null);
   const [deleted, setDeleted] = useState(false);
   const cartRef = useRef(null);
 
@@ -65,7 +65,8 @@ const CartPage = () => {
       (+item.size?.price - +(item.size?.discount || 0)) * item.quantity,
     0,
   );
-  const total = subtotal - discountValue;
+  const discountAmount = Number(discountValue?.discount || 0);
+  const total = subtotal - discountAmount;
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
 
@@ -272,10 +273,10 @@ const CartPage = () => {
                 {new Intl.NumberFormat("en-EG", {
                   style: "currency",
                   currency: "EGP",
-                }).format(Number(discountValue?.subtotal ?? 0))}
+                }).format(Number(subtotal ?? 0))}
               </span>
             </div>
-            {discount !== "" && (
+            {discountAmount > 0 && (
               <div className="totals-row">
                 <span className="totals-label">{t("Discount")}</span>
                 <span className="totals-value">
@@ -283,7 +284,7 @@ const CartPage = () => {
                   {new Intl.NumberFormat("en-EG", {
                     style: "currency",
                     currency: "EGP",
-                  }).format(Number(discountValue?.discount ?? 0))}
+                  }).format(Number(discountAmount ?? 0))}
                 </span>
               </div>
             )}
@@ -297,10 +298,14 @@ const CartPage = () => {
                 {new Intl.NumberFormat("en-EG", {
                   style: "currency",
                   currency: "EGP",
-                }).format(Number(discountValue?.total ?? 0))}
+                }).format(Number(total ?? 0))}
               </span>
             </div>
-            <Link to="/checkout" className="checkout-btn">
+            <Link
+              to="/checkout"
+              state={{ subtotal, total, cart, discountAmount }}
+              className="checkout-btn"
+            >
               {t("Checkout")}
             </Link>
           </div>

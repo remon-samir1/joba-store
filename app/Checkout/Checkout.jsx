@@ -6,15 +6,35 @@ import { toast } from "react-toastify";
 import Notifcation from "../../components/Notification";
 import Loading from "../../components/Loading/Loading";
 import image from "../../src/assets/done.svg";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const CheckoutPage = () => {
   const { t, i18n } = useTranslation();
   const scrollRef = useRef();
-  const [cart, setCart] = useState([]);
+  const location = useLocation();
+  const [cart, setCart] = useState(location.state?.cart || []);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [passedSubtotal, setPassedSubtotal] = useState(location.state?.subtotal || 0);
+  const [passedTotal, setPassedTotal] = useState(location.state?.total || 0);
+  const [passedDiscount, setPassedDiscount] = useState(location.state?.discountAmount || 0);
+  const [discountValue, setDiscountValue] = useState(location.state?.discountAmount || 0);
+  const [discount, setDiscount] = useState("");
+  const [couponType, setCouponType] = useState("");
+  const [apply, setApply] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    shipping_email: "",
+    shipping_name: "",
+    shipping_address: "",
+    shipping_city: "",
+    shipping_state: "",
+    shipping_zip: "",
+    shipping_country: "Indonesia",
+    coupon_code: "",
+    payment_method: "cash",
+  });
 
   // Define all styles as JavaScript objects
   const styles = {
@@ -166,28 +186,38 @@ const CheckoutPage = () => {
       /* Responsive styles would be implemented using window width checks */
     },
   };
-  const [discount, setDiscount] = useState("");
-  const [total, setTotal] = useState("");
-  const [couponType, setCouponType] = useState("");
-  const [apply, setApply] = useState(false);
+
+
+  // Use passed totals if available, otherwise calculate locally
+  const subtotal = cart?.reduce(
+    (sum, item) =>
+      sum +
+      (+item.size?.price - +(item.size?.discount || 0)) * item.quantity,
+    0,
+  );
+  
+  const total = subtotal - discountValue;
   useEffect(() => {
-    Axios.get(`/cart?coupon_code=${discount}`).then((data) => {
-      setCart(data.data.data.items);
-      setDiscountValue(data.data.data.discount || 0);
-      setTotal(data.data.data.total);
-      setCouponType(data.data.data.coupon_type);
-      console.log(data);
-      setIsLoading(false);
-      if (discount) {
-        if (data.data.data.discount) {
-          toast.success(t("Coupon applied successfully!"));
-        } else {
-          toast.warning(t("Invalid coupon code"));
+    // If we have items from cart state, we only need to fetch if coupon changes
+    if (discount || cart.length === 0) {
+      Axios.get(`/cart?coupon_code=${discount}`).then((data) => {
+        setCart(data.data.data.items);
+        setDiscountValue(data.data.data.discount || 0);
+        // setTotal(data.data.data.total); // We calculate total locally
+        setCouponType(data.data.data.coupon_type);
+        console.log(data);
+        setIsLoading(false);
+        if (discount) {
+          if (data.data.data.discount) {
+            toast.success(t("Coupon applied successfully!"));
+          } else {
+            toast.warning(t("Invalid coupon code"));
+          }
         }
-      }
-    });
+      });
+    }
   }, [apply]);
-  const [isLoading, setIsLoading] = useState(false);
+
 
   const applyCoupon = () => {
     if (!discount.trim()) {
@@ -211,18 +241,7 @@ const CheckoutPage = () => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  const [discountValue, setDiscountValue] = useState(0);
-  const [formData, setFormData] = useState({
-    shipping_email: "",
-    shipping_name: "",
-    shipping_address: "",
-    shipping_city: "",
-    shipping_state: "",
-    shipping_zip: "",
-    shipping_country: "Indonesia",
-    coupon_code: "",
-    payment_method: "cash",
-  });
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -466,7 +485,7 @@ const CheckoutPage = () => {
                         </span>
                         <span>
                           {new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP" }).format(
-                            (item.size.price - +item.product.discount_price) * item.quantity
+                            (+item.size?.price - +(item.size?.discount || 0)) * item.quantity
                           )}
                         </span>
                       </div>
@@ -484,7 +503,7 @@ const CheckoutPage = () => {
                       style={{ ...styles.totalsRow, fontWeight: 600 }}
                     >
                       <span className="totals-label">{t("Total")}</span>
-                      <span>{new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP" }).format(Number(total ?? 0))}</span>
+                      <span>{new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP" }).format(Number(total))}</span>
                     </div>
                   </div>
                   <div className="coupon-section">
