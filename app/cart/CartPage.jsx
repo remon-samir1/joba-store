@@ -313,7 +313,7 @@ const CartPage = () => {
       </section>
 
       {/* Related Items */}
-      <section className="related-items">
+      {/* <section className="related-items">
         <div className="container">
           <h2 className="section-title">{t("Related Items")}</h2>
           <div className="products-grid">
@@ -332,18 +332,7 @@ const CartPage = () => {
                         : product.product.name?.en
                     }
                   />
-                  {/* <div className="sale-badge">SALE</div>
-                  <button className="heart-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M21.2913 4.58741C20.7805 4.07642 20.1741 3.67106 19.5066 3.3945C18.8392 3.11793 18.1238 2.97559 17.4013 2.97559C16.6788 2.97559 15.9634 3.11793 15.2959 3.3945C14.6285 3.67106 14.022 4.07642 13.5113 4.58741L12.4513 5.64741L11.3913 4.58741C10.3596 3.55572 8.96032 2.97612 7.50129 2.97612C6.04226 2.97612 4.64298 3.55572 3.61129 4.58741C2.5796 5.6191 2 7.01838 2 8.47741C2 9.93644 2.5796 11.3357 3.61129 12.3674L4.67129 13.4274L12.4513 21.2074L20.2313 13.4274L21.2913 12.3674C21.8023 11.8567 22.2076 11.2502 22.4842 10.5828C22.7608 9.91531 22.9031 9.1999 22.9031 8.47741C22.9031 7.75492 22.7608 7.03952 22.4842 6.37206C22.2076 5.7046 21.8023 5.09817 21.2913 4.58741V4.58741Z"
-                        stroke="#F15A24"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button> */}
+                =
                   <div className="product-overlay">
                     <div className="product-info">
                       <h3 className="product-title">
@@ -365,7 +354,7 @@ const CartPage = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <Footer />
     </div>
