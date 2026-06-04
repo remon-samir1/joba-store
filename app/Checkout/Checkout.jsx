@@ -195,7 +195,7 @@ const CheckoutPage = () => {
       (+item.size?.price - +(item.size?.discount || 0)) * item.quantity,
     0,
   );
-  
+
   const total = subtotal - discountValue;
   useEffect(() => {
     // If we have items from cart state, we only need to fetch if coupon changes
@@ -257,6 +257,7 @@ const CheckoutPage = () => {
     const items = cart.map((item) => ({
       product_id: item.product.id,
       quantity: item.quantity,
+      product_size_id: item.size.id,
     }));
 
     const payload = {

@@ -99,8 +99,8 @@ export default function OrdersPage() {
       const productList = order.items
         .map((item) => {
           const productName = item.product?.name?.en || "Product Deleted";
-          const sizeName = item.product_size?.size
-            ? ` (${item.product_size.size})`
+          const sizeName = item.size?.name
+            ? ` (${item.size?.name})`
             : "";
           return `${productName}${sizeName} x${item.quantity}`;
         })
@@ -133,7 +133,20 @@ export default function OrdersPage() {
       await Axios.delete(`admin/orders/${id}`).then(() => {
         setOrders((prev) => prev.filter((order) => order.id !== id));
       });
-    } catch {}
+    } catch { }
+  };
+
+  const handleUpdateStatus = async (id, newStatus) => {
+    try {
+      await Axios.put(`admin/orders/${id}`, { status: newStatus });
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === id ? { ...order, status: newStatus } : order
+        )
+      );
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -321,20 +334,20 @@ export default function OrdersPage() {
                                             "Product Deleted"}
                                         </TableCell>
                                         <TableCell>
-                                          {item.product_size?.size || "N/A"}
+                                          {item.size?.name || "N/A"}
                                         </TableCell>
                                         <TableCell className="text-center">
                                           {item.quantity}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                          ${item.price}
+                                          EGP{item.price}
                                         </TableCell>
                                       </TableRow>
                                     ))}
                                   </TableBody>
                                 </Table>
                                 <div className="mt-4 flex justify-end font-bold text-lg">
-                                  Total: ${order.total}
+                                  Total: EGP{order.total}
                                 </div>
                               </div>
                             </DialogContent>
@@ -343,7 +356,22 @@ export default function OrdersPage() {
                       </TableCell>
                       <TableCell>{new Date(order.created_at).toLocaleString("en-GB")}</TableCell>
                       <TableCell>
-                        <Badge {...getStatusBadge(order.status)}>{order.status}</Badge>
+                        <Select
+                          onValueChange={(value) => handleUpdateStatus(order.id, value)}
+                          defaultValue={order.status?.toLowerCase()}
+                        >
+                          <SelectTrigger
+                            className={`w-[130px] h-8 font-medium ${getStatusBadge(order.status).className}`}
+                          >
+                            <SelectValue placeholder="Status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="processing">Processing</SelectItem>
+                            <SelectItem value="shipped">Shipped</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -353,7 +381,7 @@ export default function OrdersPage() {
                           Cash
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-medium text-orange-600">${order.total}</TableCell>
+                      <TableCell className="font-medium text-orange-600">EGP {order.total}</TableCell>
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
