@@ -360,28 +360,85 @@ export default function ProductListPage() {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+            <div className="px-6 py-4 border-t border-gray-200 flex flex-wrap justify-center items-center gap-1">
+              {/* Previous */}
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
+                className="px-2"
               >
-                <ArrowLeft className="h-4 w-4 mr-1" />
-                Previous
+                <ArrowLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm">
-                Page {currentPage} of {totalPages}
-              </span>
+
+              {/* Page number buttons with ellipsis */}
+              {(() => {
+                const pages = [];
+                const delta = 2; // pages to show around current
+
+                // Build a set of page numbers to show
+                const range = new Set();
+                range.add(1);
+                range.add(totalPages);
+                for (
+                  let i = Math.max(2, currentPage - delta);
+                  i <= Math.min(totalPages - 1, currentPage + delta);
+                  i++
+                ) {
+                  range.add(i);
+                }
+
+                const sorted = Array.from(range).sort((a, b) => a - b);
+
+                sorted.forEach((page, idx) => {
+                  // Insert ellipsis if there's a gap
+                  if (idx > 0 && page - sorted[idx - 1] > 1) {
+                    pages.push(
+                      <span
+                        key={`ellipsis-${page}`}
+                        className="px-2 text-gray-400 select-none"
+                      >
+                        …
+                      </span>
+                    );
+                  }
+                  pages.push(
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className={
+                        currentPage === page
+                          ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-500 min-w-[36px]"
+                          : "min-w-[36px]"
+                      }
+                    >
+                      {page}
+                    </Button>
+                  );
+                });
+
+                return pages;
+              })()}
+
+              {/* Next */}
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() =>
                   setCurrentPage(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
+                className="px-2"
               >
-                Next
-                <ArrowRight className="h-4 w-4 ml-1" />
+                <ArrowRight className="h-4 w-4" />
               </Button>
+
+              <span className="text-sm text-gray-500 ml-2">
+                Page {currentPage} of {totalPages}
+              </span>
             </div>
           </CardContent>
         </Card>
