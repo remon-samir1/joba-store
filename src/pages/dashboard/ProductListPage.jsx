@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { DashboardHeader } from "../..//components/dashboard/DashboardHeader";
 import { Card, CardContent } from "../..//components/ui/card";
 import { Button } from "../..//components/ui/button";
@@ -21,6 +21,8 @@ import {
   ArrowLeft,
   ArrowRight,
   MoreHorizontal,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
@@ -53,10 +55,11 @@ const OrangeLoader = () => (
 );
 
 export default function ProductListPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page")) || 1);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState(new Set());
   const [total, setTotal] = useState();
@@ -113,7 +116,16 @@ export default function ProductListPage() {
       })
       .catch((error) => toast.error("Failed to load products"))
       .finally(() => setLoading(false));
-  }, [currentPage, debouncedSearchQuery]);
+
+    // Update search params when page changes
+    const newParams = new URLSearchParams(searchParams);
+    if (currentPage === 1) {
+      newParams.delete("page");
+    } else {
+      newParams.set("page", currentPage.toString());
+    }
+    setSearchParams(newParams, { replace: true });
+  }, [currentPage, debouncedSearchQuery, searchParams, setSearchParams]);
 
   useEffect(() => {
     const filtered = products.filter((p) =>
@@ -334,6 +346,7 @@ export default function ProductListPage() {
                                   <DropdownMenuItem asChild>
                                     <Link
                                       to={`/dashboard/products/edit/${product.slug}`}
+                                      state={{ fromPage: currentPage }}
                                     >
                                       <Edit className="h-4 w-4 mr-2" />
                                       Edit
@@ -361,6 +374,19 @@ export default function ProductListPage() {
             </div>
 
             <div className="px-6 py-4 border-t border-gray-200 flex flex-wrap justify-center items-center gap-1">
+              {/* Skip backward 5 */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 5))}
+                disabled={currentPage <= 1}
+                className="px-2 flex items-center gap-1"
+                title="Skip backward 5 pages"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">5</span>
+              </Button>
+
               {/* Previous */}
               <Button
                 variant="outline"
@@ -377,7 +403,6 @@ export default function ProductListPage() {
                 const pages = [];
                 const delta = 2; // pages to show around current
 
-                // Build a set of page numbers to show
                 const range = new Set();
                 range.add(1);
                 range.add(totalPages);
@@ -392,7 +417,6 @@ export default function ProductListPage() {
                 const sorted = Array.from(range).sort((a, b) => a - b);
 
                 sorted.forEach((page, idx) => {
-                  // Insert ellipsis if there's a gap
                   if (idx > 0 && page - sorted[idx - 1] > 1) {
                     pages.push(
                       <span
@@ -434,6 +458,19 @@ export default function ProductListPage() {
                 className="px-2"
               >
                 <ArrowRight className="h-4 w-4" />
+              </Button>
+
+              {/* Skip forward 5 */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 5))}
+                disabled={currentPage >= totalPages}
+                className="px-2 flex items-center gap-1"
+                title="Skip forward 5 pages"
+              >
+                <span className="hidden sm:inline">5</span>
+                <ChevronsRight className="h-4 w-4" />
               </Button>
 
               <span className="text-sm text-gray-500 ml-2">

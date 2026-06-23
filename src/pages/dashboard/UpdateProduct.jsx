@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { Axios } from "../../../components/Helpers/Axios";
 import { toast } from "react-toastify";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Notifcation from "../../../components/Notification";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -54,6 +54,8 @@ export default function UpdateProduct() {
   const [loading, setLoading] = useState(true);
   const [initialData, setInitialData] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPage = location.state?.fromPage || 1;
 
   const [productData, setProductData] = useState({
     productName: "",
@@ -359,7 +361,7 @@ export default function UpdateProduct() {
       errors.push("Product Name is required");
     if (!productData.productDescription.trim())
       errors.push("Product Description is required");
-    if (!productData.productPrice) errors.push("Product Price is required");
+    // if (!productData.productPrice) errors.push("Product Price is required");
     // if (!productData.productCategory) errors.push('Product Category is required');
     if (!productData.productTag) errors.push("Product Tag is required");
 
@@ -479,7 +481,7 @@ export default function UpdateProduct() {
 
       toast.success("Product updated successfully");
       setTimeout(() => {
-        navigate("/dashboard/products");
+        navigate(`/dashboard/products?page=${fromPage}`);
       }, 1500);
     } catch (error) {
       if (error.response) {
@@ -630,7 +632,7 @@ export default function UpdateProduct() {
                     onChange={handleChange}
                     placeholder="Price in EGP"
                     className="mt-1 border-gray-300"
-                    required
+                    // required
                     min="0"
                   />
                 </div>
@@ -1065,8 +1067,8 @@ export default function UpdateProduct() {
                     <div
                       key={index}
                       className={`relative cursor-pointer border-2 rounded ${index === currentImageIndex
-                          ? "border-orange-500"
-                          : "border-transparent"
+                        ? "border-orange-500"
+                        : "border-transparent"
                         }`}
                       onClick={() => setCurrentImageIndex(index)}
                     >

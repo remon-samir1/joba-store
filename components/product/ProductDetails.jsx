@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   ShoppingCart,
@@ -222,10 +223,11 @@ export function ProductDetails({
               setSelectedSize(size.id);
               setCurrentStock(size.stock || 0);
             }}
-            className={`border-gray-900 text-gray-900 hover:bg-primary/50 px-4 py-2 ${selectedSize === size.id
-                ? "bg-primary text-white hover:shadow-md"
-                : ""
-              }`}
+            className={cn(
+              "border-gray-900 text-gray-900 hover:bg-primary/50 px-4 py-2",
+              selectedSize === size.id ? "bg-primary text-white hover:shadow-md" : "",
+              size.stock <= 0 && "line-through opacity-50"
+            )}
           >
             {size.name}
           </Button>
@@ -280,7 +282,8 @@ export function ProductDetails({
       <div className="flex flex-wrap  sm:flex-row gap-3 mt-8 sm:gap-4">
         <Button
           onClick={handleAddToCart}
-          className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2 px-6 py-3 flex-1 sm:w-[90vw]"
+          disabled={currentStock <= 0}
+          className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2 px-6 py-3 flex-1 sm:w-[90vw] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span>{t("Add to Cart")}</span>
           <ShoppingCart className="h-5 w-5" />
