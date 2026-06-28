@@ -462,7 +462,7 @@ export default function UpdateProduct() {
       formData.append(`sizes[${i}][discount]`, v.discount || 0);
       formData.append(
         `sizes[${i}][stock]`,
-        productData.stockStatus === "out_of_stock" ? 0 : v.stock || 0, // Use variation stock
+        v.stock === "" ? 0 : v.stock,
       );
     });
 
